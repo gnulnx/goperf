@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// Results for a perf thread
+/* Results for a perf thread */
 type Result struct {
     Total   time.Duration
     Average time.Duration
