@@ -16,13 +16,21 @@ func main() {
 	fmt.Println("Running again url:", *url)
 	fmt.Println("threads: ", *threads)
 
-	for i := 0; i < *threads-1; i++ {
-		go run(*url, i, *iterations)
+	//Define the channel that will syncronize and wait before exiting
+	done := make(chan time.Duration, 1)
+
+	for i := 0; i < *threads; i++ {
+		go run(*url, i, *iterations, done)
+
 	}
-	run(*url, *threads, *iterations)
+
+	//Wait on all the threads
+	for i := 0; i < *threads; i++ {
+		fmt.Println(<-done)
+	}
 }
 
-func run(url string, index int, iterations int) {
+func run(url string, index int, iterations int, done chan time.Duration) {
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("GET", url, nil)
@@ -30,12 +38,15 @@ func run(url string, index int, iterations int) {
 	start := time.Now()
 	for i := 0; i < iterations; i++ {
 		client.Do(req)
-		if i%3 == 0 {
+		if i%1 == 0 {
 			fmt.Println("Thread: ", index, " iteration: ", i)
 		}
 	}
 	end := time.Now()
 	total := end.Sub(start)
-	fmt.Println("Total: ", total)
+	fmt.Println("Thread(", index, ") Total: ", total)
+	average := total / time.Duration(iterations)
 	fmt.Println("Avg: ", total/time.Duration(iterations))
+
+	done <- average
 }
