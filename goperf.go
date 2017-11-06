@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+type Result struct {
+	total time.Duration
+	average time.Duration
+	channel int
+}
+
 func main() {
 	threads := flag.Int("threads", 10, "Number of Threads")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
@@ -17,20 +23,21 @@ func main() {
 	fmt.Println("threads: ", *threads)
 
 	//Define the channel that will syncronize and wait before exiting
-	done := make(chan time.Duration, 1)
+	//done := make(chan time.Duration, 1)
+	done := make(chan Result, 1)
 
 	for i := 0; i < *threads; i++ {
 		go run(*url, i, *iterations, done)
-
 	}
 
 	//Wait on all the threads
 	for i := 0; i < *threads; i++ {
-		fmt.Println(<-done)
+		r := <-done
+		fmt.Println("Channel(" , r.channel , ") Total(", r.total, ") Average(", r.average, ")")
 	}
 }
 
-func run(url string, index int, iterations int, done chan time.Duration) {
+func run(url string, index int, iterations int, done chan Result) {
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("GET", url, nil)
@@ -38,15 +45,18 @@ func run(url string, index int, iterations int, done chan time.Duration) {
 	start := time.Now()
 	for i := 0; i < iterations; i++ {
 		client.Do(req)
-		if i%1 == 0 {
+		if i % 5 == 0 {
 			fmt.Println("Thread: ", index, " iteration: ", i)
 		}
 	}
 	end := time.Now()
 	total := end.Sub(start)
-	fmt.Println("Thread(", index, ") Total: ", total)
 	average := total / time.Duration(iterations)
-	fmt.Println("Avg: ", total/time.Duration(iterations))
 
-	done <- average
+	// Send results on done channel
+	done <- Result {
+		total: total,
+		average: average,
+		channel: index,
+	}
 }
