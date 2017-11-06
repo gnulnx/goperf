@@ -1,20 +1,20 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"time"
-    "flag"
 )
 
 func main() {
-    threads := flag.Int("threads", 10, "Number of Threads")
-    url := flag.String("url", "https://qa.teaquinox.com", "url to test")
-    iterations := flag.Int("iter", 1000, "Iterations per thread")
-    flag.Parse()
+	threads := flag.Int("threads", 10, "Number of Threads")
+	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
+	iterations := flag.Int("iter", 1000, "Iterations per thread")
+	flag.Parse()
 
-    fmt.Println("Running again url:", *url)
-    fmt.Println("threads: ", *threads)
+	fmt.Println("Running again url:", *url)
+	fmt.Println("threads: ", *threads)
 
 	for i := 0; i < *threads-1; i++ {
 		go run(*url, i, *iterations)
@@ -30,9 +30,9 @@ func run(url string, index int, iterations int) {
 	start := time.Now()
 	for i := 0; i < iterations; i++ {
 		client.Do(req)
-        if i % 3 == 0 {
-            fmt.Println("Thread: ", index, " iteration: ", i)
-        }
+		if i%3 == 0 {
+			fmt.Println("Thread: ", index, " iteration: ", i)
+		}
 	}
 	end := time.Now()
 	total := end.Sub(start)
