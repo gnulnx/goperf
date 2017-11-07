@@ -13,6 +13,8 @@ func main() {
 	threads := flag.Int("threads", 10, "Number of Threads")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
+	output := flag.Int("output", 5, "Show thread output every {n} iterations")
+	verbose := flag.Bool("verbose", false, "Show verbose output")
 	flag.Parse()
 
 	fmt.Println("Running again url:", *url)
@@ -26,7 +28,7 @@ func main() {
 		Iterations: *iterations,
 		Threads:    *threads,
 		Url:        *url,
-		Output:     5,
+		Output:     *output,
 	}
 
 	/*
@@ -45,12 +47,13 @@ func main() {
 
 	//Wait on all the threads
 	total := make([]time.Duration, 0, *threads)
-	fmt.Println(total)
 	for i := 0; i < *threads; i++ {
 		r := <-done
 
 		total = append(total, r.Average)
-		r.Display()
+		if *verbose {
+			r.Display()
+		}
 	}
 
 	sum := time.Duration(0)
