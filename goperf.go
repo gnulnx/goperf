@@ -10,15 +10,17 @@ import (
 
 func main() {
 	// Setup comment line parameters
-	threads := flag.Int("threads", 10, "Number of Threads")
+	threads := flag.Int("connections", 10, "Number of concurrant connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
 	output := flag.Int("output", 5, "Show thread output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
+	increment := flag.Int("incr", 2, "How fast to increment the number of concurrant connections")
+	max_response := flag.Int("max-response", 1, "Maximun number of seconds to wait for a response")
 	flag.Parse()
 
 	fmt.Println("Running again url:", *url)
-	fmt.Println("threads: ", *threads)
+	fmt.Println("Concurrant Connections: ", *threads)
 
 	//You want to make a copy when you pass this into the method so the url can change
 	input := request.Input{
@@ -30,18 +32,18 @@ func main() {
 	}
 
 	total, avg := perf(input)
-	fmt.Println("Threads: ", input.Threads)
+	fmt.Println("Concurrant Connections: ", input.Threads)
 	fmt.Println("Total Time: ", total)
 	fmt.Println("Average Request time: ", avg)
 
 	for i := 0; i < 1000; i++ {
-		input.Threads += 10
+		input.Threads += *increment
 		total, avg = perf(input)
-		fmt.Println("\nThreads: ", input.Threads)
+		fmt.Println("\nConcurrant Connections: ", input.Threads)
 		fmt.Println("Total Time: ", total)
 		fmt.Println("Average Request time: ", avg)
-		if avg > time.Duration(1000*1000*1000) {
-			fmt.Println(time.Duration(1000 * 1000 * 1000))
+		if avg > time.Duration(1000*1000*1000**max_response) {
+			fmt.Println(time.Duration(1000 * 1000 * 1000 * *max_response))
 			os.Exit(1)
 		}
 	}
