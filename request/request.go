@@ -22,7 +22,10 @@ type Result struct {
 
 //display method for Results
 func (r *Result) Display() {
+	fmt.Println("---------------------------------------------------------------------")
 	fmt.Println("Channel(", r.Channel, ") Total(", r.Total, ") Average(", r.Average, ")")
+	r.Status()
+	fmt.Println("---------------------------------------------------------------------")
 }
 
 func (r *Result) Status() {
@@ -44,9 +47,9 @@ func (r *Result) Status() {
 		}
 
 	}
-	fmt.Println("200x: ", status_200)
-	fmt.Println("400x: ", status_400)
-	fmt.Println("500x: ", status_500)
+	fmt.Println("200x: ", float32(len(status_200))/float32(len(r.Responses))*100.0, "%")
+	fmt.Println("400x: ", float32(len(status_400))/float32(len(r.Responses))*100.0, "%")
+	fmt.Println("500x: ", float32(len(status_500))/float32(len(r.Responses))*100.0, "%")
 }
 
 /*

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gnulnx/goperf/request"
 	"os"
+	"time"
 )
 
 func main() {
@@ -28,15 +29,14 @@ func main() {
 		Output:     5,
 	}
 
-	input.Index = 0
-	input.Run(done)
-	r := <-done
-	r.Display()
-	fmt.Println("Before status")
-	r.Status()
-	fmt.Println("After status")
+	/*
+		input.Index = 0
+		input.Run(done)
+		r := <-done
+		r.Display()
+		r.Status()
 
-	os.Exit(1)
+	*/
 
 	for i := 0; i < *threads; i++ {
 		input.Index = i + 1
@@ -44,10 +44,24 @@ func main() {
 	}
 
 	//Wait on all the threads
+	total := make([]time.Duration, 0, *threads)
+	fmt.Println(total)
 	for i := 0; i < *threads; i++ {
 		r := <-done
+
+		total = append(total, r.Average)
 		r.Display()
-		r.Status()
 	}
 
+	sum := time.Duration(0)
+
+	for i := range total {
+		sum += total[i]
+	}
+
+	avg := sum / time.Duration(len(total))
+
+	fmt.Println("Total for all request times: ", sum)
+	fmt.Println("Average Request time: ", avg)
+	os.Exit(1)
 }
