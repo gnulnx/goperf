@@ -61,6 +61,7 @@ type Input struct {
 	Iterations int
 	Output     int
 	Index      int // Also the channel number
+	Verbose    bool
 }
 
 /*
