@@ -31,8 +31,6 @@ func (r *Result) Status() {
 	status_500 := make([]string, 0, len(r.Responses))
 
 	for resp := 0; resp < len(r.Responses); resp++ {
-		fmt.Println(r.Responses[resp].Status)
-
 		status_code := r.Responses[resp].Status
 
 		if s.Contains(status_code, "200") {
