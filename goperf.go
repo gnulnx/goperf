@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gnulnx/goperf/request"
+	"os"
 )
 
 func main() {
@@ -27,6 +28,16 @@ func main() {
 		Output:     5,
 	}
 
+	input.Index = 0
+	input.Run(done)
+	r := <-done
+	r.Display()
+	fmt.Println("Before status")
+	r.Status()
+	fmt.Println("After status")
+
+	os.Exit(1)
+
 	for i := 0; i < *threads; i++ {
 		input.Index = i + 1
 		go input.Run(done)
@@ -36,5 +47,7 @@ func main() {
 	for i := 0; i < *threads; i++ {
 		r := <-done
 		r.Display()
+		r.Status()
 	}
+
 }
