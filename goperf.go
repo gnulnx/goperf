@@ -19,9 +19,6 @@ func main() {
 	max_response := flag.Int("max-response", 1, "Maximun number of seconds to wait for a response")
 	flag.Parse()
 
-	fmt.Println("Running again url:", *url)
-	fmt.Println("Concurrant Connections: ", *threads)
-
 	//You want to make a copy when you pass this into the method so the url can change
 	input := request.Input{
 		Iterations: *iterations,
@@ -31,15 +28,14 @@ func main() {
 		Verbose:    *verbose,
 	}
 
-	total, avg := perf(input)
-	fmt.Println("Concurrant Connections: ", input.Threads)
-	fmt.Println("Total Time: ", total)
-	fmt.Println("Average Request time: ", avg)
+	fmt.Println("Running again url:", *url)
+	fmt.Println("Concurrant Connections: ", *threads, "Sustained for: ", input.Threads)
 
 	for i := 0; i < 1000; i++ {
 		input.Threads += *increment
-		total, avg = perf(input)
-		fmt.Println("\nConcurrant Connections: ", input.Threads)
+		total, avg := perf(input)
+		//fmt.Println("\nConcurrant Connections: ", input.Threads)
+		fmt.Println("Concurrant Connections:", *threads, "Sustained for:", input.Threads)
 		fmt.Println("Total Time: ", total)
 		fmt.Println("Average Request time: ", avg)
 		if avg > time.Duration(1000*1000*1000**max_response) {
