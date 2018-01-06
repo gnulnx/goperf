@@ -33,7 +33,8 @@ type Input struct {
 
 /*
    Run the input parameters defined in Input struct.
-   channel 'done' expects a Result object
+   Channel 'done' expects a Result object
+    NOTE: Input is intentioanlly passed by value.
 */
 func (input Input) Run(done chan Result) {
 	client := &http.Client{}
