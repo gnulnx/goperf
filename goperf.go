@@ -31,10 +31,9 @@ func main() {
 	fmt.Println("Running again url:", *url)
 	fmt.Println("Concurrant Connections: ", *threads, "Sustained for: ", input.Threads)
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 1; i++ {
 		input.Threads += *increment
 		total, avg := perf(input)
-		//fmt.Println("\nConcurrant Connections: ", input.Threads)
 		fmt.Println("Concurrant Connections:", *threads, "Sustained for:", input.Threads)
 		fmt.Println("Total Time: ", total)
 		fmt.Println("Average Request time: ", avg)

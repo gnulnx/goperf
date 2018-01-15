@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+    "io/ioutil"
+    "regexp"
 )
 
 import s "strings"
@@ -73,7 +75,6 @@ func (input Input) Run(done chan Result) {
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("GET", input.Url, nil)
-	//req.Header.Add("user-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Mobile Safari/537.36")
 	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
 
 	start := time.Now()
@@ -86,11 +87,36 @@ func (input Input) Run(done chan Result) {
 			fmt.Println("Error: ", err)
 			os.Exit(0)
 		}
-		resp.Body.Close()
 
 		// This is how you would read the body
-		//body, err := ioutil.ReadAll(resp.Body)
-		//fmt.Println(string(body))
+		body, err := ioutil.ReadAll(resp.Body)
+        responseBody := string(body)
+
+        // Get a list of all script urls to download
+        r, _ := regexp.Compile(`<script.*?src="(.*?)"`)
+        match := r.FindAllStringSubmatch(responseBody, -10)
+        script_urls := make([]string, 0)
+        for j := 0; j < len(match); j++ {
+            script_urls = append(script_urls, match[j][1])
+            //fmt.Println(match[j][1])
+        }
+        fmt.Println(script_urls)
+
+        //Get a list of all image urls to download
+        r, _ = regexp.Compile(`<img.*?src="(.*?)"`)
+        match = r.FindAllStringSubmatch(responseBody, -10)
+        img_urls := make([]string, 0)
+        for j := 0; j < len(match); j++ {
+            img_urls = append(img_urls, match[j][1])
+            fmt.Println(match[j][1])
+        }
+        fmt.Println(img_urls)
+
+        // TODO You need to loop over the script and img tags and download them as part of the perf test
+        // TODO you also need to include css tags in here
+
+        // Now close the response body
+		resp.Body.Close()
 
 		if i != 0 && i%input.Output == 0 {
 			fmt.Println("Thread: ", input.Index, " iteration: ", i)
