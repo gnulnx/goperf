@@ -28,9 +28,9 @@ func main() {
 		Verbose:    *verbose,
 	}
 
-	_ = request.FetchAll("https://teaquinox.com")
-
-	//fmt.Println(fetchout.JS)
+	//Uncomment next 3 lines to actually do a real perf test...you are still hashing all this out
+	fetchout := request.FetchAll("https://teaquinox.com")
+	fmt.Println(fetchout)
 	os.Exit(1)
 
 	fmt.Println("Running again url:", *url)

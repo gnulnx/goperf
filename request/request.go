@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 /*
@@ -73,6 +74,8 @@ type Input struct {
 type FetchOutput struct {
 	Url    string
 	Body   string
+	Bytes  int
+	Runes  int
 	Time   time.Duration
 	Status int
 }
@@ -106,6 +109,8 @@ func Fetch(url string) *FetchOutput {
 	output := FetchOutput{
 		Url:    url,
 		Body:   responseBody,
+		Bytes:  len(responseBody),
+		Runes:  utf8.RuneCountInString(responseBody),
 		Time:   end.Sub(start),
 		Status: resp.StatusCode,
 	}
@@ -113,6 +118,12 @@ func Fetch(url string) *FetchOutput {
 	resp.Body.Close()
 	return &output
 }
+
+//type UrlStats struct {
+//	Url	string
+//	Bytes int
+//	Runes int
+//}
 
 type FetchAllOutput struct {
 	Url    string
@@ -148,33 +159,25 @@ func FetchAll(url string) *FetchAllOutput {
 }
 
 func getjs(body string) *[]string {
-	r, _ := regexp.Compile(`<script.*?src="(.*?)"`)
-	match := r.FindAllStringSubmatch(body, -10)
-	jsfiles := make([]string, 0)
-	for j := 0; j < len(match); j++ {
-		jsfiles = append(jsfiles, match[j][1])
-	}
-	return &jsfiles
+	return runregex(`<script.*?src="(.*?)"`, body)
 }
 
 func getimg(body string) *[]string {
-	r, _ := regexp.Compile(`<img.*?src="(.*?)"`)
-	match := r.FindAllStringSubmatch(body, -10)
-	imgfiles := make([]string, 0)
-	for j := 0; j < len(match); j++ {
-		imgfiles = append(imgfiles, match[j][1])
-	}
-	return &imgfiles
+	return runregex(`<img.*?src="(.*?)"`, body)
 }
 
 func getcss(body string) *[]string {
-	r, _ := regexp.Compile(`<link.*?href="(.*?)"`)
+	return runregex(`<link.*?href="(.*?)"`, body)
+}
+
+func runregex(expr string, body string) *[]string {
+	r, _ := regexp.Compile(expr)
 	match := r.FindAllStringSubmatch(body, -10)
-	cssfiles := make([]string, 0)
+	files := make([]string, 0)
 	for j := 0; j < len(match); j++ {
-		cssfiles = append(cssfiles, match[j][1])
+		files = append(files, match[j][1])
 	}
-	return &cssfiles
+	return &files
 }
 
 func (input Input) Run(done chan Result) {
