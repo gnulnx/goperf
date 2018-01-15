@@ -31,13 +31,14 @@ func main() {
 	fmt.Println("Running again url:", *url)
 	fmt.Println("Concurrant Connections: ", *threads, "Sustained for: ", input.Threads)
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 1000; i++ {
 		input.Threads += *increment
 		total, avg := perf(input)
-		fmt.Println("Concurrant Connections:", *threads, "Sustained for:", input.Threads)
+		fmt.Println("Concurrant Connections:", input.Threads, "Sustained for:", input.Iterations, " iterations")
 		fmt.Println("Total Time: ", total)
 		fmt.Println("Average Request time: ", avg)
 		if avg > time.Duration(1000*1000*1000**max_response) {
+            fmt.Println("Exitiing because we reached max response")
 			fmt.Println(time.Duration(1000 * 1000 * 1000 * *max_response))
 			os.Exit(1)
 		}

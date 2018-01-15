@@ -8,7 +8,7 @@ import (
     "io/ioutil"
     "regexp"
 )
-
+import _ "strconv"
 import s "strings"
 
 /*
@@ -73,14 +73,20 @@ type Input struct {
 */
 func (input Input) Run(done chan Result) {
 	client := &http.Client{}
-
 	req, _ := http.NewRequest("GET", input.Url, nil)
 	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
+
+    // Causes segfault if i try to assign baes_url to input.Url... not sure why
+    //base_url := string(input.Url)
+    //fmt.Println(&base_url, &input.Url)
+    //base_url := *input.Url
+    base_url := string(`https://teaquinox.com/`)
 
 	start := time.Now()
 	responses := make([]*http.Response, 0, input.Iterations)
 
 	for i := 0; i < input.Iterations; i++ {
+        // Requet the base page
 		resp, err := client.Do(req)
 		responses = append(responses, resp)
 		if err != nil {
@@ -92,25 +98,47 @@ func (input Input) Run(done chan Result) {
 		body, err := ioutil.ReadAll(resp.Body)
         responseBody := string(body)
 
+
+        done := make(chan bool) // Channel to keep track of extra assets downloads
+        assets := 0 // Counter for all the static and img resources
+
         // Get a list of all script urls to download
         r, _ := regexp.Compile(`<script.*?src="(.*?)"`)
         match := r.FindAllStringSubmatch(responseBody, -10)
-        script_urls := make([]string, 0)
         for j := 0; j < len(match); j++ {
-            script_urls = append(script_urls, match[j][1])
-            //fmt.Println(match[j][1])
+            assets += 1
+            url := base_url + match[j][1]
+            go func(url string) {
+                req, _ := http.NewRequest("GET", url, nil)
+                req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
+                resp, err = client.Do(req)
+                //status := strconv.Itoa(resp.StatusCode)
+                //fmt.Println(status + "  " + url)
+                done <- true
+            }(url)
         }
-        fmt.Println(script_urls)
 
         //Get a list of all image urls to download
         r, _ = regexp.Compile(`<img.*?src="(.*?)"`)
         match = r.FindAllStringSubmatch(responseBody, -10)
-        img_urls := make([]string, 0)
         for j := 0; j < len(match); j++ {
-            img_urls = append(img_urls, match[j][1])
-            fmt.Println(match[j][1])
+            assets += 1
+            url := base_url + match[j][1]
+            go func(url string) {
+                req, _ := http.NewRequest("GET",url, nil)
+                req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
+                client.Do(req)
+                //status := strconv.Itoa(resp.StatusCode)
+                //fmt.Println(status + "  " + url)
+                done <- true
+            }(url)
         }
-        fmt.Println(img_urls)
+
+        // Now lets wait on all the extra requests to get called
+        for wait := 0; wait < assets; wait++ {
+            <- done
+        }
+        //fmt.Println(img_urls)
 
         // TODO You need to loop over the script and img tags and download them as part of the perf test
         // TODO you also need to include css tags in here
@@ -118,9 +146,9 @@ func (input Input) Run(done chan Result) {
         // Now close the response body
 		resp.Body.Close()
 
-		if i != 0 && i%input.Output == 0 {
-			fmt.Println("Thread: ", input.Index, " iteration: ", i)
-		}
+		//if i != 0 && i%input.Output == 0 {
+		//	fmt.Println("Thread: ", input.Index, " iteration: ", i)
+		//}
 	}
 	end := time.Now()
 	total := end.Sub(start)
