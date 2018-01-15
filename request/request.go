@@ -2,6 +2,8 @@ package request
 
 import (
 	"fmt"
+	"github.com/fatih/color"
+	"github.com/gnulnx/goperf/httputils"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -138,16 +140,17 @@ type FetchAllOutput struct {
 func FetchAll(url string) *FetchAllOutput {
 	// Fetch initial url
 	output := Fetch(url)
+	//log(url, output.Body)
 
 	//Now parse it for javascript
 	// Get a list of all script urls to download
-	jsfiles := getjs(output.Body)
-	imgfiles := getimg(output.Body)
-	cssfiles := getcss(output.Body)
+	jsfiles := httputils.Getjs(output.Body)
+	imgfiles := httputils.Getimg(output.Body)
+	cssfiles := httputils.Getcss(output.Body)
 
-	fmt.Println(jsfiles)
-	fmt.Println(imgfiles)
-	fmt.Println(cssfiles)
+	log("Javascript files", jsfiles)
+	log("CSS files", cssfiles)
+	log("IMG files", imgfiles)
 
 	outputall := FetchAllOutput{
 		Url: url,
@@ -158,38 +161,19 @@ func FetchAll(url string) *FetchAllOutput {
 	return &outputall
 }
 
-func getjs(body string) *[]string {
-	return runregex(`<script.*?src="(.*?)"`, body)
-}
-
-func getimg(body string) *[]string {
-	return runregex(`<img.*?src="(.*?)"`, body)
-}
-
-func getcss(body string) *[]string {
-	return runregex(`<link.*?href="(.*?)"`, body)
-}
-
-func runregex(expr string, body string) *[]string {
-	r, _ := regexp.Compile(expr)
-	match := r.FindAllStringSubmatch(body, -10)
-	files := make([]string, 0)
-	for j := 0; j < len(match); j++ {
-		files = append(files, match[j][1])
+func log(header string, files *[]string) {
+	color.Red(header)
+	for i := 0; i < len(*files); i++ {
+		color.Cyan(" - " + (*files)[i])
 	}
-	return &files
 }
 
 func (input Input) Run(done chan Result) {
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", input.Url, nil)
-	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
+	base_url := input.Url
 
-	// Causes segfault if i try to assign baes_url to input.Url... not sure why
-	//base_url := string(input.Url)
-	//fmt.Println(&base_url, &input.Url)
-	//base_url := *input.Url
-	base_url := string(`https://teaquinox.com/`)
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", base_url, nil)
+	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
 
 	start := time.Now()
 	responses := make([]*http.Response, 0, input.Iterations)
