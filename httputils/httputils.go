@@ -4,6 +4,21 @@ import (
 	"regexp"
 )
 
+func Resources(body string) (*[]string, *[]string, *[]string, *[]string) {
+	jsfiles := Getjs(body)
+	imgfiles := Getimg(body)
+	cssfiles := Getcss(body)
+
+	// Create a full Bundle... Maybe this is all you need?
+	// TODO It's not effecit to regex them twice like this...
+	bundle := append(
+		append(*jsfiles, *Getcss(body)...),
+		*Getimg(body)...,
+	)
+
+	return jsfiles, imgfiles, cssfiles, &bundle
+}
+
 func Getjs(body string) *[]string {
 	return runregex(`<script.*?src="(.*?)"`, body)
 }

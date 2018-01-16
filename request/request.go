@@ -1,6 +1,7 @@
 package request
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/httputils"
@@ -72,17 +73,8 @@ type Input struct {
 /*
    Run the input parameters defined in Input struct.
    Channel 'done' expects a Result object
-    NOTE: Input is intentioanlly passed by value.
+    NOTE: Input is intentionally passed by value.
 */
-type FetchOutput struct {
-	Url    string
-	Body   string
-	Bytes  int
-	Runes  int
-	Time   time.Duration
-	Status int
-}
-
 func Fetch(url string) *FetchOutput {
 	/*
 		Simple method that fetches a url and returns a FetchOutput structure
@@ -105,28 +97,67 @@ func Fetch(url string) *FetchOutput {
 	//End Timer
 	end := time.Now()
 
+	fmt.Println(resp.Header)
+	fmt.Println(json.Marshal(resp.Header))
+
 	// Read the html 'body' content from the response object
 	body, err := ioutil.ReadAll(resp.Body)
 	responseBody := string(body)
 
 	output := FetchOutput{
-		Url:    url,
-		Body:   responseBody,
-		Bytes:  len(responseBody),
-		Runes:  utf8.RuneCountInString(responseBody),
-		Time:   end.Sub(start),
-		Status: resp.StatusCode,
+		Url:     url,
+		Body:    responseBody,
+		Headers: resp.Header,
+		Bytes:   len(responseBody),
+		Runes:   utf8.RuneCountInString(responseBody),
+		Time:    end.Sub(start),
+		Status:  resp.StatusCode,
 	}
 	//Close the response body and return the output
 	resp.Body.Close()
+	//fmt.Println(resp.ContentLength)
 	return &output
 }
 
-//type UrlStats struct {
-//	Url	string
-//	Bytes int
-//	Runes int
-//}
+type FetchOutput struct {
+	Url     string
+	Body    string
+	Headers map[string][]string
+	Bytes   int
+	Runes   int
+	Time    time.Duration
+	Status  int
+}
+
+func FetchAll(url string) *FetchAllOutput {
+	// Fetch initial url
+	output := Fetch(url)
+	color.Red("Fetching: " + output.Url)
+	if output.Status == 200 {
+		color.Green(" - Status: " + strconv.Itoa(output.Status))
+	} else {
+		color.Red(" - Status: " + strconv.Itoa(output.Status))
+	}
+	color.Yellow(" - Time to first byte: " + output.Time.String())
+	color.Yellow(" - Bytes: " + strconv.Itoa(output.Bytes))
+	color.Yellow(" - Runes: " + strconv.Itoa(output.Runes))
+
+	// Now parse for js, css, img urls
+	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
+
+	log("Javascript files", jsfiles)
+	log("CSS files", cssfiles)
+	log("IMG files", imgfiles)
+	log("Full Bundle", bundle)
+
+	outputall := FetchAllOutput{
+		Url: url,
+		JS:  jsfiles,
+		IMG: imgfiles,
+		CSS: cssfiles,
+	}
+	return &outputall
+}
 
 type FetchAllOutput struct {
 	Url    string
@@ -136,43 +167,6 @@ type FetchAllOutput struct {
 	Body   string
 	Time   time.Duration
 	Status int
-}
-
-func FetchAll(url string) *FetchAllOutput {
-	// Fetch initial url
-	/*
-		type FetchOutput struct {
-			Url    string
-			Body   string
-			Bytes  int
-			Runes  int
-			Time   time.Duration
-			Status int
-			}
-	*/
-	output := Fetch(url)
-	color.Red("Fetching: " + output.Url)
-	color.Green(" - Time to first byte: " + output.Time.String())
-	color.Green(" - Bytes: " + strconv.Itoa(output.Bytes))
-	color.Green(" - Runes: " + strconv.Itoa(output.Runes))
-
-	// Now parse it for javascript
-	// Get a list of all script urls to download
-	jsfiles := httputils.Getjs(output.Body)
-	imgfiles := httputils.Getimg(output.Body)
-	cssfiles := httputils.Getcss(output.Body)
-
-	log("Javascript files", jsfiles)
-	log("CSS files", cssfiles)
-	log("IMG files", imgfiles)
-
-	outputall := FetchAllOutput{
-		Url: url,
-		JS:  jsfiles,
-		IMG: imgfiles,
-		CSS: cssfiles,
-	}
-	return &outputall
 }
 
 func log(header string, files *[]string) {
