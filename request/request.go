@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -139,10 +140,23 @@ type FetchAllOutput struct {
 
 func FetchAll(url string) *FetchAllOutput {
 	// Fetch initial url
+	/*
+		type FetchOutput struct {
+			Url    string
+			Body   string
+			Bytes  int
+			Runes  int
+			Time   time.Duration
+			Status int
+			}
+	*/
 	output := Fetch(url)
-	//log(url, output.Body)
+	color.Red("Fetching: " + output.Url)
+	color.Green(" - Time to first byte: " + output.Time.String())
+	color.Green(" - Bytes: " + strconv.Itoa(output.Bytes))
+	color.Green(" - Runes: " + strconv.Itoa(output.Runes))
 
-	//Now parse it for javascript
+	// Now parse it for javascript
 	// Get a list of all script urls to download
 	jsfiles := httputils.Getjs(output.Body)
 	imgfiles := httputils.Getimg(output.Body)

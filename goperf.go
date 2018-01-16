@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/request"
 	"os"
 	"time"
@@ -29,6 +30,7 @@ func main() {
 	}
 
 	//Uncomment next 3 lines to actually do a real perf test...you are still hashing all this out
+	color.Green("New Fangled Stuff")
 	fetchout := request.FetchAll("https://teaquinox.com")
 	fmt.Println(fetchout)
 	os.Exit(1)
@@ -57,16 +59,16 @@ func main() {
 	the total time and the average time for all the requests to run
 */
 func perf(input request.Input) (time.Duration, time.Duration) {
-	//Define the channel that will syncronize and wait before exiting
+	// Define the channel that will syncronize and wait before exiting
 	done := make(chan request.Result, 1)
 
-	/* Start all concurrant request threads */
+	// Start all concurrant request threads
 	for i := 0; i < input.Threads; i++ {
 		input.Index = i + 1
 		go input.Run(done)
 	}
 
-	/* Wait on all the threads to return and collect results */
+	// Wait on all the threads to return and collect results
 	total := make([]time.Duration, 0, input.Threads)
 	for i := 0; i < input.Threads; i++ {
 		r := <-done
