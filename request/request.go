@@ -75,7 +75,7 @@ type Input struct {
    Channel 'done' expects a Result object
     NOTE: Input is intentionally passed by value.
 */
-func Fetch(url string) *FetchOutput {
+func Fetch(url string) *FetchResponse {
 	/*
 		Simple method that fetches a url and returns a FetchOutput structure
 	*/
@@ -97,14 +97,14 @@ func Fetch(url string) *FetchOutput {
 	//End Timer
 	end := time.Now()
 
-	fmt.Println(resp.Header)
-	fmt.Println(json.Marshal(resp.Header))
+	//fmt.Println(resp.Header)
+	json.Marshal(resp.Header)
 
 	// Read the html 'body' content from the response object
 	body, err := ioutil.ReadAll(resp.Body)
 	responseBody := string(body)
 
-	output := FetchOutput{
+	output := FetchResponse{
 		Url:     url,
 		Body:    responseBody,
 		Headers: resp.Header,
@@ -113,13 +113,14 @@ func Fetch(url string) *FetchOutput {
 		Time:    end.Sub(start),
 		Status:  resp.StatusCode,
 	}
+	//tmp, _ := json.Marshal(output)
+	//fmt.Println(string(tmp))
 	//Close the response body and return the output
 	resp.Body.Close()
-	//fmt.Println(resp.ContentLength)
 	return &output
 }
 
-type FetchOutput struct {
+type FetchResponse struct {
 	Url     string
 	Body    string
 	Headers map[string][]string
@@ -129,7 +130,7 @@ type FetchOutput struct {
 	Status  int
 }
 
-func FetchAll(url string) *FetchAllOutput {
+func FetchAll(url string) *FetchAllResponse {
 	// Fetch initial url
 	output := Fetch(url)
 	color.Red("Fetching: " + output.Url)
@@ -150,20 +151,31 @@ func FetchAll(url string) *FetchAllOutput {
 	log("IMG files", imgfiles)
 	log("Full Bundle", bundle)
 
-	outputall := FetchAllOutput{
-		Url: url,
-		JS:  jsfiles,
-		IMG: imgfiles,
-		CSS: cssfiles,
+	outputall := FetchAllResponse{
+		Url:      url,
+		UrlFetch: output,
+		JS:       jsfiles,
+		IMG:      imgfiles,
+		CSS:      cssfiles,
 	}
+	tmp, _ := json.MarshalIndent(outputall, "", "    ")
+	fmt.Println(string(tmp))
 	return &outputall
 }
 
-type FetchAllOutput struct {
-	Url    string
-	JS     *[]string
-	IMG    *[]string
-	CSS    *[]string
+type FetchAllResponse struct {
+	Url      string
+	UrlFetch *FetchResponse
+
+	JS         *[]string
+	JSReponses *[]FetchResponse
+
+	IMG          *[]string
+	IMGResponses *[]FetchResponse
+
+	CSS          *[]string
+	CSSResponses *[]FetchResponse
+
 	Body   string
 	Time   time.Duration
 	Status int
