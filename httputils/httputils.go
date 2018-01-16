@@ -10,7 +10,7 @@ func Resources(body string) (*[]string, *[]string, *[]string, *[]string) {
 	cssfiles := Getcss(body)
 
 	// Create a full Bundle... Maybe this is all you need?
-	// TODO It's not effecit to regex them twice like this...
+	// TODO It's not effecient to regex them twice like this...
 	bundle := append(
 		append(*jsfiles, *Getcss(body)...),
 		*Getimg(body)...,
