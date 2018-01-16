@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+
+<html lang="en"><head><title>TeaQuinox | Buy Loose Leaf Tea, Green Tea, Black Tea, White Tea, and Tisanes!</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="description" content="TeaQuinox Tea Company | Outstanding Loose Leaf Teas"><meta name="author" content="John Furr"><meta name="theme-color" content="#999999" /><link rel="manifest" href="/media/manifest.webmanifest"/><link rel="stylesheet" href="/static/vendor/icomoon/style.css"/><link rel="shortcut icon" type="image/x-icon" href="/media/favicon_94S_icon.ico"/><link rel="stylesheet" href="/static/vendor/bootstrap/bootstrap.min.css"><link rel="stylesheet" href="/static/tcart/css/styles.min.css"><script>var domain = "qa.teaquinox.com"</script><!-- Global site tag (gtag.js) - Google AdWords: 833264255 --><meta property="og:image" content="https://www.teaquinox.com/media/templates/theme1/img/header/banner1434x598.jpeg"/></head><body><div id="fb-root"></div><div id="app"><div class="container-fluid primary-background tcart_nav" style="opacity:0.90"><div class="row"><div class="col col-md-2"><a style="float: left; margin-top:-5px;" href="/"><img src='/media//teaquinox_header_2.svg' height="100%" width="170px" alt="Teaquinox Tea Company Loose Leaf Tea Logo"/></a></div><div class="col text-center desktop-nav"><ul style="list-style-type:none; margin:0; padding:0;"><li style="display:inline-block;"><a  style="font-size:20px;margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/Black-Tea/">BLACK</a></li><li style="display:inline-block;"><a  style="font-size:20px;margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/Green-Tea/">GREEN</a></li><li style="display:inline-block;"><a  style="font-size:20px;margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/White-Tea/">WHITE</a></li><li style="display:inline-block;"><a  style="font-size:20px;margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/MATCHA/">MATCHA</a></li><li style="display:inline-block;"><a  style="font-size:20px;margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/HERBAL/">HERBAL</a></li><li style="display:inline-block;"><a  style="font-size:20px;margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/Chai/">CHAI</a></li></ul></div><div class="col col-md-1"><a style="float: right; margin-right:20px;" href="/checkout/cart"><img style="float:left; " src="/media/cart.svg" width=75px height=75px alt="Shopping cart icon" /><bounce-loader v-if="!cart" :loading="loading" :color="color" :size="size" v-bind:style="cartSpinnerStyle"></bounce-loader><p v-if="cart" id="item_count" class="v-spinner" v-cloak v-bind:style="cartCountStyle">{{cart_count}}</p></a></div></div><div class="row"><div class="col-sm-12 text-center mobile-nav" style="border-top: solid 1px"><ul class="" style="list-style-type:none; margin:0; padding:0;"><li class="" style="display:inline-block;"><a  style="margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/Black-Tea/">BLACK</a></li><li class="" style="display:inline-block;"><a  style="margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/Green-Tea/">GREEN</a></li><li class="" style="display:inline-block;"><a  style="margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/White-Tea/">WHITE</a></li><li class="" style="display:inline-block;"><a  style="margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/MATCHA/">MATCHA</a></li><li class="" style="display:inline-block;"><a  style="margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/HERBAL/">HERBAL</a></li><li class="" style="display:inline-block;"><a  style="margin-top:0px;"
+                        class="nav-link basic-link"
+                        href="/catalog/Chai/">CHAI</a></li></ul></div></div></div><div class="container-fluid"><div class='row'><div class="col-sm-12 tex-center"><img id="headdiv" border="0" class="head img-fluid"
+                    style="background-image: url('/media/banners/1-12-2018/SnowyTea_lowres2.jpg');"
+                    src="/media/banners/1-12-2018/SnowyTea_50percent.jpg"><div class="promo-wrapper-div rounded"><div class='row'><h3 class="promo-text text-center">Join our email list and receive free shipping.</h3></div><div class='row'><transition name="fade"><span v-if="email" v-cloak class='btn btn-warning status' style='width:100%;'>{{email}}</span></transition><span class='btn btn-warning' style='display:none; width:100%'></span></div><div class='row'><input v-on:keyup.enter="email_signup"
+                            type="email"
+                            placeholder="your-email@domain.com"
+                            class="form-control email_signup"/></div><div class='row' style="margin-top:5px"><input v-on:click="email_signup" type="submit" class='btn btn-tgreen' value="Sign Up" style="width:100%"/></div></div></div></div></div><section id="shop_by_category"><div class="container" style=""><div class="row"><div class="col-sm-12"><h1 class="text-center main_header">Loose Leaf Teas</h1></div></div><div class='row'><div v-on:click="change_category"
+                class="col-sm-12 col-md-3 cat-left"
+                style="cursor: pointer"
+                data-url="/catalog/Black-Tea/"><span id="side_text" class="overlay-span"><p>Loose Leaf Black Tea</p></span></div><div class="col-sm-12 col-md-6"><div class="row"><div class="col-sm-12 col-md-6"><a href='/catalog/HERBAL/' class='nostyle'><div class="cat-top-left clickable"><span id="top_left_text" class="overlay-span"><p>Loose Leaf Tisanes (Herbal)</p></span></div></a></div><div class="col-sm-12 col-md-6 "><a href='/catalog/MATCHA/' class='nostyle'><div class="cat-top-right clickable"><span id="top_right_text" class="overlay-span"><p>Matcha</p></span></div></a></div></div><div class="row"><div class="col-sm-12 col-md-12 "><a href='/catalog/White-Tea/' class='nostyle'><div class="cat-btm clickable"><span id="bottom_text" class="overlay-span"><p>Loose Leaf White Tea</p></span></div></a></div></div></div><div v-on:click="change_category"
+                class="col-sm-12 col-md-3 cat-right"
+                style="cursor: pointer"
+                data-url="/catalog/Green-Tea/"><span id="side_text" class="overlay-span"><p>Loose Leaf Green Tea</p></span></div></div></div></section><section style="height:25px;"></section><section id="featured_teas" style="background-color:white"><div class="container" style=""><div class="row"><div class="col-sm-12"><h1 class="text-center" style="line-height:75px">TeaQuinox Favorites</h1></div></div><div class="row"><div class="col-lg-12"><div class="row"><div class="col-lg-4 col-md-6 mb-4"><div class="card h-100"><a href="/catalog/White-Tea/Longevity-Eyebrows-(Shou-Mei)"><img class="card-img-top img-fluid"
+                style="width:100%" 
+                src="/media/product_11/Shou_Mei_M.jpeg"
+                alt="Longevity Eyebrows (Shou Mei) | White Tea | TeaQuinox"></a><div class="product-title-wrapper" style="opacity:.7"><h4 class="card-title"><a class='basic-link' style="color:white !important;" href="/catalog/White-Tea/Longevity-Eyebrows-(Shou-Mei)">Longevity Eyebrows (Shou Mei)</a></h4></div><div class="card-block"><p class="card-text"><a 
+                    href="/catalog/White-Tea/Longevity-Eyebrows-(Shou-Mei)"
+                    class='plainlink'
+                >
+                    Longevity Eyebrows or Shou Mei may not be the trendiest white tea, but it's simply delightful. Fuller and richer in ...
+                </a></p></div></div></div><div class="col-lg-4 col-md-6 mb-4"><div class="card h-100"><a href="/catalog/Chai/Turmeric-Chai"><img class="card-img-top img-fluid"
+                style="width:100%" 
+                src="/media/product_36/Turmeric_Chai_M.jpeg"
+                alt="Turmeric Chai | Chai Tea | TeaQuinox"></a><div class="product-title-wrapper" style="opacity:.7"><h4 class="card-title"><a class='basic-link' style="color:white !important;" href="/catalog/Chai/Turmeric-Chai">Turmeric Chai</a></h4></div><div class="card-block"><p class="card-text"><a 
+                    href="/catalog/Chai/Turmeric-Chai"
+                    class='plainlink'
+                >
+                    Weary mind? Aching joints? Just plain frazzled? Turmeric Chai to the rescue! Steep a cup, breathe deeply and let all ...
+                </a></p></div></div></div><div class="col-lg-4 col-md-6 mb-4"><div class="card h-100"><a href="/catalog/Green-Tea/Liu&#39;an-Gua-Pian"><img class="card-img-top img-fluid"
+                style="width:100%" 
+                src="/media/product_45/Luian_Gua_Pian_M.jpeg"
+                alt="Liu'an Gua Pian | Green Tea | TeaQuinox"></a><div class="product-title-wrapper" style="opacity:.7"><h4 class="card-title"><a class='basic-link' style="color:white !important;" href="/catalog/Green-Tea/Liu&#39;an-Gua-Pian">Liu'an Gua Pian</a></h4></div><div class="card-block"><p class="card-text"><a 
+                    href="/catalog/Green-Tea/Liu&#39;an-Gua-Pian"
+                    class='plainlink'
+                >
+                    From Liu'an City, Anhui Province in China, our Liu’an Gua Pian is also known by the whimsical name, Melon Seed ...
+                </a></p></div></div></div><div class="col-lg-4 col-md-6 mb-4"><div class="card h-100"><a href="/catalog/Black-Tea/New-England-Breakfast"><img class="card-img-top img-fluid"
+                style="width:100%" 
+                src="/media/product_58/NEB_new_m.jpg"
+                alt="New England Breakfast | Black Tea | TeaQuinox"></a><div class="product-title-wrapper" style="opacity:.7"><h4 class="card-title"><a class='basic-link' style="color:white !important;" href="/catalog/Black-Tea/New-England-Breakfast">New England Breakfast</a></h4></div><div class="card-block"><p class="card-text"><a 
+                    href="/catalog/Black-Tea/New-England-Breakfast"
+                    class='plainlink'
+                >
+                    A slightly different take on traditional English Breakfast, our New England Breakfast is an audacious blend sure to give you ...
+                </a></p></div></div></div><div class="col-lg-4 col-md-6 mb-4"><div class="card h-100"><a href="/catalog/Black-Tea/Black-Dragon-Pearls"><img class="card-img-top img-fluid"
+                style="width:100%" 
+                src="/media/product_71/Black_Dragon_Pearls_M.jpg"
+                alt="Black Dragon Pearls | Black Tea | TeaQuinox"></a><div class="product-title-wrapper" style="opacity:.7"><h4 class="card-title"><a class='basic-link' style="color:white !important;" href="/catalog/Black-Tea/Black-Dragon-Pearls">Black Dragon Pearls</a></h4></div><div class="card-block"><p class="card-text"><a 
+                    href="/catalog/Black-Tea/Black-Dragon-Pearls"
+                    class='plainlink'
+                >
+                    You won’t have to feel guilty about filling your treasure chest with these gorgeous pearls! Black Dragon Pearls are hand-rolled ...
+                </a></p></div></div></div><div class="col-lg-4 col-md-6 mb-4"><div class="card h-100"><a href="/catalog/Green-Tea/Moroccan-Mint"><img class="card-img-top img-fluid"
+                style="width:100%" 
+                src="/media/product_None/Moroccan_Mint_M.jpg"
+                alt="Moroccan Mint | Green Tea | TeaQuinox"></a><div class="product-title-wrapper" style="opacity:.7"><h4 class="card-title"><a class='basic-link' style="color:white !important;" href="/catalog/Green-Tea/Moroccan-Mint">Moroccan Mint</a></h4></div><div class="card-block"><p class="card-text"><a 
+                    href="/catalog/Green-Tea/Moroccan-Mint"
+                    class='plainlink'
+                >
+                    For generations, Moroccan Mint tea has been an integral part of Moroccan culture. Whether it is consumed to start the ...
+                </a></p></div></div></div></div></div></div></div></section><section style="background-color:white;height:25px;"></section><footer style="margin-top: 75px"><div class="container-fluid"><div class="row justify-content-center primary-background" style="padding-top:20px; padding-bottom:20px;"><span class="text-center" style="color:#66CC33; font-size: 1.5rem; font-weight:200;">~Whole Leaf Tea Tastes Better~</span></div></div><div class="container" style="margin-top:15px"><div class="row"><div class="col-sm-5"><span v-cloak style="color:#697174;"><b>FREE SHIPPING</b> for all new email subscribers!</span><transition name="fade"><span v-cloak v-if="email" v-cloak class='btn btn-warning status' style='width:100%;'>{{email}}</span></transition><input v-on:keyup.enter="email_signup"
+                    type="email"
+                    placeholder="your-email@domain.com"
+                    class="form-control email_signup"
+                    style="width:60% !important; display:inline-block !important; margin-right:1px;"/><script src="/static/tcart/js/test1.min.js" type="module"><input v-on:click="email_signup" type="submit" class='btn text-center' value="Sign Up" style="background-color: #66CC33; color:white; margin-left:1px;"/><br><span style="color:#697174;"><b>Follow Us</b></span><ul class="list-inline"><li class="list-inline-item"><a href='https://www.instagram.com/teaquinox.tea.company/'><button class="icon-instagram social-media" aria-hidden="true"></button></a></li><li class="list-inline-item"><a href='https://www.facebook.com/TeaQuinox-Tea-Co-166118107298452/'><button class="icon-facebook-square social-media" aria-hidden="true"></button></a></li><li class="list-inline-item"><a href='https://twitter.com/teaquinoxtea'><button class="icon-twitter social-media" aria-hidden="true"></button></a></li></ul><img src="/static/tcart/img/stripe_badges/outline_dark/powered_by_stripe.png" style='margin-bottom:10px'><br class="col-sm-3"></div><div class="col-sm-1"></div><div class="col-sm-3"><h5>Categories</h5><ul class="list-unstyled p25"><li><a class="basic-link" href="/catalog/Black-Tea/">Black</a></li><li><a class="basic-link" href="/catalog/Green-Tea/">Green</a></li><li><a class="basic-link" href="/catalog/White-Tea/">White</a></li><li><a class="basic-link" href="/catalog/MATCHA/">Matcha</a></li><li><a class="basic-link" href="/catalog/HERBAL/">Herbal</a></li><li><a class="basic-link" href="/catalog/Chai/">Chai</a></li></ul></div><div class="col-sm-3"><h5>Customer Service</h5><ul class="list-unstyled p25"><li><a class="basic-link" href="/the-daily-leaf/">The Daily Leaf</a></li><li><a class="basic-link" href="/the-leaf-buzz/">Leaf Buzz</a></li><li><a class="basic-link" href="/about-us/">About Teaquinox</a></li><li><a class="basic-link" href="/contact-us/">Contact Us</a></li></ul></div></div></div></footer><footer class="py-3 bg-inverse primary-background"><div class="row"><div class="col-sm-4 text-left"></div><div class="col-sm-4"><div class="container"><p class="m-0 text-center text-white">Copyright &copy; TeaQuinox 2017</p></div></div><div class="col-sm-4"></div></div></footer></div><script>
+    
+    window.add_to_promo = "/promo/add-to-mailing-list-and-promo-tracker/";
+    window.sendpromoemail = "/promo/send-promo-email/";
+    </script><script src="/static/tcart/js/bundle_kldsf2334.min.js" type="module"></script></body></html>
