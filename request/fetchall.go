@@ -34,6 +34,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	/*
 	   Fetch the url and then fetch all of it's assets.
 	   Assets currently refer to script, style, and img tags.
+	   Each asset class is fetched in it's own go routine
 
 	   If retdata is False we don't return the Body or Header
 	   This is useful if you only want the timing data.
@@ -46,15 +47,14 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	// Fetch initial url
 	output := Fetch(baseurl, true)
 
-	// Now parse for js, css, img urls
+	// Now parse output for js, css, img urls
 	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
 
+	// Now lets create some go routines and fetch all the js, img, css files
 	c1 := make(chan []FetchResponse)
 	c2 := make(chan []FetchResponse)
 	c3 := make(chan []FetchResponse)
 
-	// Not sure a browser kicks off 3 threads.  1 for each asset class
-	// But I'm pretty sure for load testing purposes this will be decent
 	go FetchAllAssetArray(*jsfiles, baseurl, retdat, c1)
 	go FetchAllAssetArray(*imgfiles, baseurl, retdat, c2)
 	go FetchAllAssetArray(*cssfiles, baseurl, retdat, c3)
