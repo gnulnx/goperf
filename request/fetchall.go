@@ -18,13 +18,15 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 	return Fetch(asset_url, retdat)
 }
 
-func FetchAllAssetArray(files []string, baseurl string, retdat bool) []FetchResponse {
+func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) []FetchResponse {
 	responses := []FetchResponse{}
 
 	for i := 0; i < len(files); i++ {
 		asset_url := (files)[i]
 		responses = append(responses, *FetchAsset(baseurl, asset_url, retdat))
 	}
+
+	resp <- responses
 	return responses
 }
 
@@ -47,11 +49,27 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	// Now parse for js, css, img urls
 	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
 
-	// TODO:  This needs to be done as Go routines to simulate a real browser
-	// TODO:  Use selects here...
-	jsResponses := FetchAllAssetArray(*jsfiles, baseurl, retdat)
-	imgResponses := FetchAllAssetArray(*imgfiles, baseurl, retdat)
-	cssResponses := FetchAllAssetArray(*cssfiles, baseurl, retdat)
+	c1 := make(chan []FetchResponse)
+	c2 := make(chan []FetchResponse)
+	c3 := make(chan []FetchResponse)
+
+	// Not sure a browser kicks off 3 threads.  1 for each asset class
+	// But I'm pretty sure for load testing purposes this will be decent
+	go FetchAllAssetArray(*jsfiles, baseurl, retdat, c1)
+	go FetchAllAssetArray(*imgfiles, baseurl, retdat, c2)
+	go FetchAllAssetArray(*cssfiles, baseurl, retdat, c3)
+
+	jsResponses := []FetchResponse{}
+	imgResponses := []FetchResponse{}
+	cssResponses := []FetchResponse{}
+
+	for i := 0; i < 3; i++ {
+		select {
+		case jsResponses = <-c1:
+		case imgResponses = <-c2:
+		case cssResponses = <-c3:
+		}
+	}
 
 	if !retdat {
 		output.Body = ``
@@ -63,9 +81,8 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,
 	}
-	//tmp, _ := json.MarshalIndent(outputall, "", "    ")
-	//fmt.Println(string(tmp))
 
+	// TODO You need to control output with a cmd line switch
 	color.Red("Fetching: " + output.Url)
 	if output.Status == 200 {
 		color.Green(" - Status: " + strconv.Itoa(output.Status))
