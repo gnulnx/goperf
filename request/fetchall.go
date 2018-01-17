@@ -18,6 +18,16 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 	return Fetch(asset_url, retdat)
 }
 
+func FetchAllAssetArray(files []string, baseurl string, retdat bool) []FetchResponse {
+	responses := []FetchResponse{}
+
+	for i := 0; i < len(files); i++ {
+		asset_url := (files)[i]
+		responses = append(responses, *FetchAsset(baseurl, asset_url, retdat))
+	}
+	return responses
+}
+
 func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	/*
 	   Fetch the url and then fetch all of it's assets.
@@ -38,29 +48,11 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
 
 	// TODO:  This needs to be done as Go routines to simulate a real browser
-	jsResponses := []FetchResponse{}
-	files := *jsfiles
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
-		jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url, retdat))
-		color.Magenta(asset_url)
-	}
+	// TODO:  Use selects here...
+	jsResponses := FetchAllAssetArray(*jsfiles, baseurl, retdat)
+	imgResponses := FetchAllAssetArray(*imgfiles, baseurl, retdat)
+	cssResponses := FetchAllAssetArray(*cssfiles, baseurl, retdat)
 
-	imgResponses := []FetchResponse{}
-	files = *imgfiles
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
-		imgResponses = append(imgResponses, *FetchAsset(baseurl, asset_url, retdat))
-		color.Magenta(asset_url)
-	}
-
-	cssResponses := []FetchResponse{}
-	files = *cssfiles
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
-		cssResponses = append(cssResponses, *FetchAsset(baseurl, asset_url, retdat))
-		color.Magenta(asset_url)
-	}
 	if !retdat {
 		output.Body = ``
 		output.Headers = make(map[string][]string)
