@@ -130,9 +130,16 @@ type FetchResponse struct {
 	Status  int
 }
 
-func FetchAll(url string) *FetchAllResponse {
+func FetchAll(baseurl string) *FetchAllResponse {
+	/*
+		Try to simulate a request.
+		1) Fetch base_url
+		2) Parse for script, css, and img tags
+		3) Fetch other resources with go threads
+		4) compile results and return as json
+	*/
 	// Fetch initial url
-	output := Fetch(url)
+	output := Fetch(baseurl)
 	color.Red("Fetching: " + output.Url)
 	if output.Status == 200 {
 		color.Green(" - Status: " + strconv.Itoa(output.Status))
@@ -146,21 +153,69 @@ func FetchAll(url string) *FetchAllResponse {
 	// Now parse for js, css, img urls
 	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
 
+	jsResponses := []FetchResponse{}
+	files := *jsfiles
+	for i := 0; i < len(files); i++ {
+		asset_url := (files)[i]
+		jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url))
+		color.Magenta(asset_url)
+	}
+
+	imgResponses := []FetchResponse{}
+	files = *jsfiles
+	for i := 0; i < len(files); i++ {
+		asset_url := (files)[i]
+		imgResponses = append(imgResponses, *FetchAsset(baseurl, asset_url))
+		color.Magenta(asset_url)
+	}
+
+	cssResponses := []FetchResponse{}
+	files = *jsfiles
+	for i := 0; i < len(files); i++ {
+		asset_url := (files)[i]
+		cssResponses = append(cssResponses, *FetchAsset(baseurl, asset_url))
+		color.Magenta(asset_url)
+	}
+
 	log("Javascript files", jsfiles)
 	log("CSS files", cssfiles)
 	log("IMG files", imgfiles)
 	log("Full Bundle", bundle)
 
 	outputall := FetchAllResponse{
-		Url:      url,
-		UrlFetch: output,
-		JS:       jsfiles,
-		IMG:      imgfiles,
-		CSS:      cssfiles,
+		Url:          baseurl,
+		UrlFetch:     output,
+		JS:           jsfiles,
+		JSReponses:   jsResponses,
+		IMG:          imgfiles,
+		IMGResponses: imgResponses,
+		CSS:          cssfiles,
+		CSSResponses: cssResponses,
 	}
-	tmp, _ := json.MarshalIndent(outputall, "", "    ")
-	fmt.Println(string(tmp))
+	//tmp, _ := json.MarshalIndent(outputall, "", "    ")
+	//fmt.Println(string(tmp))
 	return &outputall
+}
+
+/*
+func FetchAllAsset(
+	for i := 0; i < len(files); i++ {
+        asset_url := (files)[i]
+        jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url))
+        color.Magenta(asset_url)
+    }
+}
+*/
+func DefineAssetUrl(baseurl string, asseturl string) string {
+	if asseturl[0] == '/' {
+		asseturl = baseurl + asseturl
+	}
+	return asseturl
+}
+
+func FetchAsset(baseurl string, asseturl string) *FetchResponse {
+	asset_url := DefineAssetUrl(baseurl, asseturl)
+	return Fetch(asset_url)
 }
 
 type FetchAllResponse struct {
@@ -168,13 +223,13 @@ type FetchAllResponse struct {
 	UrlFetch *FetchResponse
 
 	JS         *[]string
-	JSReponses *[]FetchResponse
+	JSReponses []FetchResponse
 
 	IMG          *[]string
-	IMGResponses *[]FetchResponse
+	IMGResponses []FetchResponse
 
 	CSS          *[]string
-	CSSResponses *[]FetchResponse
+	CSSResponses []FetchResponse
 
 	Body   string
 	Time   time.Duration
