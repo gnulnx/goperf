@@ -153,6 +153,7 @@ func FetchAll(baseurl string) *FetchAllResponse {
 	// Now parse for js, css, img urls
 	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
 
+	// TODO:  This needs to be done as Go routines to simulate a real browser
 	jsResponses := []FetchResponse{}
 	files := *jsfiles
 	for i := 0; i < len(files); i++ {
@@ -162,7 +163,7 @@ func FetchAll(baseurl string) *FetchAllResponse {
 	}
 
 	imgResponses := []FetchResponse{}
-	files = *jsfiles
+	files = *imgfiles
 	for i := 0; i < len(files); i++ {
 		asset_url := (files)[i]
 		imgResponses = append(imgResponses, *FetchAsset(baseurl, asset_url))
@@ -170,17 +171,12 @@ func FetchAll(baseurl string) *FetchAllResponse {
 	}
 
 	cssResponses := []FetchResponse{}
-	files = *jsfiles
+	files = *cssfiles
 	for i := 0; i < len(files); i++ {
 		asset_url := (files)[i]
 		cssResponses = append(cssResponses, *FetchAsset(baseurl, asset_url))
 		color.Magenta(asset_url)
 	}
-
-	log("Javascript files", jsfiles)
-	log("CSS files", cssfiles)
-	log("IMG files", imgfiles)
-	log("Full Bundle", bundle)
 
 	outputall := FetchAllResponse{
 		Url:          baseurl,
@@ -192,30 +188,14 @@ func FetchAll(baseurl string) *FetchAllResponse {
 		CSS:          cssfiles,
 		CSSResponses: cssResponses,
 	}
-	//tmp, _ := json.MarshalIndent(outputall, "", "    ")
-	//fmt.Println(string(tmp))
+	tmp, _ := json.MarshalIndent(outputall, "", "    ")
+	fmt.Println(string(tmp))
+	log("Javascript files", jsfiles)
+	log("CSS files", cssfiles)
+	log("IMG files", imgfiles)
+	log("Full Bundle", bundle)
+
 	return &outputall
-}
-
-/*
-func FetchAllAsset(
-	for i := 0; i < len(files); i++ {
-        asset_url := (files)[i]
-        jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url))
-        color.Magenta(asset_url)
-    }
-}
-*/
-func DefineAssetUrl(baseurl string, asseturl string) string {
-	if asseturl[0] == '/' {
-		asseturl = baseurl + asseturl
-	}
-	return asseturl
-}
-
-func FetchAsset(baseurl string, asseturl string) *FetchResponse {
-	asset_url := DefineAssetUrl(baseurl, asseturl)
-	return Fetch(asset_url)
 }
 
 type FetchAllResponse struct {
@@ -234,6 +214,18 @@ type FetchAllResponse struct {
 	Body   string
 	Time   time.Duration
 	Status int
+}
+
+func DefineAssetUrl(baseurl string, asseturl string) string {
+	if asseturl[0] == '/' {
+		asseturl = baseurl + asseturl
+	}
+	return asseturl
+}
+
+func FetchAsset(baseurl string, asseturl string) *FetchResponse {
+	asset_url := DefineAssetUrl(baseurl, asseturl)
+	return Fetch(asset_url)
 }
 
 func log(header string, files *[]string) {

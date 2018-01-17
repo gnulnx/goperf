@@ -31,7 +31,8 @@ func main() {
 
 	//Uncomment next 3 lines to actually do a real perf test...you are still hashing all this out
 	color.Green("~~ Fetching a single url and printing info ~~")
-	_ = request.FetchAll("https://teaquinox.com")
+	//_ = request.FetchAll("https://teaquinox.com")
+	_ = request.FetchAll(*url)
 	//fmt.Println(fetchout)
 	os.Exit(1)
 
