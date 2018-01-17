@@ -1,7 +1,6 @@
 package request
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/httputils"
@@ -75,9 +74,10 @@ type Input struct {
    Channel 'done' expects a Result object
     NOTE: Input is intentionally passed by value.
 */
-func Fetch(url string) *FetchResponse {
+func Fetch(url string, retdat bool) *FetchResponse {
 	/*
 		Simple method that fetches a url and returns a FetchOutput structure
+		retdata if True then we return the Body and the Headers
 	*/
 
 	// Set up the http request
@@ -97,9 +97,6 @@ func Fetch(url string) *FetchResponse {
 	//End Timer
 	end := time.Now()
 
-	//fmt.Println(resp.Header)
-	json.Marshal(resp.Header)
-
 	// Read the html 'body' content from the response object
 	body, err := ioutil.ReadAll(resp.Body)
 	responseBody := string(body)
@@ -113,8 +110,11 @@ func Fetch(url string) *FetchResponse {
 		Time:    end.Sub(start),
 		Status:  resp.StatusCode,
 	}
-	//tmp, _ := json.Marshal(output)
-	//fmt.Println(string(tmp))
+
+	if !retdat {
+		output.Body = ``
+		output.Headers = make(map[string][]string)
+	}
 	//Close the response body and return the output
 	resp.Body.Close()
 	return &output
@@ -130,7 +130,7 @@ type FetchResponse struct {
 	Status  int
 }
 
-func FetchAll(baseurl string) *FetchAllResponse {
+func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	/*
 		Try to simulate a request.
 		1) Fetch base_url
@@ -139,7 +139,7 @@ func FetchAll(baseurl string) *FetchAllResponse {
 		4) compile results and return as json
 	*/
 	// Fetch initial url
-	output := Fetch(baseurl)
+	output := Fetch(baseurl, true)
 	color.Red("Fetching: " + output.Url)
 	if output.Status == 200 {
 		color.Green(" - Status: " + strconv.Itoa(output.Status))
@@ -158,7 +158,7 @@ func FetchAll(baseurl string) *FetchAllResponse {
 	files := *jsfiles
 	for i := 0; i < len(files); i++ {
 		asset_url := (files)[i]
-		jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url))
+		jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url, retdat))
 		color.Magenta(asset_url)
 	}
 
@@ -166,7 +166,7 @@ func FetchAll(baseurl string) *FetchAllResponse {
 	files = *imgfiles
 	for i := 0; i < len(files); i++ {
 		asset_url := (files)[i]
-		imgResponses = append(imgResponses, *FetchAsset(baseurl, asset_url))
+		imgResponses = append(imgResponses, *FetchAsset(baseurl, asset_url, retdat))
 		color.Magenta(asset_url)
 	}
 
@@ -174,22 +174,22 @@ func FetchAll(baseurl string) *FetchAllResponse {
 	files = *cssfiles
 	for i := 0; i < len(files); i++ {
 		asset_url := (files)[i]
-		cssResponses = append(cssResponses, *FetchAsset(baseurl, asset_url))
+		cssResponses = append(cssResponses, *FetchAsset(baseurl, asset_url, retdat))
 		color.Magenta(asset_url)
 	}
-
+	if !retdat {
+		output.Body = ``
+		output.Headers = make(map[string][]string)
+	}
 	outputall := FetchAllResponse{
-		Url:          baseurl,
-		UrlFetch:     output,
-		JS:           jsfiles,
+		//Url:          baseurl,
+		BaseUrl:      output,
 		JSReponses:   jsResponses,
-		IMG:          imgfiles,
 		IMGResponses: imgResponses,
-		CSS:          cssfiles,
 		CSSResponses: cssResponses,
 	}
-	tmp, _ := json.MarshalIndent(outputall, "", "    ")
-	fmt.Println(string(tmp))
+	//tmp, _ := json.MarshalIndent(outputall, "", "    ")
+	//fmt.Println(string(tmp))
 	log("Javascript files", jsfiles)
 	log("CSS files", cssfiles)
 	log("IMG files", imgfiles)
@@ -199,16 +199,10 @@ func FetchAll(baseurl string) *FetchAllResponse {
 }
 
 type FetchAllResponse struct {
-	Url      string
-	UrlFetch *FetchResponse
-
-	JS         *[]string
-	JSReponses []FetchResponse
-
-	IMG          *[]string
+	//Url          string
+	BaseUrl      *FetchResponse
+	JSReponses   []FetchResponse
 	IMGResponses []FetchResponse
-
-	CSS          *[]string
 	CSSResponses []FetchResponse
 
 	Body   string
@@ -223,9 +217,9 @@ func DefineAssetUrl(baseurl string, asseturl string) string {
 	return asseturl
 }
 
-func FetchAsset(baseurl string, asseturl string) *FetchResponse {
+func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 	asset_url := DefineAssetUrl(baseurl, asseturl)
-	return Fetch(asset_url)
+	return Fetch(asset_url, retdat)
 }
 
 func log(header string, files *[]string) {
