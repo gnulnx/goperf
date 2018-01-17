@@ -3,29 +3,18 @@ package request
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/gnulnx/goperf/httputils"
+	//"github.com/gnulnx/goperf/httputils"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
-	"strconv"
+	//"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
+	//"unicode/utf8"
 )
 
-/*
-	Structure used to create web request Channel.  This is how we get the results
-	back from the 'go Run(...) method call
-*/
-type Result struct {
-	Total     time.Duration
-	Average   time.Duration
-	Channel   int
-	Responses []*http.Response
-}
-
-//display method for Results
+// display method for Results
 func (r *Result) Display() {
 	fmt.Println("---------------------------------------------------------------------")
 	fmt.Println("Channel(", r.Channel, ") Total(", r.Total, ") Average(", r.Average, ")")
@@ -57,159 +46,6 @@ func (r *Result) Status() {
 	fmt.Println("500x: ", float32(len(status_500))/float32(len(r.Responses))*100.0, "%")
 }
 
-/*
-   Structure to hold the input variables to 'go Run(...)' method call
-*/
-type Input struct {
-	Url        string
-	Threads    int
-	Iterations int
-	Output     int
-	Index      int // Also the channel number
-	Verbose    bool
-}
-
-/*
-   Run the input parameters defined in Input struct.
-   Channel 'done' expects a Result object
-    NOTE: Input is intentionally passed by value.
-*/
-func Fetch(url string, retdat bool) *FetchResponse {
-	/*
-		Simple method that fetches a url and returns a FetchOutput structure
-		retdata if True then we return the Body and the Headers
-	*/
-
-	// Set up the http request
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
-
-	//Start Timer
-	start := time.Now()
-
-	//Fetch the url
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(0)
-	}
-	//End Timer
-	end := time.Now()
-
-	// Read the html 'body' content from the response object
-	body, err := ioutil.ReadAll(resp.Body)
-	responseBody := string(body)
-
-	output := FetchResponse{
-		Url:     url,
-		Body:    responseBody,
-		Headers: resp.Header,
-		Bytes:   len(responseBody),
-		Runes:   utf8.RuneCountInString(responseBody),
-		Time:    end.Sub(start),
-		Status:  resp.StatusCode,
-	}
-
-	if !retdat {
-		output.Body = ``
-		output.Headers = make(map[string][]string)
-	}
-	//Close the response body and return the output
-	resp.Body.Close()
-	return &output
-}
-
-type FetchResponse struct {
-	Url     string
-	Body    string
-	Headers map[string][]string
-	Bytes   int
-	Runes   int
-	Time    time.Duration
-	Status  int
-}
-
-func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
-	/*
-		Try to simulate a request.
-		1) Fetch base_url
-		2) Parse for script, css, and img tags
-		3) Fetch other resources with go threads
-		4) compile results and return as json
-	*/
-	// Fetch initial url
-	output := Fetch(baseurl, true)
-	color.Red("Fetching: " + output.Url)
-	if output.Status == 200 {
-		color.Green(" - Status: " + strconv.Itoa(output.Status))
-	} else {
-		color.Red(" - Status: " + strconv.Itoa(output.Status))
-	}
-	color.Yellow(" - Time to first byte: " + output.Time.String())
-	color.Yellow(" - Bytes: " + strconv.Itoa(output.Bytes))
-	color.Yellow(" - Runes: " + strconv.Itoa(output.Runes))
-
-	// Now parse for js, css, img urls
-	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
-
-	// TODO:  This needs to be done as Go routines to simulate a real browser
-	jsResponses := []FetchResponse{}
-	files := *jsfiles
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
-		jsResponses = append(jsResponses, *FetchAsset(baseurl, asset_url, retdat))
-		color.Magenta(asset_url)
-	}
-
-	imgResponses := []FetchResponse{}
-	files = *imgfiles
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
-		imgResponses = append(imgResponses, *FetchAsset(baseurl, asset_url, retdat))
-		color.Magenta(asset_url)
-	}
-
-	cssResponses := []FetchResponse{}
-	files = *cssfiles
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
-		cssResponses = append(cssResponses, *FetchAsset(baseurl, asset_url, retdat))
-		color.Magenta(asset_url)
-	}
-	if !retdat {
-		output.Body = ``
-		output.Headers = make(map[string][]string)
-	}
-	outputall := FetchAllResponse{
-		//Url:          baseurl,
-		BaseUrl:      output,
-		JSReponses:   jsResponses,
-		IMGResponses: imgResponses,
-		CSSResponses: cssResponses,
-	}
-	//tmp, _ := json.MarshalIndent(outputall, "", "    ")
-	//fmt.Println(string(tmp))
-	log("Javascript files", jsfiles)
-	log("CSS files", cssfiles)
-	log("IMG files", imgfiles)
-	log("Full Bundle", bundle)
-
-	return &outputall
-}
-
-type FetchAllResponse struct {
-	//Url          string
-	BaseUrl      *FetchResponse
-	JSReponses   []FetchResponse
-	IMGResponses []FetchResponse
-	CSSResponses []FetchResponse
-
-	Body   string
-	Time   time.Duration
-	Status int
-}
-
 func DefineAssetUrl(baseurl string, asseturl string) string {
 	if asseturl[0] == '/' {
 		asseturl = baseurl + asseturl
@@ -229,6 +65,11 @@ func log(header string, files *[]string) {
 	}
 }
 
+/*
+   Run the input parameters defined in Input struct.
+   Channel 'done' expects a Result object
+    NOTE: Input is intentionally passed by value.
+*/
 func (input Input) Run(done chan Result) {
 	base_url := input.Url
 
