@@ -23,8 +23,16 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 
 func Fetch(url string, retdat bool) *FetchResponse {
 	/*
-	   Simple method that fetches a url and returns a FetchOutput structure
-	   retdata if True then we return the Body and the Headers
+	   Fetch the url and then fetch all of it's assets.
+	   Assets currently refer to script, style, and img tags.
+
+	   If retdata is False we don't return the Body or Header
+	   This is useful if you only want the timing data.
+	   For instance you might find it useful to fetch with retdat=true
+	   the first time around to get all the data and write to file.
+	   The subsequet requests could be used as part of a perf test where
+	   you only need the raw timing and size data.  In those cases
+	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
 
 	// Set up the http request

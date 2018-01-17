@@ -3,15 +3,12 @@ package request
 import (
 	"fmt"
 	"github.com/fatih/color"
-	//"github.com/gnulnx/goperf/httputils"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
-	//"strconv"
 	"strings"
 	"time"
-	//"unicode/utf8"
 )
 
 // display method for Results
@@ -44,18 +41,6 @@ func (r *Result) Status() {
 	fmt.Println("200x: ", float32(len(status_200))/float32(len(r.Responses))*100.0, "%")
 	fmt.Println("400x: ", float32(len(status_400))/float32(len(r.Responses))*100.0, "%")
 	fmt.Println("500x: ", float32(len(status_500))/float32(len(r.Responses))*100.0, "%")
-}
-
-func DefineAssetUrl(baseurl string, asseturl string) string {
-	if asseturl[0] == '/' {
-		asseturl = baseurl + asseturl
-	}
-	return asseturl
-}
-
-func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
-	asset_url := DefineAssetUrl(baseurl, asseturl)
-	return Fetch(asset_url, retdat)
 }
 
 func log(header string, files *[]string) {
