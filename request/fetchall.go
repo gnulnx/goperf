@@ -6,13 +6,30 @@ import (
 	"strconv"
 )
 
+func DefineAssetUrl(baseurl string, asseturl string) string {
+	if asseturl[0] == '/' {
+		asseturl = baseurl + asseturl
+	}
+	return asseturl
+}
+
+func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
+	asset_url := DefineAssetUrl(baseurl, asseturl)
+	return Fetch(asset_url, retdat)
+}
+
 func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	/*
-	   Try to simulate a request.
-	   1) Fetch base_url
-	   2) Parse for script, css, and img tags
-	   3) Fetch other resources with go threads
-	   4) compile results and return as json
+	   Fetch the url and then fetch all of it's assets.
+	   Assets currently refer to script, style, and img tags.
+
+	   If retdata is False we don't return the Body or Header
+	   This is useful if you only want the timing data.
+	   For instance you might find it useful to fetch with retdat=true
+	   the first time around to get all the data and write to file.
+	   The subsequet requests could be used as part of a perf test where
+	   you only need the raw timing and size data.  In those cases
+	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
 	// Fetch initial url
 	output := Fetch(baseurl, true)
