@@ -4,6 +4,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/httputils"
 	"strconv"
+	"time"
 )
 
 func DefineAssetUrl(baseurl string, asseturl string) string {
@@ -45,6 +46,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
 	// Fetch initial url
+	start := time.Now()
 	output := Fetch(baseurl, true)
 
 	// Now parse output for js, css, img urls
@@ -75,14 +77,21 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		output.Body = ``
 		output.Headers = make(map[string][]string)
 	}
+
+	end := time.Now()
+	totalTime := end.Sub(start)
+	//totaltime := *time.Duration
+
 	outputall := FetchAllResponse{
 		BaseUrl:      output,
+		Time:         totalTime,
 		JSReponses:   jsResponses,
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,
 	}
 
-	// TODO You need to control output with a cmd line switch
+	// TODO You need to handle this stuff in a different method
+	// Perhaps a PrintFetchAllResponse method
 	color.Red("Fetching: " + output.Url)
 	if output.Status == 200 {
 		color.Green(" - Status: " + strconv.Itoa(output.Status))
