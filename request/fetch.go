@@ -11,8 +11,8 @@ import (
 
 func Fetch(url string, retdat bool) *FetchResponse {
 	/*
-	   Fetch the html document found at url.
-	   Return download time and file size data as part of FetchResponse
+	   Fetch document at url size and time data.
+	   If retdat is true you also return the http.Response.Body
 	*/
 
 	// Set up the http request
@@ -20,19 +20,17 @@ func Fetch(url string, retdat bool) *FetchResponse {
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
 
-	// Start Request Timer
+	//Fetch the url and time the request
 	start := time.Now()
-
-	//Fetch the url
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	responseTime := time.Now().Sub(start)
+
 	if err != nil {
 		// TODO This needs to return a FetchResponse with err as the url (or think of something better)
 		fmt.Println("Error: ", err)
 		os.Exit(0)
 	}
-
-	// End Request Timer
-	end := time.Now()
 
 	// Read the html 'body' content from the response object
 	body, err := ioutil.ReadAll(resp.Body)
@@ -44,7 +42,7 @@ func Fetch(url string, retdat bool) *FetchResponse {
 		Headers: resp.Header,
 		Bytes:   len(responseBody),
 		Runes:   utf8.RuneCountInString(responseBody),
-		Time:    end.Sub(start),
+		Time:    responseTime,
 		Status:  resp.StatusCode,
 	}
 
@@ -53,6 +51,5 @@ func Fetch(url string, retdat bool) *FetchResponse {
 		output.Headers = make(map[string][]string)
 	}
 	//Close the response body and return the output
-	resp.Body.Close()
 	return &output
 }
