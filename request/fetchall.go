@@ -22,6 +22,8 @@ func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan [
 
 	// TODO  What if this was go routines instead?
 	// NOTE: Then you end up hyper threaded which is perfect right?
+	// Look wait group example below
+	// https://nathanleclaire.com/blog/2014/02/15/how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
 	for _, asset_url := range files {
 		responses = append(
 			responses,
