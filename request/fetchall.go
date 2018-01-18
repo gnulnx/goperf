@@ -17,7 +17,7 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 	return Fetch(asset_url, retdat)
 }
 
-func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) []FetchResponse {
+func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
 	responses := []FetchResponse{}
 
 	for i := 0; i < len(files); i++ {
@@ -26,7 +26,6 @@ func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan [
 	}
 
 	resp <- responses
-	return responses
 }
 
 func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
