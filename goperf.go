@@ -32,7 +32,6 @@ func main() {
 	//You want to make a copy when you pass this into the method so the url can change
 	// Is thre any reason this 'Input' struc has to live in requests?  I'm going with no
 	input := request.Input{
-		//var Input struct {
 		Iterations: *iterations,
 		Threads:    *threads,
 		Url:        *url,
