@@ -7,9 +7,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/request"
 	"os"
+	"runtime/pprof"
 	"strconv"
 	"time"
-	"runtime/pprof"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -18,6 +18,7 @@ func main() {
 	// New stuff
 	fetch := flag.Bool("fetch", false, "Fetch only the stats from url.  Do not return resources")
 	fetchall := flag.Bool("fetchall", false, "Fetch all the resources and stats from -url")
+	printjson := flag.Bool("printjson", false, "Print results as json")
 	// Setup comment line parameters
 	threads := flag.Int("connections", 10, "Number of concurrant connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
@@ -46,8 +47,11 @@ func main() {
 		color.Green("~~ Fetching a single url and printing info ~~")
 		resp := request.FetchAll(*url, *fetchall)
 		printFetchAllResponse(resp)
-		tmp, _ := json.MarshalIndent(resp, "", "    ")
-		fmt.Println(string(tmp))
+
+		if *printjson {
+			tmp, _ := json.MarshalIndent(resp, "", "    ")
+			fmt.Println(string(tmp))
+		}
 		pprof.StopCPUProfile()
 		// Old Method Below Here.  Likely not relevant any longer
 		os.Exit(1)
@@ -72,7 +76,7 @@ func main() {
 }
 
 func printFetchAllResponse(resp *request.FetchAllResponse) {
-	color.Red("Fetching: " + resp.BaseUrl.Url)
+	color.Red("Base Url Results")
 
 	//if output.Status == 200 {
 	if resp.BaseUrl.Status == 200 {
@@ -84,6 +88,26 @@ func printFetchAllResponse(resp *request.FetchAllResponse) {
 	color.Yellow(" - Time to first byte: " + resp.BaseUrl.Time.String())
 	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
 	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
+
+	// This part will work for a single response
+
+	green := color.New(color.FgGreen).SprintFunc()
+	yellow := color.New(color.FgYellow).SprintFunc()
+
+	color.Red("JS Responses")
+	for _, val := range resp.JSReponses {
+		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+	}
+
+	color.Red("CSS Responses")
+	for _, val := range resp.CSSResponses {
+		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+	}
+
+	color.Red("IMG Responses")
+	for _, val := range resp.IMGResponses {
+		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+	}
 
 }
 

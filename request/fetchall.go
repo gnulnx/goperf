@@ -53,7 +53,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	output := Fetch(baseurl, true)
 
 	// Now parse output for js, css, img urls
-	jsfiles, imgfiles, cssfiles, bundle := httputils.Resources(output.Body)
+	jsfiles, imgfiles, cssfiles, _ := httputils.Resources(output.Body)
 
 	// Now lets create some go routines and fetch all the js, img, css files
 	c1 := make(chan []FetchResponse)
@@ -88,13 +88,6 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,
 	}
-
-	// This log package is current private..
-	// Make this public and elevate this or get rid of it
-	log("Javascript files", jsfiles)
-	log("CSS files", cssfiles)
-	log("IMG files", imgfiles)
-	log("Full Bundle", bundle)
 
 	return &resp
 }
