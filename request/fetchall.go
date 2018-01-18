@@ -20,8 +20,7 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
 	responses := []FetchResponse{}
 
-	for i := 0; i < len(files); i++ {
-		asset_url := (files)[i]
+	for _, asset_url := range files {
 		responses = append(responses, *FetchAsset(baseurl, asset_url, retdat))
 	}
 
