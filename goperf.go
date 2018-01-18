@@ -46,12 +46,13 @@ func main() {
 		pprof.StartCPUProfile(f)
 		color.Green("~~ Fetching a single url and printing info ~~")
 		resp := request.FetchAll(*url, *fetchall)
-		printFetchAllResponse(resp)
 
 		if *printjson {
 			tmp, _ := json.MarshalIndent(resp, "", "    ")
 			fmt.Println(string(tmp))
 		}
+
+		printFetchAllResponse(resp)
 		pprof.StopCPUProfile()
 		// Old Method Below Here.  Likely not relevant any longer
 		os.Exit(1)
@@ -78,7 +79,6 @@ func main() {
 func printFetchAllResponse(resp *request.FetchAllResponse) {
 	color.Red("Base Url Results")
 
-	//if output.Status == 200 {
 	if resp.BaseUrl.Status == 200 {
 		color.Green(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
 	} else {
@@ -90,7 +90,6 @@ func printFetchAllResponse(resp *request.FetchAllResponse) {
 	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
 
 	// This part will work for a single response
-
 	green := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
