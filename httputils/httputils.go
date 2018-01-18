@@ -4,21 +4,20 @@ import (
 	"regexp"
 )
 
-// TODO Are you REALLY sure you want to return pointers toslices and not just a slice?
-func Resources(body string) ([]string, []string, []string, []string) {
+func ParseAllAssets(body string) (js []string, img []string, css []string) {
 
 	c1 := make(chan []string)
 	c2 := make(chan []string)
 	c3 := make(chan []string)
 
 	go func() {
-		c1 <- Getjs(body)
+		c1 <- GetJS(body)
 	}()
 	go func() {
-		c2 <- Getimg(body)
+		c2 <- GetIMG(body)
 	}()
 	go func() {
-		c3 <- Getcss(body)
+		c3 <- GetCSS(body)
 	}()
 
 	jsfiles := []string{}
@@ -33,27 +32,19 @@ func Resources(body string) ([]string, []string, []string, []string) {
 		}
 	}
 
-	// Extremely small perf hit using a bundle
-	// Not sure if it's worth keeping this or not
-	bundle := []string{}
-	bundle = append(
-		append(bundle, jsfiles...),
-		imgfiles...,
-	)
-
-	return jsfiles, imgfiles, cssfiles, bundle
+	return jsfiles, imgfiles, cssfiles
 }
 
-func Getjs(body string) []string {
+func GetJS(body string) []string {
 	return runregex(`<script.*?src="(.*?)"`, body)
 }
 
-func Getimg(body string) []string {
-	return runregex(`<img.*?src="(.*?)"`, body)
+func GetCSS(body string) []string {
+	return runregex(`<link.*?href="(.*?)"`, body)
 }
 
-func Getcss(body string) []string {
-	return runregex(`<link.*?href="(.*?)"`, body)
+func GetIMG(body string) []string {
+	return runregex(`<img.*?src="(.*?)"`, body)
 }
 
 func runregex(expr string, body string) []string {

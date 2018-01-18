@@ -53,7 +53,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	output := Fetch(baseurl, true)
 
 	// Now parse output for js, css, img urls
-	jsfiles, imgfiles, cssfiles, _ := httputils.Resources(output.Body)
+	jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
 
 	// Now lets create some go routines and fetch all the js, img, css files
 	c1 := make(chan []FetchResponse)

@@ -26,10 +26,10 @@ func test_deep_equal(input []string, testdata []string, t *testing.T) bool {
 	return true
 }
 
-func TestResources(t *testing.T) {
+func TestParseAllAssets(t *testing.T) {
 	color.Green("~~ TestGetjs ~~")
 	body := get_test_body()
-	jsfiles, imgfiles, cssfiles, _ := Resources(body)
+	jsfiles, imgfiles, cssfiles := ParseAllAssets(body)
 
 	// Test js results
 	test_data := []string{
@@ -56,13 +56,13 @@ func TestResources(t *testing.T) {
 	test_deep_equal(cssfiles, test_data, t)
 }
 
-func BenchmarkResources(b *testing.B) {
+func BenchmarkParseAllAssets(b *testing.B) {
 	body := get_test_body()
 
 	start := time.Now()
 
 	for i := 0; i < b.N; i++ {
-		_, _, _, _ = Resources(body)
+		_, _, _ = ParseAllAssets(body)
 	}
 
 	total := time.Now().Sub(start)
