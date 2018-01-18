@@ -43,10 +43,10 @@ func (r *Result) Status() {
 	fmt.Println("500x: ", float32(len(status_500))/float32(len(r.Responses))*100.0, "%")
 }
 
-func log(header string, files *[]string) {
+func log(header string, files []string) {
 	color.Red(header)
-	for i := 0; i < len(*files); i++ {
-		color.Cyan(" - " + (*files)[i])
+	for i := 0; i < len(files); i++ {
+		color.Cyan(" - " + (files)[i])
 	}
 }
 

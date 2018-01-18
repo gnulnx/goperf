@@ -48,3 +48,8 @@ output = {
 
 Run unit tests
 go test ./... -cover
+
+Run Benchmar
+go test -bench BenchmarkResources -cpu 3
+
+-cpu 3 uses 3 cores..default (without -cpu is 8 cores)

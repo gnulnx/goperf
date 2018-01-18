@@ -91,10 +91,10 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 
 	// This log package is current private..
 	// Make this public and elevate this or get rid of it
-	log("Javascript files", &jsfiles)
-	log("CSS files", &cssfiles)
-	log("IMG files", &imgfiles)
-	log("Full Bundle", &bundle)
+	log("Javascript files", jsfiles)
+	log("CSS files", cssfiles)
+	log("IMG files", imgfiles)
+	log("Full Bundle", bundle)
 
 	return &resp
 }
