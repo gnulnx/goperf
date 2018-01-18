@@ -5,21 +5,25 @@ import (
 )
 
 func ParseAllAssets(body string) (js []string, img []string, css []string) {
+	/*
+		Parse string of text (typically from a http.Response.Body)
+		and return it's assets:  js, css, img.
 
+		Note:  In go it is literally faster to start seperate go routines for each asset rather than
+			fetch them sequetially.  The go routine overhead is miniscule.  Go literally fucking rocks...
+	*/
+
+	// make some channels
 	c1 := make(chan []string)
 	c2 := make(chan []string)
 	c3 := make(chan []string)
 
-	go func() {
-		c1 <- GetJS(body)
-	}()
-	go func() {
-		c2 <- GetIMG(body)
-	}()
-	go func() {
-		c3 <- GetCSS(body)
-	}()
+	//kick off our annonymous go routines.
+	go func() { c1 <- GetJS(body) }()
+	go func() { c2 <- GetIMG(body) }()
+	go func() { c3 <- GetCSS(body) }()
 
+	//collect our results
 	jsfiles := []string{}
 	imgfiles := []string{}
 	cssfiles := []string{}
