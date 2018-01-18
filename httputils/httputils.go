@@ -1,8 +1,6 @@
 package httputils
 
 import (
-	"fmt"
-	"reflect"
 	"regexp"
 )
 
@@ -35,24 +33,14 @@ func Resources(body string) (*[]string, *[]string, *[]string, *[]string) {
 		}
 	}
 
+	// Extremely small perf hit using a bundle
+	// Not sure if it's worth keeping this or not
 	bundle := []string{}
-	fmt.Println(reflect.TypeOf(jsfiles))
-	fmt.Println(reflect.TypeOf(imgfiles))
-	fmt.Println(reflect.TypeOf(cssfiles))
-	fmt.Println(reflect.TypeOf(bundle))
+	bundle = append(
+		append(bundle, jsfiles...),
+		imgfiles...,
+	)
 
-	//_ = jsfiles[:]
-	//jsfiles = append(jsfiles[:], imgfiles)
-	/*
-		bundle = append(bundle, *jsfiles)
-
-		// Create a full Bundle... Maybe this is all you need?
-		// TODO It's not effecient to regex them twice like this...
-		bundle := append(
-			append(*jsfiles, *cssfiles),
-			imgfiles,
-		)
-	*/
 	return &jsfiles, &imgfiles, &cssfiles, &bundle
 }
 
