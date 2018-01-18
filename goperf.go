@@ -15,11 +15,11 @@ import (
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
-	// New stuff
+	// I ❤️  the way go handles command line arguments
 	fetch := flag.Bool("fetch", false, "Fetch only the stats from url.  Do not return resources")
 	fetchall := flag.Bool("fetchall", false, "Fetch all the resources and stats from -url")
 	printjson := flag.Bool("printjson", false, "Print results as json")
-	// Setup comment line parameters
+
 	threads := flag.Int("connections", 10, "Number of concurrant connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
