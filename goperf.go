@@ -23,7 +23,9 @@ func main() {
 	flag.Parse()
 
 	//You want to make a copy when you pass this into the method so the url can change
+	// Is thre any reason this 'Input' struc has to live in requests?  I'm going with no
 	input := request.Input{
+		//var Input struct {
 		Iterations: *iterations,
 		Threads:    *threads,
 		Url:        *url,
@@ -31,13 +33,14 @@ func main() {
 		Verbose:    *verbose,
 	}
 
-	//Uncomment next 3 lines to actually do a real perf test...you are still hashing all this out
+	// Working on New Method:  Currently fetch url and assets.
 	color.Green("~~ Fetching a single url and printing info ~~")
 	resp := request.FetchAll(*url, false)
 	printFetchAllResponse(resp)
 	tmp, _ := json.MarshalIndent(resp, "", "    ")
 	fmt.Println(string(tmp))
-	//fmt.Println(fetchout)
+
+	// Old Method Below Here.  Likely not relevant any longer
 	os.Exit(1)
 
 	fmt.Println("Running again url:", *url)
