@@ -56,12 +56,12 @@ func TestResources(t *testing.T) {
 	test_deep_equal(cssfiles, test_data, t)
 }
 
-func TestResourcesPerf(t *testing.T) {
+func BenchmarkResources(b *testing.B) {
 	body := get_test_body()
 
 	start := time.Now()
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < b.N; i++ {
 		_, _, _, _ = Resources(body)
 	}
 
