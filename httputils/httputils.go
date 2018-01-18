@@ -5,7 +5,7 @@ import (
 )
 
 // TODO Are you REALLY sure you want to return pointers toslices and not just a slice?
-func Resources(body string) (*[]string, *[]string, *[]string, *[]string) {
+func Resources(body string) ([]string, []string, []string, []string) {
 
 	c1 := make(chan []string)
 	c2 := make(chan []string)
@@ -41,7 +41,7 @@ func Resources(body string) (*[]string, *[]string, *[]string, *[]string) {
 		imgfiles...,
 	)
 
-	return &jsfiles, &imgfiles, &cssfiles, &bundle
+	return jsfiles, imgfiles, cssfiles, bundle
 }
 
 func Getjs(body string) []string {

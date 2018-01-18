@@ -60,9 +60,9 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	c2 := make(chan []FetchResponse)
 	c3 := make(chan []FetchResponse)
 
-	go FetchAllAssetArray(*jsfiles, baseurl, retdat, c1)
-	go FetchAllAssetArray(*imgfiles, baseurl, retdat, c2)
-	go FetchAllAssetArray(*cssfiles, baseurl, retdat, c3)
+	go FetchAllAssetArray(jsfiles, baseurl, retdat, c1)
+	go FetchAllAssetArray(imgfiles, baseurl, retdat, c2)
+	go FetchAllAssetArray(cssfiles, baseurl, retdat, c3)
 
 	jsResponses := []FetchResponse{}
 	imgResponses := []FetchResponse{}
@@ -91,10 +91,10 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 
 	// This log package is current private..
 	// Make this public and elevate this or get rid of it
-	log("Javascript files", jsfiles)
-	log("CSS files", cssfiles)
-	log("IMG files", imgfiles)
-	log("Full Bundle", bundle)
+	log("Javascript files", &jsfiles)
+	log("CSS files", &cssfiles)
+	log("IMG files", &imgfiles)
+	log("Full Bundle", &bundle)
 
 	return &resp
 }

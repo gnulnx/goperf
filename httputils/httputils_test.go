@@ -36,14 +36,14 @@ func TestResources(t *testing.T) {
 		`/static/tcart/js/test1.min.js`,
 		`/static/tcart/js/bundle_kldsf2334.min.js`,
 	}
-	test_deep_equal(*jsfiles, test_data, t)
+	test_deep_equal(jsfiles, test_data, t)
 
 	// Test img results
 	test_data = []string{
 		`/media/cart.svg`,
 		`/static/tcart/img/stripe_badges/outline_dark/powered_by_stripe.png`,
 	}
-	test_deep_equal(*imgfiles, test_data, t)
+	test_deep_equal(imgfiles, test_data, t)
 
 	//Test css Results
 	test_data = []string{
@@ -53,7 +53,7 @@ func TestResources(t *testing.T) {
 		`/static/vendor/bootstrap/bootstrap.min.css`,
 		`/static/tcart/css/styles.min.css`,
 	}
-	test_deep_equal(*cssfiles, test_data, t)
+	test_deep_equal(cssfiles, test_data, t)
 }
 
 func TestResourcesPerf(t *testing.T) {
