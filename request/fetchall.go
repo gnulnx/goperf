@@ -20,8 +20,13 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
 	responses := []FetchResponse{}
 
+	// TODO  What if this was go routines instead?
+	// NOTE: Then you end up hyper threaded which is perfect right?
 	for _, asset_url := range files {
-		responses = append(responses, *FetchAsset(baseurl, asset_url, retdat))
+		responses = append(
+			responses,
+			*FetchAsset(baseurl, asset_url, retdat),
+		)
 	}
 
 	resp <- responses
@@ -74,13 +79,9 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		output.Headers = make(map[string][]string)
 	}
 
-	end := time.Now()
-	totalTime := end.Sub(start)
-	//totaltime := *time.Duration
-
 	resp := FetchAllResponse{
 		BaseUrl:      output,
-		Time:         totalTime,
+		Time:         time.Now().Sub(start),
 		JSReponses:   jsResponses,
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,

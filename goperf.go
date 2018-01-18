@@ -35,7 +35,7 @@ func main() {
 
 	// Working on New Method:  Currently fetch url and assets.
 	color.Green("~~ Fetching a single url and printing info ~~")
-	resp := request.FetchAll(*url, false)
+	resp := request.FetchAll(*url, true)
 	printFetchAllResponse(resp)
 	tmp, _ := json.MarshalIndent(resp, "", "    ")
 	fmt.Println(string(tmp))
