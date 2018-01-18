@@ -9,7 +9,10 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"runtime/pprof"
 )
+
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
 	// New stuff
@@ -38,12 +41,14 @@ func main() {
 
 	// Working on New Method:  Currently fetch url and assets.
 	if *fetch || *fetchall {
+		f, _ := os.Create(*cpuprofile)
+		pprof.StartCPUProfile(f)
 		color.Green("~~ Fetching a single url and printing info ~~")
 		resp := request.FetchAll(*url, *fetchall)
 		printFetchAllResponse(resp)
 		tmp, _ := json.MarshalIndent(resp, "", "    ")
 		fmt.Println(string(tmp))
-
+		pprof.StopCPUProfile()
 		// Old Method Below Here.  Likely not relevant any longer
 		os.Exit(1)
 	}
