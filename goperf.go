@@ -12,6 +12,9 @@ import (
 )
 
 func main() {
+	// New stuff
+	fetch := flag.Bool("fetch", false, "Fetch only the stats from url.  Do not return resources")
+	fetchall := flag.Bool("fetchall", false, "Fetch all the resources and stats from -url")
 	// Setup comment line parameters
 	threads := flag.Int("connections", 10, "Number of concurrant connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
@@ -34,14 +37,16 @@ func main() {
 	}
 
 	// Working on New Method:  Currently fetch url and assets.
-	color.Green("~~ Fetching a single url and printing info ~~")
-	resp := request.FetchAll(*url, true)
-	printFetchAllResponse(resp)
-	tmp, _ := json.MarshalIndent(resp, "", "    ")
-	fmt.Println(string(tmp))
+	if *fetch || *fetchall {
+		color.Green("~~ Fetching a single url and printing info ~~")
+		resp := request.FetchAll(*url, *fetchall)
+		printFetchAllResponse(resp)
+		tmp, _ := json.MarshalIndent(resp, "", "    ")
+		fmt.Println(string(tmp))
 
-	// Old Method Below Here.  Likely not relevant any longer
-	os.Exit(1)
+		// Old Method Below Here.  Likely not relevant any longer
+		os.Exit(1)
+	}
 
 	fmt.Println("Running again url:", *url)
 	fmt.Println("Concurrant Connections: ", *threads, "Sustained for: ", input.Threads)
