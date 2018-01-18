@@ -1,9 +1,7 @@
 package request
 
 import (
-	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/httputils"
-	"strconv"
 	"time"
 )
 
@@ -82,7 +80,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	totalTime := end.Sub(start)
 	//totaltime := *time.Duration
 
-	outputall := FetchAllResponse{
+	resp := FetchAllResponse{
 		BaseUrl:      output,
 		Time:         totalTime,
 		JSReponses:   jsResponses,
@@ -90,21 +88,12 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		CSSResponses: cssResponses,
 	}
 
-	// TODO You need to handle this stuff in a different method
-	// Perhaps a PrintFetchAllResponse method
-	color.Red("Fetching: " + output.Url)
-	if output.Status == 200 {
-		color.Green(" - Status: " + strconv.Itoa(output.Status))
-	} else {
-		color.Red(" - Status: " + strconv.Itoa(output.Status))
-	}
-	color.Yellow(" - Time to first byte: " + output.Time.String())
-	color.Yellow(" - Bytes: " + strconv.Itoa(output.Bytes))
-	color.Yellow(" - Runes: " + strconv.Itoa(output.Runes))
+	// This log package is current private..
+	// Make this public and elevate this or get rid of it
 	log("Javascript files", jsfiles)
 	log("CSS files", cssfiles)
 	log("IMG files", imgfiles)
 	log("Full Bundle", bundle)
 
-	return &outputall
+	return &resp
 }

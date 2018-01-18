@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/request"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -32,8 +33,9 @@ func main() {
 
 	//Uncomment next 3 lines to actually do a real perf test...you are still hashing all this out
 	color.Green("~~ Fetching a single url and printing info ~~")
-	responses := request.FetchAll(*url, false)
-	tmp, _ := json.MarshalIndent(responses, "", "    ")
+	resp := request.FetchAll(*url, false)
+	printFetchAllResponse(resp)
+	tmp, _ := json.MarshalIndent(resp, "", "    ")
 	fmt.Println(string(tmp))
 	//fmt.Println(fetchout)
 	os.Exit(1)
@@ -54,6 +56,22 @@ func main() {
 		}
 	}
 	os.Exit(1)
+}
+
+func printFetchAllResponse(resp *request.FetchAllResponse) {
+	color.Red("Fetching: " + resp.BaseUrl.Url)
+
+	//if output.Status == 200 {
+	if resp.BaseUrl.Status == 200 {
+		color.Green(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
+	} else {
+		color.Red(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
+	}
+
+	color.Yellow(" - Time to first byte: " + resp.BaseUrl.Time.String())
+	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
+	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
+
 }
 
 /*
