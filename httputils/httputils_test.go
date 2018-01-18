@@ -3,10 +3,10 @@ package httputils
 import (
 	"fmt"
 	"github.com/fatih/color"
-	//"github.com/gnulnx/goperf/httputils"
 	"io/ioutil"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func get_test_body() string {
@@ -54,4 +54,17 @@ func TestResources(t *testing.T) {
 		`/static/tcart/css/styles.min.css`,
 	}
 	test_deep_equal(*cssfiles, test_data, t)
+}
+
+func TestResourcesPerf(t *testing.T) {
+	body := get_test_body()
+
+	start := time.Now()
+
+	for i := 0; i < 1000; i++ {
+		_, _, _, _ = Resources(body)
+	}
+
+	total := time.Now().Sub(start)
+	fmt.Print("total: ", total)
 }
