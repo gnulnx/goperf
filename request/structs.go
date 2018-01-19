@@ -34,6 +34,7 @@ type FetchAllResponse struct {
 type Input struct {
 	Url        string
 	Threads    int
+	Seconds    int
 	Iterations int
 	Output     int
 	Index      int // Also the channel number

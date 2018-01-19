@@ -45,6 +45,7 @@ func main() {
 
 	threads := flag.Int("connections", 10, "Number of concurrent connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
+	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
 	output := flag.Int("output", 5, "Show thread output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
@@ -77,6 +78,7 @@ func main() {
 		Url:        *url,
 		Output:     *output,
 		Verbose:    *verbose,
+		Seconds:    *seconds,
 	}
 
 	// Working on New Method:  Currently fetch url and assets.
@@ -88,9 +90,11 @@ func main() {
 	for i := 0; i < 100; i++ {
 		input.Threads += *increment
 		total, avg := perf(input)
+
 		fmt.Println("Concurrant Connections:", input.Threads, "Sustained for:", input.Iterations, " iterations")
 		fmt.Println("Total Time: ", total)
 		fmt.Println("Average Request time: ", avg)
+
 		if avg > time.Duration(1000*1000*1000**max_response) {
 			fmt.Println("Exitiing because we reached max response")
 			fmt.Println(time.Duration(1000 * 1000 * 1000 * *max_response))
@@ -98,6 +102,10 @@ func main() {
 		}
 	}
 	os.Exit(1)
+}
+
+func perf2(input request.Input) time.Duration {
+	return 0
 }
 
 /*
