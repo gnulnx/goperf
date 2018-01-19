@@ -19,6 +19,7 @@ type FetchAllResponse struct {
 	BaseUrl      *FetchResponse  `json:"baseUrl"`
 	Time         time.Duration   `json:"time"`
 	TotalTime    time.Duration   `json:"total_time"`
+	TotalBytes   int             `json:"total_bytes"`
 	Status       int             `json:"status"`
 	JSResponses  []FetchResponse `json:"jsResponses"`
 	IMGResponses []FetchResponse `json:"imgResponses"`

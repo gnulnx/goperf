@@ -83,23 +83,36 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		output.Headers = make(map[string][]string)
 	}
 
-	calcTotal := func(resp []FetchResponse) time.Duration {
-		total := time.Duration(0)
+	calcTotal := func(resp []FetchResponse) (time.Duration, int) {
+		totalTime := time.Duration(0)
+		totalBytes := 0
 		for _, val := range resp {
-			total += val.Time
+			totalTime += val.Time
+			totalBytes += val.Bytes
 		}
-		return total
+		return totalTime, totalBytes
 	}
 
-	total := output.Time
-	total += calcTotal(jsResponses)
-	total += calcTotal(cssResponses)
-	total += calcTotal(imgResponses)
+	totalTime := output.Time
+	totalBytes := output.Bytes
+
+	jsTime, jsBytes := calcTotal(jsResponses)
+	totalTime += jsTime
+	totalBytes += jsBytes
+
+	cssTime, cssBytes := calcTotal(cssResponses)
+	totalTime += cssTime
+    totalBytes += cssBytes
+
+	imgTime, imgBytes := calcTotal(imgResponses)
+	totalTime += imgTime
+    totalBytes += imgBytes
 
 	resp := FetchAllResponse{
 		BaseUrl:      output,
 		Time:         output.Time,
-		TotalTime:    total,
+		TotalTime:    totalTime,
+		TotalBytes:   totalBytes,
 		JSResponses:  jsResponses,
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,
@@ -124,6 +137,7 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
 	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
 	color.Magenta(" - TotalTime: " + resp.TotalTime.String())
+	color.Magenta(" - TotalBytes: " + strconv.Itoa(resp.TotalBytes))
 
 	// This part will work for a single response
 	green := color.New(color.FgGreen).SprintFunc()
