@@ -4,6 +4,13 @@ import (
 	"regexp"
 )
 
+func ParseAllAssetsSequential(body string) (js []string, img []string, css []string) {
+	jsfiles := GetJS(body)
+	cssfiles := GetCSS(body)
+	imgfiles := GetIMG(body)
+	return jsfiles, imgfiles, cssfiles
+}
+
 func ParseAllAssets(body string) (js []string, img []string, css []string) {
 	/*
 		Parse string of text (typically from a http.Response.Body)

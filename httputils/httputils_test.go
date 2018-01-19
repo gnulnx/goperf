@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"reflect"
 	"testing"
-	"time"
 )
 
 func get_test_body() string {
@@ -58,13 +57,14 @@ func TestParseAllAssets(t *testing.T) {
 
 func BenchmarkParseAllAssets(b *testing.B) {
 	body := get_test_body()
-
-	start := time.Now()
-
 	for i := 0; i < b.N; i++ {
-		_, _, _ = ParseAllAssets(body)
+		ParseAllAssets(body)
 	}
+}
 
-	total := time.Now().Sub(start)
-	fmt.Print("total: ", total)
+func BenchmarkParseAllAssetsSequential(b *testing.B) {
+    body := get_test_body()
+    for i := 0; i < b.N; i++ {
+ 		ParseAllAssetsSequential(body)
+    }
 }
