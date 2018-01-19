@@ -17,13 +17,14 @@ type FetchResponse struct {
 
 type FetchAllResponse struct {
 	BaseUrl      *FetchResponse  `json:"baseUrl"`
+	Time   time.Duration `json:"time"`
+	TotalTime   time.Duration `json:"total_time"`
+	Status int           `json:"status"`
 	JSResponses  []FetchResponse `json:"jsResponses"`
 	IMGResponses []FetchResponse `json:"imgResponses"`
 	CSSResponses []FetchResponse `json:"cssResponses"`
 
 	Body   string        `json:"body"`
-	Time   time.Duration `json:"time"`
-	Status int           `json:"status"`
 }
 
 /*

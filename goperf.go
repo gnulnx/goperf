@@ -1,5 +1,25 @@
 package main
 
+/*
+goperf is a load testing tool.
+
+** Use Case 1:  Fetch a url and report stats
+
+This command will return all information for a given url.
+./goperf -url http://qa.teaquinox.com -fetchall -printjson
+
+When fetchall is provided the returned struct will contain
+url, time, size, and data info.
+
+You can do a simpler request that leaves the data and headers out like this
+./goperf -url http://qa.teaquinox.com -fetchall -printjson
+
+
+** Use Case 2: Load testing
+
+
+*/
+
 import (
 	"encoding/json"
 	"flag"

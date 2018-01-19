@@ -52,7 +52,6 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
 	// Fetch initial url
-	start := time.Now()
 	output := Fetch(baseurl, true)
 
 	// Now parse output for js, css, img urls
@@ -84,9 +83,23 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		output.Headers = make(map[string][]string)
 	}
 
+	calcTotal := func(resp []FetchResponse) time.Duration {
+		total := time.Duration(0)
+		for _, val := range resp {
+			total += val.Time
+		}
+		return total
+	}
+
+	total := output.Time
+	total += calcTotal(jsResponses)
+	total += calcTotal(cssResponses)
+	total += calcTotal(imgResponses)
+
 	resp := FetchAllResponse{
 		BaseUrl:      output,
-		Time:         time.Now().Sub(start),
+		Time:         output.Time,
+		TotalTime:    total,
 		JSResponses:  jsResponses,
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,
@@ -110,25 +123,11 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	color.Yellow(" - Time to first byte: " + total.String())
 	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
 	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
+	color.Magenta(" - TotalTime: " + resp.TotalTime.String())
 
 	// This part will work for a single response
 	green := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
-
-	// This really needs to be factored back into the request module
-	calcTotal := func(resp []FetchResponse) time.Duration {
-		total := time.Duration(0)
-		for _, val := range resp {
-			total += val.Time
-		}
-		return total
-	}
-
-	total += calcTotal(resp.JSResponses)
-	total += calcTotal(resp.CSSResponses)
-	total += calcTotal(resp.IMGResponses)
-
-	color.Magenta(" - Total Time: %s", total.String())
 
 	color.Red("JS Responses")
 	fmt.Printf(" - %-22s %-15s %-50s \n", green("Time"), green("Bytes"), green("Url"))
