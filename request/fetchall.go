@@ -93,20 +93,12 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		return totalTime, totalBytes
 	}
 
-	totalTime := output.Time
-	totalBytes := output.Bytes
-
 	jsTime, jsBytes := calcTotal(jsResponses)
-	totalTime += jsTime
-	totalBytes += jsBytes
-
 	cssTime, cssBytes := calcTotal(cssResponses)
-	totalTime += cssTime
-    totalBytes += cssBytes
-
 	imgTime, imgBytes := calcTotal(imgResponses)
-	totalTime += imgTime
-    totalBytes += imgBytes
+
+	totalTime := output.Time + jsTime + cssTime + imgTime
+	totalBytes := output.Bytes + jsBytes + cssBytes + imgBytes
 
 	resp := FetchAllResponse{
 		BaseUrl:      output,
