@@ -6,24 +6,24 @@ import (
 )
 
 type FetchResponse struct {
-	url     string
-	body    string
-	headers map[string][]string
-	bytes   int
-	runes   int
-	time    time.Duration
-	status  int
+	Url     string              `json:"url"`
+	Body    string              `json:"body"`
+	Headers map[string][]string `json:"headers"`
+	Bytes   int                 `json:"bytes"`
+	Runes   int                 `json:"runes"`
+	Time    time.Duration       `json:"time"`
+	Status  int                 `json:"status"`
 }
 
 type FetchAllResponse struct {
-	baseUrl      *FetchResponse
-	jsResponses  []FetchResponse
-	imgResponses []FetchResponse
-	cssResponses []FetchResponse
+	BaseUrl      *FetchResponse  `json:"baseUrl"`
+	JSResponses  []FetchResponse `json:"jsResponses"`
+	IMGResponses []FetchResponse `json:"imgResponses"`
+	CSSResponses []FetchResponse `json:"cssResponses"`
 
-	body   string
-	time   time.Duration
-	status int
+	Body   string        `json:"body"`
+	Time   time.Duration `json:"time"`
+	Status int           `json:"status"`
 }
 
 /*
