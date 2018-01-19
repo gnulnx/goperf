@@ -87,7 +87,7 @@ func printFetchAllResponse(resp *request.FetchAllResponse) {
 	}
 
 	total := resp.BaseUrl.Time
-
+	color.Yellow(" - Url: " + resp.BaseUrl.Url)
 	color.Yellow(" - Time to first byte: " + total.String())
 	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
 	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
