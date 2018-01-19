@@ -9,6 +9,10 @@ import (
 )
 
 func DefineAssetUrl(baseurl string, asseturl string) string {
+	/*
+	If the url starts with a / we know it's a local resource
+	so we prepend the baseurl to it
+	*/
 	if asseturl[0] == '/' {
 		asseturl = baseurl + asseturl
 	}
@@ -52,6 +56,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
 	// Fetch initial url
+	start := time.Now()
 	output := Fetch(baseurl, true)
 
 	// Now parse output for js, css, img urls
@@ -77,6 +82,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 		case cssResponses = <-c3:
 		}
 	}
+	totalTime2 := time.Now().Sub(start)
 
 	if !retdat {
 		output.Body = ``
@@ -97,23 +103,23 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	cssTime, cssBytes := calcTotal(cssResponses)
 	imgTime, imgBytes := calcTotal(imgResponses)
 
-	totalTime := output.Time + jsTime + cssTime + imgTime
+	totalLinearTime := output.Time + jsTime + cssTime + imgTime
 	totalBytes := output.Bytes + jsBytes + cssBytes + imgBytes
 
 	resp := FetchAllResponse{
-		BaseUrl:      output,
-		Time:         output.Time,
-		TotalTime:    totalTime,
-		TotalBytes:   totalBytes,
-		JSResponses:  jsResponses,
-		IMGResponses: imgResponses,
-		CSSResponses: cssResponses,
+		BaseUrl:         output,
+		Time:            output.Time,
+		TotalTime:       totalTime2,
+		TotalLinearTime: totalLinearTime,
+		TotalBytes:      totalBytes,
+		JSResponses:     jsResponses,
+		IMGResponses:    imgResponses,
+		CSSResponses:    cssResponses,
 	}
 
 	return &resp
 }
 
-// Why is this here?  move this to the request.fetch.go modules
 func PrintFetchAllResponse(resp *FetchAllResponse) {
 	color.Red("Base Url Results")
 

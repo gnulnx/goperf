@@ -43,7 +43,7 @@ func main() {
 
 	printjson := flag.Bool("printjson", false, "Print json output")
 
-	threads := flag.Int("connections", 10, "Number of concurrent connections")
+	threads := flag.Int("connections", 1, "Number of concurrent connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
@@ -80,6 +80,8 @@ func main() {
 		Verbose:    *verbose,
 		Seconds:    *seconds,
 	}
+	perf2(input)
+	os.Exit(1)
 
 	// Working on New Method:  Currently fetch url and assets.
 
@@ -104,7 +106,57 @@ func main() {
 	os.Exit(1)
 }
 
+func iterateRequest(url string, sec int) (time.Duration, int, time.Duration) {
+	start := time.Now()
+	maxTime := time.Duration(sec * 1000 * 1000 * 1000)
+	elapsedTime := maxTime
+	count := 1
+	for {
+		request.FetchAll(url, false)
+		elapsedTime = time.Now().Sub(start)
+		//fmt.Println(" - ", elapsedTime, " - ", resp.TotalTime)
+		if elapsedTime > maxTime {
+			break
+		}
+		count += 1
+	}
+	fmt.Println("----------------------------")
+	fmt.Println(" - total: ", elapsedTime)
+	fmt.Println(" - Num of Requests: ", int64(count))
+	avg := time.Duration(int64(elapsedTime) / int64(count))
+	fmt.Println(" - avg: ", avg)
+	fmt.Println("----------------------------")
+
+	return elapsedTime, count, avg
+}
+
 func perf2(input request.Input) time.Duration {
+	// Print input params as JSON
+	tmp, _ := json.MarshalIndent(input, "", "    ")
+	fmt.Println(string(tmp))
+
+	// Create some channels
+	chanslice := []chan bool{}
+	for i := 0; i< input.Threads; i++ {
+		chanslice = append(chanslice, make(chan bool));
+	}
+
+	for i := 0; i < len(chanslice); i++ {
+		go func(c chan bool) { 
+			iterateRequest(input.Url, input.Seconds)
+			//elapsed, numRequests, avg := iterateRequest(input.Url, input.Seconds)
+			//fmt.Println(elapsed, numRequests, avg)
+			c <- true
+		}(chanslice[i])
+	}
+
+
+	// Wait on all the threads
+	for i := 0; i < len(chanslice); i++ {
+		<-chanslice[i]
+	}
+
+
 	return 0
 }
 

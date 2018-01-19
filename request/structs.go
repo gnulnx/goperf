@@ -16,14 +16,15 @@ type FetchResponse struct {
 }
 
 type FetchAllResponse struct {
-	BaseUrl      *FetchResponse  `json:"baseUrl"`
-	Time         time.Duration   `json:"time"`
-	TotalTime    time.Duration   `json:"total_time"`
-	TotalBytes   int             `json:"total_bytes"`
-	Status       int             `json:"status"`
-	JSResponses  []FetchResponse `json:"jsResponses"`
-	IMGResponses []FetchResponse `json:"imgResponses"`
-	CSSResponses []FetchResponse `json:"cssResponses"`
+	BaseUrl         *FetchResponse  `json:"baseUrl"`
+	Time            time.Duration   `json:"time"`
+	TotalTime       time.Duration   `json:"total_time"`
+	TotalLinearTime time.Duration   `json:total_linear_time"`
+	TotalBytes      int             `json:"total_bytes"`
+	Status          int             `json:"status"`
+	JSResponses     []FetchResponse `json:"jsResponses"`
+	IMGResponses    []FetchResponse `json:"imgResponses"`
+	CSSResponses    []FetchResponse `json:"cssResponses"`
 
 	Body string `json:"body"`
 }
