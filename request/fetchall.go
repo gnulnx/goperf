@@ -56,7 +56,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	output := Fetch(baseurl, true)
 
 	// Now parse output for js, css, img urls
-	jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
+	jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.body)
 
 	// Now lets create some go routines and fetch all the js, img, css files
 	c1 := make(chan []FetchResponse)
@@ -80,16 +80,16 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	}
 
 	if !retdat {
-		output.Body = ``
-		output.Headers = make(map[string][]string)
+		output.body = ``
+		output.headers = make(map[string][]string)
 	}
 
 	resp := FetchAllResponse{
-		BaseUrl:      output,
-		Time:         time.Now().Sub(start),
-		JSResponses:  jsResponses,
-		IMGResponses: imgResponses,
-		CSSResponses: cssResponses,
+		baseUrl:      output,
+		time:         time.Now().Sub(start),
+		jsResponses:  jsResponses,
+		imgResponses: imgResponses,
+		cssResponses: cssResponses,
 	}
 
 	return &resp
@@ -99,17 +99,17 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 func PrintFetchAllResponse(resp *FetchAllResponse) {
 	color.Red("Base Url Results")
 
-	if resp.BaseUrl.Status == 200 {
-		color.Green(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
+	if resp.baseUrl.status == 200 {
+		color.Green(" - Status: " + strconv.Itoa(resp.baseUrl.status))
 	} else {
-		color.Red(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
+		color.Red(" - Status: " + strconv.Itoa(resp.baseUrl.status))
 	}
 
-	total := resp.BaseUrl.Time
-	color.Yellow(" - Url: " + resp.BaseUrl.Url)
+	total := resp.baseUrl.time
+	color.Yellow(" - Url: " + resp.baseUrl.url)
 	color.Yellow(" - Time to first byte: " + total.String())
-	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
-	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
+	color.Yellow(" - Bytes: " + strconv.Itoa(resp.baseUrl.bytes))
+	color.Yellow(" - Runes: " + strconv.Itoa(resp.baseUrl.runes))
 
 	// This part will work for a single response
 	green := color.New(color.FgGreen).SprintFunc()
@@ -119,35 +119,35 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	calcTotal := func(resp []FetchResponse) time.Duration {
 		total := time.Duration(0)
 		for _, val := range resp {
-			total += val.Time
+			total += val.time
 		}
 		return total
 	}
 
-	total += calcTotal(resp.JSResponses)
-	total += calcTotal(resp.CSSResponses)
-	total += calcTotal(resp.IMGResponses)
+	total += calcTotal(resp.jsResponses)
+	total += calcTotal(resp.cssResponses)
+	total += calcTotal(resp.imgResponses)
 
 	color.Magenta(" - Total Time: %s", total.String())
 
 	color.Red("JS Responses")
 	fmt.Printf(" - %-22s %-15s %-50s \n", green("Time"), green("Bytes"), green("Url"))
-	for _, val := range resp.JSResponses {
-		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+	for _, val := range resp.jsResponses {
+		total += val.time
+		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.time.String()), yellow(strconv.Itoa(val.bytes)), val.url)
 	}
 
 	color.Red("CSS Responses")
 	fmt.Printf(" - %-22s %-15s %-50s \n", green("Time"), green("Bytes"), green("Url"))
-	for _, val := range resp.CSSResponses {
-		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+	for _, val := range resp.cssResponses {
+		total += val.time
+		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.time.String()), yellow(strconv.Itoa(val.bytes)), val.url)
 	}
 
 	color.Red("IMG Responses")
 	fmt.Printf(" - %-22s %-15s %-50s \n", green("Time"), green("Bytes"), green("Url"))
-	for _, val := range resp.IMGResponses {
-		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+	for _, val := range resp.imgResponses {
+		total += val.time
+		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.time.String()), yellow(strconv.Itoa(val.bytes)), val.url)
 	}
 }

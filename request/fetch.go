@@ -37,18 +37,18 @@ func Fetch(url string, retdat bool) *FetchResponse {
 	responseBody := string(body)
 
 	output := FetchResponse{
-		Url:     url,
-		Body:    responseBody,
-		Headers: resp.Header,
-		Bytes:   len(responseBody),
-		Runes:   utf8.RuneCountInString(responseBody),
-		Time:    responseTime,
-		Status:  resp.StatusCode,
+		url:     url,
+		body:    responseBody,
+		headers: resp.Header,
+		bytes:   len(responseBody),
+		runes:   utf8.RuneCountInString(responseBody),
+		time:    responseTime,
+		status:  resp.StatusCode,
 	}
 
 	if !retdat { // we don't want the document data or headers
-		output.Body = ``
-		output.Headers = make(map[string][]string)
+		output.body = ``
+		output.headers = make(map[string][]string)
 	}
 	//Close the response body and return the output
 	return &output

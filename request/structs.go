@@ -6,24 +6,24 @@ import (
 )
 
 type FetchResponse struct {
-	Url     string
-	Body    string
-	Headers map[string][]string
-	Bytes   int
-	Runes   int
-	Time    time.Duration
-	Status  int
+	url     string
+	body    string
+	headers map[string][]string
+	bytes   int
+	runes   int
+	time    time.Duration
+	status  int
 }
 
 type FetchAllResponse struct {
-	BaseUrl      *FetchResponse
-	JSResponses  []FetchResponse
-	IMGResponses []FetchResponse
-	CSSResponses []FetchResponse
+	baseUrl      *FetchResponse
+	jsResponses  []FetchResponse
+	imgResponses []FetchResponse
+	cssResponses []FetchResponse
 
-	Body   string
-	Time   time.Duration
-	Status int
+	body   string
+	time   time.Duration
+	status int
 }
 
 /*
