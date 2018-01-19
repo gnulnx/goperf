@@ -8,7 +8,6 @@ import (
 	"github.com/gnulnx/goperf/request"
 	"os"
 	"runtime/pprof"
-	"strconv"
 	"time"
 )
 
@@ -52,7 +51,7 @@ func main() {
 			fmt.Println(string(tmp))
 		}
 
-		printFetchAllResponse(resp)
+		request.PrintFetchAllResponse(resp)
 
 		pprof.StopCPUProfile()
 		os.Exit(1)
@@ -75,60 +74,6 @@ func main() {
 		}
 	}
 	os.Exit(1)
-}
-
-func printFetchAllResponse(resp *request.FetchAllResponse) {
-	color.Red("Base Url Results")
-
-	if resp.BaseUrl.Status == 200 {
-		color.Green(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
-	} else {
-		color.Red(" - Status: " + strconv.Itoa(resp.BaseUrl.Status))
-	}
-
-	total := resp.BaseUrl.Time
-	color.Yellow(" - Url: " + resp.BaseUrl.Url)
-	color.Yellow(" - Time to first byte: " + total.String())
-	color.Yellow(" - Bytes: " + strconv.Itoa(resp.BaseUrl.Bytes))
-	color.Yellow(" - Runes: " + strconv.Itoa(resp.BaseUrl.Runes))
-
-	// This part will work for a single response
-	green := color.New(color.FgGreen).SprintFunc()
-	yellow := color.New(color.FgYellow).SprintFunc()
-
-	// JSResponses   []FetchResponse
-	calcTotal := func(resp []request.FetchResponse) time.Duration {
-		total := time.Duration(0)
-		for _, val := range resp {
-			total += val.Time
-		}
-		return total
-	}
-
-	total += calcTotal(resp.JSResponses)
-	total += calcTotal(resp.CSSResponses)
-	total += calcTotal(resp.IMGResponses)
-
-	color.Magenta(" - Total Time: %s", total.String())
-
-	color.Red("JS Responses")
-	for _, val := range resp.JSResponses {
-		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
-	}
-
-	color.Red("CSS Responses")
-	for _, val := range resp.CSSResponses {
-		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
-	}
-
-	color.Red("IMG Responses")
-	for _, val := range resp.IMGResponses {
-		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
-	}
-
 }
 
 /*
