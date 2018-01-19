@@ -15,30 +15,23 @@ var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
 	// I ❤️  the way go handles command line arguments
-	fetch := flag.Bool("fetch", false, "Fetch only the stats from url.  Do not return resources")
-	fetchall := flag.Bool("fetchall", false, "Fetch all the resources and stats from -url")
-	printjson := flag.Bool("printjson", false, "Print results as json")
+	fetch := flag.Bool("fetch", false,
+		"Fetch -url and report it's stats. Does not return resources")
 
-	threads := flag.Int("connections", 10, "Number of concurrant connections")
+	fetchall := flag.Bool("fetchall", false,
+		") Fetch -url and report stats  return all assets (js, css, img)")
+
+	printjson := flag.Bool("printjson", false, "Print json output")
+
+	threads := flag.Int("connections", 10, "Number of concurrent connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
 	output := flag.Int("output", 5, "Show thread output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
-	increment := flag.Int("incr", 2, "How fast to increment the number of concurrant connections")
+	increment := flag.Int("incr", 2, "How fast to increment the number of concurrent connections")
 	max_response := flag.Int("max-response", 1, "Maximun number of seconds to wait for a response")
 	flag.Parse()
 
-	//You want to make a copy when you pass this into the method so the url can change
-	// Is thre any reason this 'Input' struc has to live in requests?  I'm going with no
-	input := request.Input{
-		Iterations: *iterations,
-		Threads:    *threads,
-		Url:        *url,
-		Output:     *output,
-		Verbose:    *verbose,
-	}
-
-	// Working on New Method:  Currently fetch url and assets.
 	if *fetch || *fetchall {
 		f, _ := os.Create(*cpuprofile)
 		pprof.StartCPUProfile(f)
@@ -57,9 +50,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO Declare an inline parameter struct...
+	input := request.Input{
+		Iterations: *iterations,
+		Threads:    *threads,
+		Url:        *url,
+		Output:     *output,
+		Verbose:    *verbose,
+	}
+
+	// Working on New Method:  Currently fetch url and assets.
+
 	// Old Method Below Here.  Likely not relevant any longer
-	fmt.Println("Running again url:", *url)
-	fmt.Println("Concurrant Connections: ", *threads, "Sustained for: ", input.Threads)
+	fmt.Println("Running url again:", *url)
+	fmt.Println("Concurrent Connections: ", *threads, "Sustained for: ", input.Threads)
 
 	for i := 0; i < 100; i++ {
 		input.Threads += *increment
