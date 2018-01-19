@@ -84,7 +84,7 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	resp := FetchAllResponse{
 		BaseUrl:      output,
 		Time:         time.Now().Sub(start),
-		JSReponses:   jsResponses,
+		JSResponses:  jsResponses,
 		IMGResponses: imgResponses,
 		CSSResponses: cssResponses,
 	}

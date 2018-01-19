@@ -17,7 +17,7 @@ type FetchResponse struct {
 
 type FetchAllResponse struct {
 	BaseUrl      *FetchResponse
-	JSReponses   []FetchResponse
+	JSResponses  []FetchResponse
 	IMGResponses []FetchResponse
 	CSSResponses []FetchResponse
 
