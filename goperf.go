@@ -28,6 +28,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/request"
 	"os"
+	"reflect"
 	"runtime/pprof"
 	"time"
 )
@@ -78,6 +79,31 @@ func main() {
 	defer pprof.StopCPUProfile()
 }
 
+func gatherStats(Resps []request.FetchResponse, respMap map[string]*request.IterateReqResp) {
+	// gather all the responses
+	for resp := 0; resp < len(Resps); resp++ {
+		url2 := Resps[resp].Url
+		bytes := Resps[resp].Bytes
+		status := Resps[resp].Status
+		respTime := Resps[resp].Time
+		_, ok := respMap[url2]
+		if !ok {
+			fmt.Println(url2)
+			respMap[url2] = &request.IterateReqResp{
+				Url:         url2,
+				Bytes:       bytes,
+				Status:      []int{status},
+				RespTimes:   []time.Duration{respTime},
+				NumRequests: 1,
+			}
+		} else {
+			respMap[url2].Status = append(respMap[url2].Status, status)
+			respMap[url2].RespTimes = append(respMap[url2].RespTimes, respTime)
+			respMap[url2].NumRequests += 1
+		}
+	}
+}
+
 func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	start := time.Now()
 	maxTime := time.Duration(sec) * time.Second
@@ -87,37 +113,25 @@ func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	resp := request.IterateReqResp{
 		Url: url,
 	}
+	jsMap := map[string]*request.IterateReqResp{}
 	cssMap := map[string]*request.IterateReqResp{}
+	imgMap := map[string]*request.IterateReqResp{}
 
+	// Remove this when you can
 	resps := []request.FetchAllResponse{}
 	for {
+		//Fetch the url
 		fetchAllResp := request.FetchAll(url, false)
+
+		// Set base resp properties
 		resp.Status = append(resp.Status, fetchAllResp.Status)
 		resp.RespTimes = append(resp.RespTimes, fetchAllResp.Time)
 		resp.Bytes = fetchAllResp.TotalBytes
 
-		for cssResp := 0; cssResp < len(fetchAllResp.CSSResponses); cssResp++ {
-			url2 := fetchAllResp.CSSResponses[cssResp].Url
-			bytes := fetchAllResp.CSSResponses[cssResp].Bytes
-			status := fetchAllResp.CSSResponses[cssResp].Status
-			respTime := fetchAllResp.CSSResponses[cssResp].Time
-			_, ok := cssMap[url2]
-			if !ok {
-				fmt.Println(url2)
-				cssMap[url2] = &request.IterateReqResp{
-					Url:         url2,
-					Bytes:       bytes,
-					Status:      []int{status},
-					RespTimes:   []time.Duration{respTime},
-					NumRequests: 1,
-				}
-			} else {
-				cssMap[url2].Status = append(cssMap[url2].Status, status)
-				cssMap[url2].RespTimes = append(cssMap[url2].RespTimes, respTime)
-				cssMap[url2].NumRequests += 1
-			}
+		gatherStats(fetchAllResp.JSResponses, jsMap)
+		gatherStats(fetchAllResp.CSSResponses, cssMap)
+		gatherStats(fetchAllResp.IMGResponses, imgMap)
 
-		}
 		// This is the old way... it will be removed
 		resps = append(resps, *fetchAllResp)
 
@@ -134,9 +148,47 @@ func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	fmt.Println(" - avg: ", avg)
 	fmt.Println("----------------------------")
 
-	tmp2, _ := json.MarshalIndent(cssMap, "", "    ")
+	if 1 == 0 {
+		reflect.TypeOf(avg)
+	}
+
+	jsResps := []*request.IterateReqResp{}
+	for _, val := range jsMap {
+		jsResps = append(jsResps, val)
+	}
+
+	cssResps := []*request.IterateReqResp{}
+	for _, val := range cssMap {
+		cssResps = append(cssResps, val)
+	}
+
+	imgResps := []*request.IterateReqResp{}
+	for _, val := range imgMap {
+		imgResps = append(imgResps, val)
+	}
+
+	/*
+		tmp2, _ := json.MarshalIndent(cssMap, "", "    ")
+		fmt.Println(string(tmp2))
+
+		tmp2, _ = json.MarshalIndent(imgMap, "", "    ")
+		fmt.Println(string(tmp2))
+
+		tmp2, _ = json.MarshalIndent(jsMap, "", "    ")
+		fmt.Println(string(tmp2))
+	*/
+	color.Blue("-------------------------------")
+	tmp2, _ := json.MarshalIndent(resp, "", "    ")
 	fmt.Println(string(tmp2))
 
+	tmp2, _ = json.MarshalIndent(jsResps, "", "    ")
+	fmt.Println(string(tmp2))
+
+	tmp2, _ = json.MarshalIndent(cssResps, "", "    ")
+	fmt.Println(string(tmp2))
+
+	tmp2, _ = json.MarshalIndent(imgResps, "", "    ")
+	fmt.Println(string(tmp2))
 	return resps
 }
 
