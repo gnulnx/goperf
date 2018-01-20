@@ -21,7 +21,6 @@ You can do a simpler request that leaves the data and headers out like this
 */
 
 import (
-	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -104,7 +103,7 @@ func gatherStats(Resps []request.FetchResponse, respMap map[string]*request.Iter
 	}
 }
 
-func iterateRequest(url string, sec int) []request.FetchAllResponse {
+func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	start := time.Now()
 	maxTime := time.Duration(sec) * time.Second
 	elapsedTime := maxTime
@@ -152,44 +151,28 @@ func iterateRequest(url string, sec int) []request.FetchAllResponse {
 		reflect.TypeOf(avg)
 	}
 
-	jsResps := []*request.IterateReqResp{}
+	jsResps := []request.IterateReqResp{}
 	for _, val := range jsMap {
-		jsResps = append(jsResps, val)
+		jsResps = append(jsResps, *val)
 	}
 
-	cssResps := []*request.IterateReqResp{}
+	cssResps := []request.IterateReqResp{}
 	for _, val := range cssMap {
-		cssResps = append(cssResps, val)
+		cssResps = append(cssResps, *val)
 	}
 
-	imgResps := []*request.IterateReqResp{}
+	imgResps := []request.IterateReqResp{}
 	for _, val := range imgMap {
-		imgResps = append(imgResps, val)
+		imgResps = append(imgResps, *val)
 	}
 
-	/*
-		tmp2, _ := json.MarshalIndent(cssMap, "", "    ")
-		fmt.Println(string(tmp2))
-
-		tmp2, _ = json.MarshalIndent(imgMap, "", "    ")
-		fmt.Println(string(tmp2))
-
-		tmp2, _ = json.MarshalIndent(jsMap, "", "    ")
-		fmt.Println(string(tmp2))
-	*/
-	color.Blue("-------------------------------")
-	tmp2, _ := json.MarshalIndent(resp, "", "    ")
-	fmt.Println(string(tmp2))
-
-	tmp2, _ = json.MarshalIndent(jsResps, "", "    ")
-	fmt.Println(string(tmp2))
-
-	tmp2, _ = json.MarshalIndent(cssResps, "", "    ")
-	fmt.Println(string(tmp2))
-
-	tmp2, _ = json.MarshalIndent(imgResps, "", "    ")
-	fmt.Println(string(tmp2))
-	return resps
+	output := request.IterateReqRespAll{
+		BaseUrl:  resp,
+		JSResps:  jsResps,
+		CSSResps: cssResps,
+		IMGResps: imgResps,
+	}
+	return output
 }
 
 func perf2(input request.Input) time.Duration {
@@ -199,37 +182,25 @@ func perf2(input request.Input) time.Duration {
 
 	// Create slice of channels to hold results
 	// Fire off anonymous go routine using newly created channel
-	chanslice := []chan []request.FetchAllResponse{}
+	chanslice := []chan request.IterateReqRespAll{}
 	for i := 0; i < input.Threads; i++ {
-		chanslice = append(chanslice, make(chan []request.FetchAllResponse))
-		go func(c chan []request.FetchAllResponse) {
+		chanslice = append(chanslice, make(chan request.IterateReqRespAll))
+		go func(c chan request.IterateReqRespAll) {
 			c <- iterateRequest(input.Url, input.Seconds)
 		}(chanslice[i])
 	}
 
 	// Wait on all the channels
-	results := [][]request.FetchAllResponse{}
+	results := []request.IterateReqRespAll{}
 	totalReqs := 0
 	for ch := 0; ch < len(chanslice); ch++ {
 		// Wait on the results
 		fetchAllRespSlice := <-chanslice[ch]
-
 		results = append(results, fetchAllRespSlice)
-
-		//Now process the results...
-		totalReqs += len(fetchAllRespSlice)
-
-		if 1 == 0 {
-			reader := bufio.NewReader(os.Stdin)
-			tmp, _ = json.MarshalIndent(results[ch][0], "", "    ")
-			fmt.Println(string(tmp))
-			fmt.Print("Enter text: ")
-			_, _ = reader.ReadString('\n')
-		}
 	}
 
 	tmp, _ = json.MarshalIndent(results, "", "    ")
-	//fmt.Println(string(tmp))
+	fmt.Println(string(tmp))
 
 	f, _ := os.Create("./results.json")
 	f.WriteString(string(tmp))
