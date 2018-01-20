@@ -21,6 +21,7 @@ You can do a simpler request that leaves the data and headers out like this
 */
 
 import (
+	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -84,7 +85,6 @@ func main() {
 	defer pprof.StopCPUProfile()
 }
 
-//func iterateRequest(url string, sec int) (time.Duration, int, time.Duration, []request.FetchAllResponse) {
 func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	start := time.Now()
 	maxTime := time.Duration(sec * 1000 * 1000 * 1000)
@@ -107,7 +107,6 @@ func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	fmt.Println("----------------------------")
 
 	return resps
-	//return elapsedTime, count, avg, resps
 }
 
 func perf2(input request.Input) time.Duration {
@@ -115,26 +114,33 @@ func perf2(input request.Input) time.Duration {
 	tmp, _ := json.MarshalIndent(input, "", "    ")
 	fmt.Println(string(tmp))
 
-	// Create some channels
+	// Create slice of channels to hold results
+	// Fire off anonymous go routine using newly created channel
 	chanslice := []chan []request.FetchAllResponse{}
 	for i := 0; i< input.Threads; i++ {
 		chanslice = append(chanslice, make(chan []request.FetchAllResponse));
-	}
-
-	// Fire off a new go routine for each channel
-	for i := 0; i < len(chanslice); i++ {
-		go func(c chan []request.FetchAllResponse) { 
-			//elapsed, numRequests, avg := iterateRequest(input.Url, input.Seconds)
-			//fmt.Println(elapsed, numRequests, avg)
-			//iterateRequest(input.Url, input.Seconds)
-			c <- iterateRequest(input.Url, input.Seconds)
-		}(chanslice[i])
+		go func(c chan []request.FetchAllResponse) {
+            c <- iterateRequest(input.Url, input.Seconds)
+        }(chanslice[i])
 	}
 
 	// Wait on all the channels
 	results := [][]request.FetchAllResponse{}
-	for i := 0; i < len(chanslice); i++ {
-		results = append(results, <-chanslice[i])
+	totalReqs := 0
+	for ch := 0; ch < len(chanslice); ch++ {
+		// Wait on the results
+		fetchAllRespSlice := <- chanslice[ch]
+		
+		results = append(results, fetchAllRespSlice)
+
+		//Now process the results... 
+		totalReqs += len(fetchAllRespSlice)
+
+		reader := bufio.NewReader(os.Stdin)
+		tmp, _ = json.MarshalIndent(results[ch][0], "", "    ")
+		fmt.Println(string(tmp))
+		fmt.Print("Enter text: ")
+		_, _ = reader.ReadString('\n')
 	}
 
 	tmp, _ = json.MarshalIndent(results, "", "    ")
@@ -142,6 +148,11 @@ func perf2(input request.Input) time.Duration {
 
 	f, _ := os.Create("./results.json")
 	f.WriteString(string(tmp))
-
+	color.Magenta("json results in results.json")
+	color.Yellow("len results: %d", len(results))
+	color.Yellow("total reqs: %d", totalReqs)
+	for i := 0; i< len(results); i++ {
+		
+	}
 	return 0
 }
