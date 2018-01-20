@@ -29,6 +29,21 @@ type FetchAllResponse struct {
 	Body string `json:"body"`
 }
 
+type IterateReqResp struct {
+	Url         string          `json:"url"`
+	Status      []int           `json:"status"`
+	RespTimes   []time.Duration `json:"resp_times"`
+	NumRequests int             `json:"num_requests"`
+	Bytes       int             `json:"bytes"`
+}
+
+type IterateReqRespAll struct {
+	BaseUrl  IterateReqResp   `json:"baseUrl"`
+	JSResps  []IterateReqResp `json:"js_resps"`
+	CSSResps []IterateReqResp `json:"css_resps"`
+	IMGResps []IterateReqResp `json:"img_resps"`
+}
+
 /*
    Structure to hold the input variables to 'go Run(...)' method call
 */

@@ -80,12 +80,47 @@ func main() {
 
 func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	start := time.Now()
-	maxTime := time.Duration(sec * 1000 * 1000 * 1000)
+	maxTime := time.Duration(sec) * time.Second
 	elapsedTime := maxTime
 	count := 1
+
+	resp := request.IterateReqResp{
+		Url: url,
+	}
+	cssMap := map[string]*request.IterateReqResp{}
+
 	resps := []request.FetchAllResponse{}
 	for {
-		resps = append(resps, *request.FetchAll(url, false))
+		fetchAllResp := request.FetchAll(url, false)
+		resp.Status = append(resp.Status, fetchAllResp.Status)
+		resp.RespTimes = append(resp.RespTimes, fetchAllResp.Time)
+		resp.Bytes = fetchAllResp.TotalBytes
+
+		for cssResp := 0; cssResp < len(fetchAllResp.CSSResponses); cssResp++ {
+			url2 := fetchAllResp.CSSResponses[cssResp].Url
+			bytes := fetchAllResp.CSSResponses[cssResp].Bytes
+			status := fetchAllResp.CSSResponses[cssResp].Status
+			respTime := fetchAllResp.CSSResponses[cssResp].Time
+			_, ok := cssMap[url2]
+			if !ok {
+				fmt.Println(url2)
+				cssMap[url2] = &request.IterateReqResp{
+					Url:         url2,
+					Bytes:       bytes,
+					Status:      []int{status},
+					RespTimes:   []time.Duration{respTime},
+					NumRequests: 1,
+				}
+			} else {
+				cssMap[url2].Status = append(cssMap[url2].Status, status)
+				cssMap[url2].RespTimes = append(cssMap[url2].RespTimes, respTime)
+				cssMap[url2].NumRequests += 1
+			}
+
+		}
+		// This is the old way... it will be removed
+		resps = append(resps, *fetchAllResp)
+
 		elapsedTime = time.Now().Sub(start)
 		if elapsedTime > maxTime {
 			break
@@ -98,6 +133,9 @@ func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	avg := time.Duration(int64(elapsedTime) / int64(count))
 	fmt.Println(" - avg: ", avg)
 	fmt.Println("----------------------------")
+
+	tmp2, _ := json.MarshalIndent(cssMap, "", "    ")
+	fmt.Println(string(tmp2))
 
 	return resps
 }
@@ -129,11 +167,13 @@ func perf2(input request.Input) time.Duration {
 		//Now process the results...
 		totalReqs += len(fetchAllRespSlice)
 
-		reader := bufio.NewReader(os.Stdin)
-		tmp, _ = json.MarshalIndent(results[ch][0], "", "    ")
-		fmt.Println(string(tmp))
-		fmt.Print("Enter text: ")
-		_, _ = reader.ReadString('\n')
+		if 1 == 0 {
+			reader := bufio.NewReader(os.Stdin)
+			tmp, _ = json.MarshalIndent(results[ch][0], "", "    ")
+			fmt.Println(string(tmp))
+			fmt.Print("Enter text: ")
+			_, _ = reader.ReadString('\n')
+		}
 	}
 
 	tmp, _ = json.MarshalIndent(results, "", "    ")
