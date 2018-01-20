@@ -36,22 +36,15 @@ var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
 	// I ❤️  the way go handles command line arguments
-	fetch := flag.Bool("fetch", false,
-		"Fetch -url and report it's stats. Does not return resources")
-
-	fetchall := flag.Bool("fetchall", false,
-		") Fetch -url and report stats  return all assets (js, css, img)")
-
+	fetch := flag.Bool("fetch", false, "Fetch -url and report it's stats. Does not return resources")
+	fetchall := flag.Bool("fetchall", false, "Fetch -url and report stats  return all assets (js, css, img)")
 	printjson := flag.Bool("printjson", false, "Print json output")
-
 	threads := flag.Int("connections", 1, "Number of concurrent connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
 	output := flag.Int("output", 5, "Show thread output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
-	//increment := flag.Int("incr", 2, "How fast to increment the number of concurrent connections")
-	//max_response := flag.Int("max-response", 1, "Maximun number of seconds to wait for a response")
 	flag.Parse()
 
 	if *fetch || *fetchall {
@@ -117,11 +110,11 @@ func perf2(input request.Input) time.Duration {
 	// Create slice of channels to hold results
 	// Fire off anonymous go routine using newly created channel
 	chanslice := []chan []request.FetchAllResponse{}
-	for i := 0; i< input.Threads; i++ {
-		chanslice = append(chanslice, make(chan []request.FetchAllResponse));
+	for i := 0; i < input.Threads; i++ {
+		chanslice = append(chanslice, make(chan []request.FetchAllResponse))
 		go func(c chan []request.FetchAllResponse) {
-            c <- iterateRequest(input.Url, input.Seconds)
-        }(chanslice[i])
+			c <- iterateRequest(input.Url, input.Seconds)
+		}(chanslice[i])
 	}
 
 	// Wait on all the channels
@@ -129,11 +122,11 @@ func perf2(input request.Input) time.Duration {
 	totalReqs := 0
 	for ch := 0; ch < len(chanslice); ch++ {
 		// Wait on the results
-		fetchAllRespSlice := <- chanslice[ch]
-		
+		fetchAllRespSlice := <-chanslice[ch]
+
 		results = append(results, fetchAllRespSlice)
 
-		//Now process the results... 
+		//Now process the results...
 		totalReqs += len(fetchAllRespSlice)
 
 		reader := bufio.NewReader(os.Stdin)
@@ -144,15 +137,15 @@ func perf2(input request.Input) time.Duration {
 	}
 
 	tmp, _ = json.MarshalIndent(results, "", "    ")
-    //fmt.Println(string(tmp))
+	//fmt.Println(string(tmp))
 
 	f, _ := os.Create("./results.json")
 	f.WriteString(string(tmp))
 	color.Magenta("json results in results.json")
 	color.Yellow("len results: %d", len(results))
 	color.Yellow("total reqs: %d", totalReqs)
-	for i := 0; i< len(results); i++ {
-		
+	for i := 0; i < len(results); i++ {
+
 	}
 	return 0
 }
