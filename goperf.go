@@ -116,26 +116,32 @@ func perf2(input request.Input) time.Duration {
 	fmt.Println(string(tmp))
 
 	// Create some channels
-	chanslice := []chan bool{}
+	chanslice := []chan []request.FetchAllResponse{}
 	for i := 0; i< input.Threads; i++ {
-		chanslice = append(chanslice, make(chan bool));
+		chanslice = append(chanslice, make(chan []request.FetchAllResponse));
 	}
 
 	// Fire off a new go routine for each channel
 	for i := 0; i < len(chanslice); i++ {
-		go func(c chan bool) { 
+		go func(c chan []request.FetchAllResponse) { 
 			//elapsed, numRequests, avg := iterateRequest(input.Url, input.Seconds)
 			//fmt.Println(elapsed, numRequests, avg)
-			iterateRequest(input.Url, input.Seconds)
-			c <- true
+			//iterateRequest(input.Url, input.Seconds)
+			c <- iterateRequest(input.Url, input.Seconds)
 		}(chanslice[i])
 	}
 
-
 	// Wait on all the channels
+	results := [][]request.FetchAllResponse{}
 	for i := 0; i < len(chanslice); i++ {
-		<-chanslice[i]
+		results = append(results, <-chanslice[i])
 	}
+
+	tmp, _ = json.MarshalIndent(results, "", "    ")
+    //fmt.Println(string(tmp))
+
+	f, _ := os.Create("./results.json")
+	f.WriteString(string(tmp))
 
 	return 0
 }
