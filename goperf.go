@@ -27,7 +27,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/request"
 	"os"
-	"reflect"
 	"runtime/pprof"
 	"time"
 )
@@ -73,7 +72,7 @@ func main() {
 	}
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)
-	perf2(input)
+	perf(input)
 
 	defer pprof.StopCPUProfile()
 }
@@ -107,7 +106,6 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	start := time.Now()
 	maxTime := time.Duration(sec) * time.Second
 	elapsedTime := maxTime
-	count := 1
 
 	resp := request.IterateReqResp{
 		Url: url,
@@ -138,19 +136,20 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		if elapsedTime > maxTime {
 			break
 		}
-		count += 1
-	}
-	fmt.Println("----------------------------")
-	fmt.Println(" - total: ", elapsedTime)
-	fmt.Println(" - Num of Requests: ", int64(count))
-	avg := time.Duration(int64(elapsedTime) / int64(count))
-	fmt.Println(" - avg: ", avg)
-	fmt.Println("----------------------------")
-
-	if 1 == 0 {
-		reflect.TypeOf(avg)
 	}
 
+	// NOTE Do you want to return the elapsed time?
+	/*
+		fmt.Println("----------------------------")
+		fmt.Println(" - total: ", elapsedTime)
+		fmt.Println(" - Num of Requests: ", int64(count))
+		avg := time.Duration(int64(elapsedTime) / int64(count))
+		fmt.Println(" - avg: ", avg)
+		fmt.Println("----------------------------")
+	*/
+
+	// TODO Clean this up.  Perhaps some benchmark tests
+	// to see if its faster as go routines or not
 	jsResps := []request.IterateReqResp{}
 	for _, val := range jsMap {
 		jsResps = append(jsResps, *val)
@@ -175,7 +174,7 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	return output
 }
 
-func perf2(input request.Input) time.Duration {
+func perf(input request.Input) time.Duration {
 	// Print input params as JSON
 	tmp, _ := json.MarshalIndent(input, "", "    ")
 	fmt.Println(string(tmp))
@@ -194,10 +193,15 @@ func perf2(input request.Input) time.Duration {
 	results := []request.IterateReqRespAll{}
 	totalReqs := 0
 	for ch := 0; ch < len(chanslice); ch++ {
-		// Wait on the results
-		fetchAllRespSlice := <-chanslice[ch]
-		results = append(results, fetchAllRespSlice)
+		results = append(results, <-chanslice[ch])
 	}
+
+	/*
+		TODO Next steps.
+		1) Figureout why BaseUrl doesn't have status
+		Combine all IterateReqResp in results into a single
+		IterateReqResp struct.  That is what we want to return from here
+	*/
 
 	tmp, _ = json.MarshalIndent(results, "", "    ")
 	fmt.Println(string(tmp))
