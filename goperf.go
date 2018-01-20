@@ -49,13 +49,11 @@ func main() {
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
 	output := flag.Int("output", 5, "Show thread output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
-	increment := flag.Int("incr", 2, "How fast to increment the number of concurrent connections")
-	max_response := flag.Int("max-response", 1, "Maximun number of seconds to wait for a response")
+	//increment := flag.Int("incr", 2, "How fast to increment the number of concurrent connections")
+	//max_response := flag.Int("max-response", 1, "Maximun number of seconds to wait for a response")
 	flag.Parse()
 
 	if *fetch || *fetchall {
-		f, _ := os.Create(*cpuprofile)
-		pprof.StartCPUProfile(f)
 
 		color.Green("~~ Fetching a single url and printing info ~~")
 		resp := request.FetchAll(*url, *fetchall)
@@ -67,7 +65,6 @@ func main() {
 
 		request.PrintFetchAllResponse(resp)
 
-		pprof.StopCPUProfile()
 		os.Exit(1)
 	}
 
@@ -80,41 +77,23 @@ func main() {
 		Verbose:    *verbose,
 		Seconds:    *seconds,
 	}
+	f, _ := os.Create(*cpuprofile)
+	pprof.StartCPUProfile(f)
 	perf2(input)
-	os.Exit(1)
 
-	// Working on New Method:  Currently fetch url and assets.
-
-	// Old Method Below Here.  Likely not relevant any longer
-	fmt.Println("Running url again:", *url)
-	fmt.Println("Concurrent Connections: ", *threads, "Sustained for: ", input.Threads)
-
-	for i := 0; i < 100; i++ {
-		input.Threads += *increment
-		total, avg := perf(input)
-
-		fmt.Println("Concurrant Connections:", input.Threads, "Sustained for:", input.Iterations, " iterations")
-		fmt.Println("Total Time: ", total)
-		fmt.Println("Average Request time: ", avg)
-
-		if avg > time.Duration(1000*1000*1000**max_response) {
-			fmt.Println("Exitiing because we reached max response")
-			fmt.Println(time.Duration(1000 * 1000 * 1000 * *max_response))
-			os.Exit(1)
-		}
-	}
-	os.Exit(1)
+	defer pprof.StopCPUProfile()
 }
 
-func iterateRequest(url string, sec int) (time.Duration, int, time.Duration) {
+//func iterateRequest(url string, sec int) (time.Duration, int, time.Duration, []request.FetchAllResponse) {
+func iterateRequest(url string, sec int) []request.FetchAllResponse {
 	start := time.Now()
 	maxTime := time.Duration(sec * 1000 * 1000 * 1000)
 	elapsedTime := maxTime
 	count := 1
+	resps := []request.FetchAllResponse{}
 	for {
-		request.FetchAll(url, false)
+		resps = append(resps, *request.FetchAll(url, false))
 		elapsedTime = time.Now().Sub(start)
-		//fmt.Println(" - ", elapsedTime, " - ", resp.TotalTime)
 		if elapsedTime > maxTime {
 			break
 		}
@@ -127,7 +106,8 @@ func iterateRequest(url string, sec int) (time.Duration, int, time.Duration) {
 	fmt.Println(" - avg: ", avg)
 	fmt.Println("----------------------------")
 
-	return elapsedTime, count, avg
+	return resps
+	//return elapsedTime, count, avg, resps
 }
 
 func perf2(input request.Input) time.Duration {
@@ -141,58 +121,21 @@ func perf2(input request.Input) time.Duration {
 		chanslice = append(chanslice, make(chan bool));
 	}
 
+	// Fire off a new go routine for each channel
 	for i := 0; i < len(chanslice); i++ {
 		go func(c chan bool) { 
-			iterateRequest(input.Url, input.Seconds)
 			//elapsed, numRequests, avg := iterateRequest(input.Url, input.Seconds)
 			//fmt.Println(elapsed, numRequests, avg)
+			iterateRequest(input.Url, input.Seconds)
 			c <- true
 		}(chanslice[i])
 	}
 
 
-	// Wait on all the threads
+	// Wait on all the channels
 	for i := 0; i < len(chanslice); i++ {
 		<-chanslice[i]
 	}
 
-
 	return 0
-}
-
-/*
-	This method is the basic unit of perf testing.
-	It takes an input object with run parameters and it returns
-	the total time and the average time for all the requests to run
-*/
-func perf(input request.Input) (time.Duration, time.Duration) {
-	// Define the channel that will syncronize and wait before exiting
-	done := make(chan request.Result, 1)
-
-	// Start all concurrant request threads
-	for i := 0; i < input.Threads; i++ {
-		input.Index = i + 1
-		go input.Run(done)
-	}
-
-	// Wait on all the threads to return and collect results
-	total := make([]time.Duration, 0, input.Threads)
-	for i := 0; i < input.Threads; i++ {
-		r := <-done
-
-		total = append(total, r.Average)
-		if input.Verbose {
-			r.Display()
-		}
-	}
-
-	sum := time.Duration(0)
-
-	for i := range total {
-		sum += total[i]
-	}
-
-	avg := sum / time.Duration(len(total))
-
-	return sum, avg
 }
