@@ -45,19 +45,6 @@ type IterateReqRespAll struct {
 }
 
 /*
-   Structure to hold the input variables to 'go Run(...)' method call
-*/
-type Input struct {
-	Url        string
-	Threads    int
-	Seconds    int
-	Iterations int
-	Output     int
-	Index      int // Also the channel number
-	Verbose    bool
-}
-
-/*
    Structure used to create web request Channel.  This is how we get the results
    back from the 'go Run(...) method call
 */

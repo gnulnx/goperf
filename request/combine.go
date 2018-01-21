@@ -5,7 +5,9 @@ import (
 )
 
 func Combine(results []IterateReqRespAll) IterateReqRespAll {
-	// Maybe this needs to go into it's own function
+	/*
+		Combine the slice of IterateReqRespAll structs into a single IterateReqRespAll
+	*/
 	totalReqs := 0
 	baseStatus := []int{}
 	baseRespTimes := []time.Duration{}
