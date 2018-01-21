@@ -83,6 +83,8 @@ func main() {
 
 	if *printjson {
 		perfJob.Json()
+	} else {
+		perfJob.Print()
 	}
 
 }

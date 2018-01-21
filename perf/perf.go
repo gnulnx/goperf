@@ -3,7 +3,9 @@ package perf
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/gnulnx/goperf/request"
+	"strconv"
 	"time"
 )
 
@@ -46,6 +48,49 @@ func (input *Init) Basic() request.IterateReqRespAll {
 func (input Init) Json() {
 	tmp, _ := json.MarshalIndent(input.Results, "", "  ")
 	fmt.Println(string(tmp))
+}
+
+func (input Init) Print() {
+	results := input.Results
+	color.Red("Base Url Results")
+	color.Yellow(" - Url: %s", results.BaseUrl.Url)
+	//color.Yellow(" - Threads: %d",
+	color.Yellow(" - Number of Reqs: %d", len(results.BaseUrl.Status))
+	color.Yellow(" - Total Bytes: %d", results.BaseUrl.Bytes)
+
+	avg, statusResults := procResult(&results.BaseUrl)
+	color.Yellow(" - Average Time to First Byte: %s", avg)
+	color.Yellow(" - Status: %s", statusResults)
+
+	color.Red("JS Results")
+
+	color.Red("CSS Results")
+
+	color.Red("IMG Results")
+}
+
+func procResult(resp *request.IterateReqResp) (string, string) {
+	totalTime := time.Duration(0)
+	for _, val := range resp.RespTimes {
+		totalTime += val
+	}
+	avg := time.Duration(int64(totalTime) / int64(len(resp.Status))).String()
+	//fmt.Println("avg: %s", avg)
+
+	statusCodes := map[string][]int{}
+	for _, val := range resp.Status {
+		status := strconv.Itoa(val)
+		statusCodes[status] = append(statusCodes[status], val)
+	}
+
+	statusResults := make(map[string]int)
+	for key, _ := range statusCodes {
+		statusResults[key] = len(statusCodes[key])
+	}
+	//tmp, _ := json.MarshalIndent(statusResults, "", "   ")
+	tmp, _ := json.Marshal(statusResults)
+	status := string(tmp)
+	return avg, status
 }
 
 func iterateRequest(url string, sec int) request.IterateReqRespAll {
