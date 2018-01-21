@@ -62,7 +62,7 @@ func main() {
 	}
 
 	// TODO Declare an inline parameter struct...
-	input := perf.Input{
+	perfJob := &perf.Init{
 		Iterations: *iterations,
 		Threads:    *threads,
 		Url:        *url,
@@ -72,14 +72,18 @@ func main() {
 	}
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)
-	results := perf.Perf(input)
+	results := perfJob.Basic()
 	defer pprof.StopCPUProfile()
+
+	perfJob.Json()
 
 	// Write json response to file.
 	outfile, _ := os.Create("./results.json")
 	tmp, _ := json.MarshalIndent(results, "", "    ")
-	//tmp, _ = json.Marshal(results)
 	outfile.WriteString(string(tmp))
+
+	//tmp, _ = json.MarshalIndent(perfJob, "", "  ")
+	//fmt.Println(string(tmp))
 
 	color.Magenta("Job Results: results.json")
 

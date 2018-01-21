@@ -63,8 +63,8 @@ func BenchmarkParseAllAssets(b *testing.B) {
 }
 
 func BenchmarkParseAllAssetsSequential(b *testing.B) {
-    body := get_test_body()
-    for i := 0; i < b.N; i++ {
- 		ParseAllAssetsSequential(body)
-    }
+	body := get_test_body()
+	for i := 0; i < b.N; i++ {
+		ParseAllAssetsSequential(body)
+	}
 }

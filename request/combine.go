@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-func Combine(results []IterateReqRespAll) IterateReqRespAll {
+func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	/*
 		Combine the slice of IterateReqRespAll structs into a single IterateReqRespAll
 	*/
@@ -55,7 +55,7 @@ func Combine(results []IterateReqRespAll) IterateReqRespAll {
 		return allResps
 	}
 
-	return IterateReqRespAll{
+	return &IterateReqRespAll{
 		BaseUrl: IterateReqResp{
 			Url:         results[0].BaseUrl.Url,
 			Status:      baseStatus,

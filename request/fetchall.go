@@ -8,39 +8,6 @@ import (
 	"time"
 )
 
-func DefineAssetUrl(baseurl string, asseturl string) string {
-	/*
-	If the url starts with a / we know it's a local resource
-	so we prepend the baseurl to it
-	*/
-	if asseturl[0] == '/' {
-		asseturl = baseurl + asseturl
-	}
-	return asseturl
-}
-
-func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
-	asset_url := DefineAssetUrl(baseurl, asseturl)
-	return Fetch(asset_url, retdat)
-}
-
-func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
-	responses := []FetchResponse{}
-
-	// TODO  What if this was go routines instead?
-	// NOTE: Then you end up hyper threaded which is perfect right?
-	// Look wait group example below
-	// https://nathanleclaire.com/blog/2014/02/15/how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
-	for _, asset_url := range files {
-		responses = append(
-			responses,
-			*FetchAsset(baseurl, asset_url, retdat),
-		)
-	}
-
-	resp <- responses
-}
-
 func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	/*
 	   Fetch the url and then fetch all of it's assets.
@@ -161,4 +128,37 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 		total += val.Time
 		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
 	}
+}
+
+func DefineAssetUrl(baseurl string, asseturl string) string {
+	/*
+		If the url starts with a / we know it's a local resource
+		so we prepend the baseurl to it
+	*/
+	if asseturl[0] == '/' {
+		asseturl = baseurl + asseturl
+	}
+	return asseturl
+}
+
+func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
+	asset_url := DefineAssetUrl(baseurl, asseturl)
+	return Fetch(asset_url, retdat)
+}
+
+func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
+	responses := []FetchResponse{}
+
+	// TODO  What if this was go routines instead?
+	// NOTE: Then you end up hyper threaded which is perfect right?
+	// Look wait group example below
+	// https://nathanleclaire.com/blog/2014/02/15/how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
+	for _, asset_url := range files {
+		responses = append(
+			responses,
+			*FetchAsset(baseurl, asset_url, retdat),
+		)
+	}
+
+	resp <- responses
 }
