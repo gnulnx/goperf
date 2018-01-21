@@ -66,19 +66,19 @@ func (input Init) Print() {
 	color.Red("JS Results")
 	for _, resp := range results.JSResps {
 		avg, statusResults := procResult(&resp)
-		fmt.Printf(" - %-22s %-15s %-50s\n", green(avg), yellow(statusResults), resp.Url)
+		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 
 	color.Red("CSS Results")
 	for _, resp := range results.CSSResps {
 		avg, statusResults := procResult(&resp)
-		fmt.Printf(" - %-22s %-15s %-50s\n", green(avg), yellow(statusResults), resp.Url)
+		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 
 	color.Red("IMG Results")
 	for _, resp := range results.IMGResps {
 		avg, statusResults := procResult(&resp)
-		fmt.Printf(" - %-22s %-15s %-50s\n", green(avg), yellow(statusResults), resp.Url)
+		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 }
 

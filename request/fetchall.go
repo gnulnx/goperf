@@ -109,14 +109,14 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	color.Red("JS Responses")
-	fmt.Printf(" - %-22s %-15s %-50s \n", green("Time"), green("Bytes"), green("Url"))
+	fmt.Printf(" - %-22s %-20s %-10s \n", green("Time"), green("Bytes"), green("Url"))
 	for _, val := range resp.JSResponses {
 		total += val.Time
-		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
+		fmt.Printf(" - %-22s %-20s %-10s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
 	}
 
 	color.Red("CSS Responses")
-	fmt.Printf(" - %-22s %-15s %-50s \n", green("Time"), green("Bytes"), green("Url"))
+	fmt.Printf(" - %-22s %-20s %-10s \n", green("Time"), green("Bytes"), green("Url"))
 	for _, val := range resp.CSSResponses {
 		total += val.Time
 		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
