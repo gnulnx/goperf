@@ -75,16 +75,14 @@ func main() {
 	results := perfJob.Basic()
 	defer pprof.StopCPUProfile()
 
-	perfJob.Json()
-
 	// Write json response to file.
 	outfile, _ := os.Create("./results.json")
 	tmp, _ := json.MarshalIndent(results, "", "    ")
 	outfile.WriteString(string(tmp))
-
-	//tmp, _ = json.MarshalIndent(perfJob, "", "  ")
-	//fmt.Println(string(tmp))
-
 	color.Magenta("Job Results: results.json")
+
+	if *printjson {
+		perfJob.Json()
+	}
 
 }
