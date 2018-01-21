@@ -63,10 +63,22 @@ func (input Init) Print() {
 	color.Yellow(" - Status: %s", statusResults)
 
 	color.Red("JS Results")
+	for _, resp := range results.JSResps {
+		avg, statusResults := procResult(&resp)
+		color.Yellow(" - %s, %s, %s", avg, statusResults, resp.Url)
+	}
 
 	color.Red("CSS Results")
+	for _, resp := range results.CSSResps {
+		avg, statusResults := procResult(&resp)
+		color.Yellow(" - %s, %s, %s", avg, statusResults, resp.Url)
+	}
 
 	color.Red("IMG Results")
+	for _, resp := range results.IMGResps {
+		avg, statusResults := procResult(&resp)
+		color.Yellow(" - %s, %s, %s", avg, statusResults, resp.Url)
+	}
 }
 
 func procResult(resp *request.IterateReqResp) (string, string) {
