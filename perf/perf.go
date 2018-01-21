@@ -52,32 +52,33 @@ func (input Init) Json() {
 
 func (input Init) Print() {
 	results := input.Results
+	yellow := color.New(color.FgYellow).SprintfFunc()
+	green := color.New(color.FgGreen).SprintfFunc()
 	color.Red("Base Url Results")
-	color.Yellow(" - Url: %s", results.BaseUrl.Url)
-	//color.Yellow(" - Threads: %d",
-	color.Yellow(" - Number of Reqs: %d", len(results.BaseUrl.Status))
-	color.Yellow(" - Total Bytes: %d", results.BaseUrl.Bytes)
+	fmt.Printf(" - Url: %s\n", green(results.BaseUrl.Url))
+	fmt.Printf(" - Number of Reqs: %s\n", green(strconv.Itoa(len(results.BaseUrl.Status))))
+	fmt.Printf(" - Total Bytes: %s\n", green(strconv.Itoa(results.BaseUrl.Bytes)))
 
 	avg, statusResults := procResult(&results.BaseUrl)
-	color.Yellow(" - Average Time to First Byte: %s", avg)
-	color.Yellow(" - Status: %s", statusResults)
+	fmt.Printf(" - Average Time to First Byte: %s\n", green(avg))
+	fmt.Printf(" - Status: %s\n", green(statusResults))
 
 	color.Red("JS Results")
 	for _, resp := range results.JSResps {
 		avg, statusResults := procResult(&resp)
-		color.Yellow(" - %s, %s, %s", avg, statusResults, resp.Url)
+		fmt.Printf(" - %-22s %-15s %-50s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 
 	color.Red("CSS Results")
 	for _, resp := range results.CSSResps {
 		avg, statusResults := procResult(&resp)
-		color.Yellow(" - %s, %s, %s", avg, statusResults, resp.Url)
+		fmt.Printf(" - %-22s %-15s %-50s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 
 	color.Red("IMG Results")
 	for _, resp := range results.IMGResps {
 		avg, statusResults := procResult(&resp)
-		color.Yellow(" - %s, %s, %s", avg, statusResults, resp.Url)
+		fmt.Printf(" - %-22s %-15s %-50s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 }
 
@@ -87,7 +88,6 @@ func procResult(resp *request.IterateReqResp) (string, string) {
 		totalTime += val
 	}
 	avg := time.Duration(int64(totalTime) / int64(len(resp.Status))).String()
-	//fmt.Println("avg: %s", avg)
 
 	statusCodes := map[string][]int{}
 	for _, val := range resp.Status {
@@ -99,7 +99,6 @@ func procResult(resp *request.IterateReqResp) (string, string) {
 	for key, _ := range statusCodes {
 		statusResults[key] = len(statusCodes[key])
 	}
-	//tmp, _ := json.MarshalIndent(statusResults, "", "   ")
 	tmp, _ := json.Marshal(statusResults)
 	status := string(tmp)
 	return avg, status
