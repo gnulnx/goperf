@@ -72,9 +72,18 @@ func main() {
 	}
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)
-	perf(input)
-
+	results := perf(input)
 	defer pprof.StopCPUProfile()
+
+	// Write json response to file.
+	outfile, _ := os.Create("./results.json")
+	tmp, _ := json.MarshalIndent(results, "", "    ")
+	//tmp, _ = json.Marshal(results)
+	outfile.WriteString(string(tmp))
+
+	color.Magenta("Job Results: results.json")
+	//color.Yellow("Concurrency: %d", len(results))
+
 }
 
 func gatherStats(Resps []request.FetchResponse, respMap map[string]*request.IterateReqResp) {
@@ -86,7 +95,6 @@ func gatherStats(Resps []request.FetchResponse, respMap map[string]*request.Iter
 		respTime := Resps[resp].Time
 		_, ok := respMap[url2]
 		if !ok {
-			fmt.Println(url2)
 			respMap[url2] = &request.IterateReqResp{
 				Url:         url2,
 				Bytes:       bytes,
@@ -138,16 +146,6 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		}
 	}
 
-	// NOTE Do you want to return the elapsed time?
-	/*
-		fmt.Println("----------------------------")
-		fmt.Println(" - total: ", elapsedTime)
-		fmt.Println(" - Num of Requests: ", int64(count))
-		avg := time.Duration(int64(elapsedTime) / int64(count))
-		fmt.Println(" - avg: ", avg)
-		fmt.Println("----------------------------")
-	*/
-
 	// TODO Clean this up.  Perhaps some benchmark tests
 	// to see if its faster as go routines or not
 	jsResps := []request.IterateReqResp{}
@@ -174,10 +172,10 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	return output
 }
 
-func perf(input request.Input) time.Duration {
+func perf(input request.Input) request.IterateReqRespAll {
 	// Print input params as JSON
-	tmp, _ := json.MarshalIndent(input, "", "    ")
-	fmt.Println(string(tmp))
+	//tmp, _ := json.MarshalIndent(input, "", "    ")
+	//fmt.Println(string(tmp))
 
 	// Create slice of channels to hold results
 	// Fire off anonymous go routine using newly created channel
@@ -196,21 +194,6 @@ func perf(input request.Input) time.Duration {
 	}
 
 	// Combine all the results into 1
-	all := request.Combine(results)
+	return request.Combine(results)
 
-	tmp, _ = json.MarshalIndent(all, "", "    ")
-	fmt.Println(string(tmp))
-
-	// Write json response to file.
-	f, _ := os.Create("./results.json")
-	tmp, _ = json.Marshal(results)
-	f.WriteString(string(tmp))
-
-	color.Magenta("json results in results.json")
-	color.Yellow("Concurrency: %d", len(results))
-	//color.Yellow("total reqs: %d", totalReqs)
-	for i := 0; i < len(results); i++ {
-
-	}
-	return 0
 }
