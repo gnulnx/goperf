@@ -21,7 +21,7 @@ type FetchAllResponse struct {
 	TotalTime       time.Duration   `json:"total_time"`
 	TotalLinearTime time.Duration   `json:total_linear_time"`
 	TotalBytes      int             `json:"total_bytes"`
-	Status          int             `json:"status"`
+	Status          int             `json:"status"` // Is this field actually used?
 	JSResponses     []FetchResponse `json:"jsResponses"`
 	IMGResponses    []FetchResponse `json:"imgResponses"`
 	CSSResponses    []FetchResponse `json:"cssResponses"`

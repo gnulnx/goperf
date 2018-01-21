@@ -119,10 +119,13 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	for {
 		//Fetch the url
 		fetchAllResp := request.FetchAll(url, false)
+		//tmp, _ := json.MarshalIndent(fetchAllResp, "", "    ")
+		//fmt.Println(string(tmp))
+		//fmt.Println(fetchAllResp.Status)
 
 		// Set base resp properties
-		resp.Status = append(resp.Status, fetchAllResp.Status)
-		resp.RespTimes = append(resp.RespTimes, fetchAllResp.Time)
+		resp.Status = append(resp.Status, fetchAllResp.BaseUrl.Status)
+		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
 		resp.Bytes = fetchAllResp.TotalBytes
 
 		gatherStats(fetchAllResp.JSResponses, jsMap)
