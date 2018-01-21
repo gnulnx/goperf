@@ -3,7 +3,7 @@ package perf
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
+	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/request"
 	"strconv"
 	"time"
@@ -37,9 +37,6 @@ func (input *Init) Basic() request.IterateReqRespAll {
 		results = append(results, <-ch)
 	}
 
-	// Combine all the results into 1
-	_ = request.Combine(results)
-
 	input.Results = request.Combine(results)
 	return *input.Results
 
@@ -55,13 +52,13 @@ func (input Init) Print() {
 	yellow := color.New(color.FgYellow).SprintfFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
 	color.Red("Base Url Results")
-	fmt.Printf(" - Url: %s\n", green(results.BaseUrl.Url))
-	fmt.Printf(" - Number of Reqs: %s\n", green(strconv.Itoa(len(results.BaseUrl.Status))))
-	fmt.Printf(" - Total Bytes: %s\n", green(strconv.Itoa(results.BaseUrl.Bytes)))
+	fmt.Printf(" - %-30s %-25s\n", "Url:", green(results.BaseUrl.Url))
+	fmt.Printf(" - %-30s %-25s\n", "Number of Requests:", green(strconv.Itoa(len(results.BaseUrl.Status))))
+	fmt.Printf(" - %-30s %s\n", "Total Bytes:", green(strconv.Itoa(results.BaseUrl.Bytes)))
 
 	avg, statusResults := procResult(&results.BaseUrl)
-	fmt.Printf(" - Average Time to First Byte: %s\n", green(avg))
-	fmt.Printf(" - Status: %s\n", green(statusResults))
+	fmt.Printf(" - %-30s %s\n", "Average Time to First Byte:", green(avg))
+	fmt.Printf(" - %-30s %s\n", "Status:", green(statusResults))
 
 	color.Red("JS Results")
 	for _, resp := range results.JSResps {

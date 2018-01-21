@@ -2,7 +2,7 @@ package request
 
 import (
 	"fmt"
-	"github.com/fatih/color"
+	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/httputils"
 	"strconv"
 	"time"

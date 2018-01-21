@@ -24,7 +24,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/fatih/color"
+	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/perf"
 	"github.com/gnulnx/goperf/request"
 	"os"
@@ -77,9 +77,6 @@ func main() {
 
 	// Write json response to file.
 	outfile, _ := os.Create("./results.json")
-	tmp, _ := json.MarshalIndent(results, "", "    ")
-	outfile.WriteString(string(tmp))
-	color.Magenta("Job Results: results.json")
 
 	if *printjson {
 		perfJob.Json()
@@ -87,4 +84,7 @@ func main() {
 		perfJob.Print()
 	}
 
+	tmp, _ := json.MarshalIndent(results, "", "    ")
+	outfile.WriteString(string(tmp))
+	color.Magenta("Job Results Saved: ./results.json")
 }

@@ -2,7 +2,7 @@ package httputils
 
 import (
 	"fmt"
-	"github.com/fatih/color"
+	"github.com/gnulnx/color"
 	"io/ioutil"
 	"reflect"
 	"testing"
