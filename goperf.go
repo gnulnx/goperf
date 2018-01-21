@@ -119,9 +119,6 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	for {
 		//Fetch the url
 		fetchAllResp := request.FetchAll(url, false)
-		//tmp, _ := json.MarshalIndent(fetchAllResp, "", "    ")
-		//fmt.Println(string(tmp))
-		//fmt.Println(fetchAllResp.Status)
 
 		// Set base resp properties
 		resp.Status = append(resp.Status, fetchAllResp.BaseUrl.Status)
@@ -194,26 +191,24 @@ func perf(input request.Input) time.Duration {
 
 	// Wait on all the channels
 	results := []request.IterateReqRespAll{}
-	totalReqs := 0
-	for ch := 0; ch < len(chanslice); ch++ {
-		results = append(results, <-chanslice[ch])
+	for _, ch := range chanslice {
+		results = append(results, <-ch)
 	}
 
-	/*
-		TODO Next steps.
-		1) Figureout why BaseUrl doesn't have status
-		Combine all IterateReqResp in results into a single
-		IterateReqResp struct.  That is what we want to return from here
-	*/
+	// Combine all the results into 1
+	all := request.Combine(results)
 
-	tmp, _ = json.MarshalIndent(results, "", "    ")
+	tmp, _ = json.MarshalIndent(all, "", "    ")
 	fmt.Println(string(tmp))
 
+	// Write json response to file.
 	f, _ := os.Create("./results.json")
+	tmp, _ = json.Marshal(results)
 	f.WriteString(string(tmp))
+
 	color.Magenta("json results in results.json")
-	color.Yellow("len results: %d", len(results))
-	color.Yellow("total reqs: %d", totalReqs)
+	color.Yellow("Concurrency: %d", len(results))
+	//color.Yellow("total reqs: %d", totalReqs)
 	for i := 0; i < len(results); i++ {
 
 	}
