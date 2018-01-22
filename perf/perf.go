@@ -127,7 +127,6 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
 		resp.Bytes = fetchAllResp.TotalBytes
 
-		fmt.Println(fetchAllResp.TotalLinearTime)
 		totalRespTimes += int64(fetchAllResp.TotalLinearTime)
 
 		gatherAllStats(fetchAllResp, jsMap, cssMap, imgMap)
@@ -140,7 +139,6 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	}
 
 	avgTotalRespTimes := time.Duration(totalRespTimes / count)
-	fmt.Println("avgTotalRespTimes: ", avgTotalRespTimes)
 
 	// TODO Clean this up.  Perhaps some benchmark tests
 	// to see if its faster as go routines or not

@@ -1,55 +1,17 @@
 # goperf
-Go based Load Tester
 
-output shoudl be
+## Go based Load Tester
 
-output = {
-    url:  string,
-    time: datetime,
-    bytes: bytes,
-    runes: runes,
-    body: string,
-    headers: string,
-    status: int
-    
-    // Run parameters
+Usage:
+### Build the package
+go build
 
-    jsassets: [
-        {
-            url:  string,
-            time: datetime,
-            bytes: bytes,
-            runes: runes,
-        },
-        {...}
-    ],
+### Basic perf test.
+./goperf -url {url} -sec=3 -connections=3
 
-    cssassets: [
-        {
-            url:  string,
-            time: datetime,
-            bytes: bytes,
-            runes: runes,
-        },
-        {...}
-    ],
 
-    // An Array of imgAsset response
-    imgassets: [
-        {
-            url:  string,
-            time: datetime,
-            bytes: bytes,
-            runes: runes,
-        },
-        {...}
-    }
-}
+### Fetch and return all stats as json
+./goperf -url {url} fetch
 
-Run unit tests
-go test ./... -cover
-
-Run Benchmar
-go test -bench BenchmarkResources -cpu 3
-
--cpu 3 uses 3 cores..default (without -cpu is 8 cores)
+### Fetch and return all assets bodys (js, css, html) as json
+./goperf -url {url} fetchall
