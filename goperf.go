@@ -114,36 +114,32 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("seconds is required"))
 		return
 	}
-	s := strSeconds[0]
-	seconds, _ := strconv.Atoi(s)
+	seconds, _ := strconv.Atoi(strSeconds[0])
 
 	strConnections, ok := r.PostForm["conn"]
 	if !ok {
 		w.Write([]byte("conn is required"))
 		return
 	}
-	//c := strConnections[0]
 	conn, _ := strconv.Atoi(strConnections[0])
-
-	if 1 == 0 {
-		strconv.Itoa(2)
-	}
 
 	fmt.Fprintf(w, "PostForm: %s\n", r.PostForm)
 
 	perfJob := &perf.Init{
-		//Iterations: 10,
 		Threads: conn,
 		Url:     url[0],
 		Seconds: seconds,
-		//Output:     *output,
-		//Verbose:    *verbose,
 	}
 	results := perfJob.Basic()
-	tmp, _ := json.Marshal(results)
-	//tmp, _ := json.MarshalIndent(results, "", "   ")
-	_ = string(tmp)
+
+	_, ok = r.PostForm["pretty"]
+	output := []byte{}
+	if ok {
+		output, _ = json.MarshalIndent(results, "", "   ")
+	} else {
+		output, _ = json.Marshal(results)
+	}
 	w.Header().Set("Server", "A Go Web Server")
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(tmp)
+	w.Write(output)
 }
