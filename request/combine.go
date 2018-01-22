@@ -16,11 +16,15 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	cssResps := map[string][]IterateReqResp{}
 	imgResps := map[string][]IterateReqResp{}
 
+	var totalAvglRespTimes int64 = 0
+	var count int64 = 0
 	for _, resp := range results {
 		totalReqs += len(resp.BaseUrl.Status)
 		baseStatus = append(baseStatus, resp.BaseUrl.Status...)
 		baseRespTimes = append(baseRespTimes, resp.BaseUrl.RespTimes...)
 		baseBytes += resp.BaseUrl.Bytes
+		totalAvglRespTimes += int64(resp.AvgTotalRespTime)
+		count += 1
 
 		for _, jsresp := range resp.JSResps {
 			jsResps[jsresp.Url] = append(jsResps[jsresp.Url], jsresp)
@@ -32,6 +36,8 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 			imgResps[imgresp.Url] = append(imgResps[imgresp.Url], imgresp)
 		}
 	}
+
+	avgTotalRespTimes := time.Duration(totalAvglRespTimes / count)
 
 	combine := func(resps map[string][]IterateReqResp) []IterateReqResp {
 		allResps := []IterateReqResp{}
@@ -56,6 +62,7 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	}
 
 	return &IterateReqRespAll{
+		AvgTotalRespTime: avgTotalRespTimes,
 		BaseUrl: IterateReqResp{
 			Url:         results[0].BaseUrl.Url,
 			Status:      baseStatus,

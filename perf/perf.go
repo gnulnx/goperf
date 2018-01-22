@@ -116,6 +116,8 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	cssMap := map[string]*request.IterateReqResp{}
 	imgMap := map[string]*request.IterateReqResp{}
 
+	var totalRespTimes int64 = 0
+	var count int64 = 0
 	for {
 		//Fetch the url and all the js, css, and img assets
 		fetchAllResp := request.FetchAll(url, false)
@@ -125,13 +127,20 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
 		resp.Bytes = fetchAllResp.TotalBytes
 
+		fmt.Println(fetchAllResp.TotalLinearTime)
+		totalRespTimes += int64(fetchAllResp.TotalLinearTime)
+
 		gatherAllStats(fetchAllResp, jsMap, cssMap, imgMap)
 
 		elapsedTime = time.Now().Sub(start)
+		count += 1
 		if elapsedTime > maxTime {
 			break
 		}
 	}
+
+	avgTotalRespTimes := time.Duration(totalRespTimes / count)
+	fmt.Println("avgTotalRespTimes: ", avgTotalRespTimes)
 
 	// TODO Clean this up.  Perhaps some benchmark tests
 	// to see if its faster as go routines or not
@@ -151,10 +160,11 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	}
 
 	output := request.IterateReqRespAll{
-		BaseUrl:  resp,
-		JSResps:  jsResps,
-		CSSResps: cssResps,
-		IMGResps: imgResps,
+		BaseUrl:          resp,
+		AvgTotalRespTime: avgTotalRespTimes,
+		JSResps:          jsResps,
+		CSSResps:         cssResps,
+		IMGResps:         imgResps,
 	}
 	return output
 }
