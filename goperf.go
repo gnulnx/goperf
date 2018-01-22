@@ -27,8 +27,10 @@ import (
 	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/perf"
 	"github.com/gnulnx/goperf/request"
+	"net/http"
 	"os"
 	"runtime/pprof"
+	"strconv"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -41,10 +43,18 @@ func main() {
 	threads := flag.Int("connections", 1, "Number of concurrent connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
+	web := flag.Bool("web", false, "Run as a webserver")
+
+	// Not currently used, but could be
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
 	output := flag.Int("output", 5, "Show thread output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
 	flag.Parse()
+
+	if *web {
+		http.HandleFunc("/api/", handler)
+		http.ListenAndServe(":8080", nil)
+	}
 
 	if *fetch || *fetchall {
 
@@ -87,4 +97,53 @@ func main() {
 	tmp, _ := json.MarshalIndent(results, "", "    ")
 	outfile.WriteString(string(tmp))
 	color.Magenta("Job Results Saved: ./results.json")
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	/*
+	 */
+	r.ParseForm()
+	url, ok := r.PostForm["url"]
+	if !ok {
+		w.Write([]byte("url is required"))
+		return
+	}
+
+	strSeconds, ok := r.PostForm["seconds"]
+	if !ok {
+		w.Write([]byte("seconds is required"))
+		return
+	}
+	s := strSeconds[0]
+	seconds, _ := strconv.Atoi(s)
+
+	strConnections, ok := r.PostForm["conn"]
+	if !ok {
+		w.Write([]byte("conn is required"))
+		return
+	}
+	//c := strConnections[0]
+	conn, _ := strconv.Atoi(strConnections[0])
+
+	if 1 == 0 {
+		strconv.Itoa(2)
+	}
+
+	fmt.Fprintf(w, "PostForm: %s\n", r.PostForm)
+
+	perfJob := &perf.Init{
+		//Iterations: 10,
+		Threads: conn,
+		Url:     url[0],
+		Seconds: seconds,
+		//Output:     *output,
+		//Verbose:    *verbose,
+	}
+	results := perfJob.Basic()
+	tmp, _ := json.Marshal(results)
+	//tmp, _ := json.MarshalIndent(results, "", "   ")
+	_ = string(tmp)
+	w.Header().Set("Server", "A Go Web Server")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(tmp)
 }
