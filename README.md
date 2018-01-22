@@ -17,3 +17,8 @@ go build
 
 ### Fetch and return all assets bodys (js, css, html) as json
 ./goperf -url {url} -fetchall --printjson
+
+
+### Run minimal unit and benchmarck tests
+go test ./... -cover -bench
+
