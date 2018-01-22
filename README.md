@@ -1,8 +1,8 @@
 # goperf
 
 ## Go based Load Tester
-This project is still in rabid development mode.  It is definitly not production ready code. 
-However, it does work and it is useful as is.  ;)
+This project is still in rabid development mode.  It is definitly not production ready code.
+However, it does work and you may find it useful as is.  ;)
 
 ### Build the package
 go build
