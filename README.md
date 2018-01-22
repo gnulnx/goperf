@@ -2,10 +2,10 @@
 
 ## Go based Load Tester
 
-Usage:
 ### Build the package
 go build
 
+## Usage:
 ### Basic perf test.
 ./goperf -url {url} -sec=3 -connections=3
 
