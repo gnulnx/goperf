@@ -55,6 +55,7 @@ func (input Init) Print() {
 	fmt.Printf(" - %-30s %-25s\n", "Url:", green(results.BaseUrl.Url))
 	fmt.Printf(" - %-30s %-25s\n", "Number of Requests:", green(strconv.Itoa(len(results.BaseUrl.Status))))
 	fmt.Printf(" - %-30s %s\n", "Total Bytes:", green(strconv.Itoa(results.BaseUrl.Bytes)))
+	fmt.Printf(" - %-30s %s\n", "Avg Page Resp Time:", green(results.AvgTotalRespTime.String()))
 
 	avg, statusResults := procResult(&results.BaseUrl)
 	fmt.Printf(" - %-30s %s\n", "Average Time to First Byte:", green(avg))
