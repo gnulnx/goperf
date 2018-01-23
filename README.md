@@ -9,8 +9,11 @@ go build
 
 ## Usage:
 ### Basic perf test.
-./goperf -url {url} -sec=3 -connections=3
 
+Fire a 3 second test with 3 simultaneous connections
+```
+./goperf -url {url} -sec=3 -connections=3
+```
 
 ### Fetch and return all stats as json
 ./goperf -url {url} -fetch --printjson
