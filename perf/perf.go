@@ -42,6 +42,29 @@ func (input *Init) Basic() request.IterateReqRespAll {
 
 }
 
+type BaseUrl struct {
+	Url	string `json:"base_url"`
+	Numreqs	int `json:"num_reqs"`
+	TotBytes int `json:"total_bytes"`
+	AvgPageRespTime time.Duration	`json:"avg_page_resp_time"`
+	AvgTimeToFirsttByte time.Duration `json:"avg_time_to_first_byte"`
+	Status map[string]int `json:"status"`
+}
+
+type AssetResult struct {
+	Url string `json:"url"`
+	AvgRespTime time.Duration   `json:"avg_resp_time"`
+	Status map[string]int `json:"status"`
+}
+
+type Output struct {
+	Baseurl BaseUrl  `json:"base_url"`
+	JSResults []AssetResult `json:"js_assets"`
+	CSSResults []AssetResult `json:"css_assets"`
+	IMGResults []AssetResult `json:"img_assets"`
+}
+
+
 func (input Init) JsonAll() {
 	tmp, _ := json.MarshalIndent(input.Results, "", "  ")
 	fmt.Println(string(tmp))
@@ -50,85 +73,39 @@ func (input Init) JsonAll() {
 func (input Init) JsonResults() string {
 	results := input.Results
 
-	type BaseUrl struct {
-		Url	string `json:"base_url"`
-		Numreqs	int `json:"num_reqs"`
-		TotBytes int `json:"total_bytes"`
-		AvgPageRespTime time.Duration	`json:"avg_page_resp_time"`
-		AvgTimeToFirsttByte time.Duration `json:"avg_time_to_first_byte"`
-		Status map[string]int `json:"status"`
-	}
-
-	type AssetResult struct {
-		Url string `json:"url"`
-		AvgRespTime time.Duration   `json:"avg_resp_time"`
-		Status map[string]int `json:"status"`
-	}
-
-	type Output struct {
-		Baseurl BaseUrl  `json:"base_url"`
-		JSResults []AssetResult `json:"js_assets"`
-		CSSResults []AssetResult `json:"css_assets"`
-		IMGResults []AssetResult `json:"img_assets"`
-	}
-
 	avg, statusResults := procResult(&results.BaseUrl)
-	baseUrl := BaseUrl{
-		Url: results.BaseUrl.Url,
-		Numreqs: len(results.BaseUrl.Status),
-		TotBytes: results.BaseUrl.Bytes,
-		AvgPageRespTime: results.AvgTotalRespTime,
-		AvgTimeToFirsttByte: avg,
-		Status: statusResults,
-
-	}
-
-	jsResults := []AssetResult{}
-	for _, resp := range results.JSResps {
-		avg, statusResults := procResult(&resp)
-        jsResult := AssetResult {
-            Url: resp.Url,
-            AvgRespTime: avg,
-            Status: statusResults,
-        }
-        jsResults = append(jsResults, jsResult)
-    }
-
-	cssResults := []AssetResult{}
-	for _, resp := range results.CSSResps {
-		avg, statusResults := procResult(&resp)
-		cssResult := AssetResult {
-			Url: resp.Url,
-			AvgRespTime: avg,
-			Status: statusResults,
-		}
-		cssResults = append(cssResults, cssResult)
-	}
-
-	imgResults := []AssetResult{}
-    for _, resp := range results.IMGResps {
-        avg, statusResults := procResult(&resp)
-        imgResult := AssetResult {
-            Url: resp.Url,
-            AvgRespTime: avg,
-            Status: statusResults,
-        }
-        imgResults = append(imgResults, imgResult)
-    }
-
-
-
 	output := Output{
-		Baseurl: baseUrl,
-		JSResults: jsResults,
-		CSSResults: cssResults,
-		IMGResults: imgResults,
+		Baseurl: BaseUrl{
+        	Url: results.BaseUrl.Url,
+        	Numreqs: len(results.BaseUrl.Status),
+        	TotBytes: results.BaseUrl.Bytes,
+        	AvgPageRespTime: results.AvgTotalRespTime,
+        	AvgTimeToFirsttByte: avg,
+       		Status: statusResults,
+    	},
+		JSResults: buildAssetSlice(results.JSResps),
+		CSSResults: buildAssetSlice(results.CSSResps),
+		IMGResults: buildAssetSlice(results.IMGResps),
 	}
 	
 	tmp, _ := json.MarshalIndent(output, "", "    ")
 	output_json := string(tmp)
 	fmt.Println(output_json)
 	return output_json
+}
+
+func buildAssetSlice(resps []request.IterateReqResp) []AssetResult {
+	results := []AssetResult{}
+    for _, resp := range resps {
+        avg, statusResults := procResult(&resp)
+        result := AssetResult {
+            Url: resp.Url,
+            AvgRespTime: avg,
+            Status: statusResults,
+        }
+        results = append(results, result)
+    }
+	return results
 }
 
 func (input Init) Print() {
