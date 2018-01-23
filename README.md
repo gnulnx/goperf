@@ -15,7 +15,7 @@ go build
 ### Fetch and return all stats as json
 ./goperf -url {url} -fetch --printjson
 
-### Fetch and return all assets bodys (js, css, html) as json
+### Fetch and return all asset bodies (js, css, html) as json
 ./goperf -url {url} -fetchall --printjson
 
 
