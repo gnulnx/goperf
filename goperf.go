@@ -43,7 +43,8 @@ func main() {
 	threads := flag.Int("connections", 1, "Number of concurrent connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
-	web := flag.Bool("web", false, "Run as a webserver")
+	web := flag.Bool("web", false, "Run as a webserver -web {port}")
+	port := flag.Int("port", 8080, "used with -web to specif which port to bind")
 
 	// Not currently used, but could be
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
@@ -53,7 +54,7 @@ func main() {
 
 	if *web {
 		http.HandleFunc("/api/", handler)
-		http.ListenAndServe(":8080", nil)
+		http.ListenAndServe(":"+strconv.Itoa(*port), nil)
 	}
 
 	if *fetch || *fetchall {
@@ -123,23 +124,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	conn, _ := strconv.Atoi(strConnections[0])
 
-	fmt.Fprintf(w, "PostForm: %s\n", r.PostForm)
-
 	perfJob := &perf.Init{
 		Threads: conn,
 		Url:     url[0],
 		Seconds: seconds,
 	}
-	results := perfJob.Basic()
+	perfJob.Basic()
+	json_results := perfJob.JsonResults()
 
-	_, ok = r.PostForm["pretty"]
-	output := []byte{}
-	if ok {
-		output, _ = json.MarshalIndent(results, "", "   ")
-	} else {
-		output, _ = json.Marshal(results)
-	}
-	w.Header().Set("Server", "A Go Web Server")
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(string(json_results))
 }

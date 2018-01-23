@@ -43,27 +43,26 @@ func (input *Init) Basic() request.IterateReqRespAll {
 }
 
 type BaseUrl struct {
-	Url	string `json:"base_url"`
-	Numreqs	int `json:"num_reqs"`
-	TotBytes int `json:"total_bytes"`
-	AvgPageRespTime time.Duration	`json:"avg_page_resp_time"`
-	AvgTimeToFirsttByte time.Duration `json:"avg_time_to_first_byte"`
-	Status map[string]int `json:"status"`
+	Url                 string         `json:"base_url"`
+	Numreqs             int            `json:"num_reqs"`
+	TotBytes            int            `json:"total_bytes"`
+	AvgPageRespTime     time.Duration  `json:"avg_page_resp_time"`
+	AvgTimeToFirsttByte time.Duration  `json:"avg_time_to_first_byte"`
+	Status              map[string]int `json:"status"`
 }
 
 type AssetResult struct {
-	Url string `json:"url"`
-	AvgRespTime time.Duration   `json:"avg_resp_time"`
-	Status map[string]int `json:"status"`
+	Url         string         `json:"url"`
+	AvgRespTime time.Duration  `json:"avg_resp_time"`
+	Status      map[string]int `json:"status"`
 }
 
 type Output struct {
-	Baseurl BaseUrl  `json:"base_url"`
-	JSResults []AssetResult `json:"js_assets"`
+	Baseurl    BaseUrl       `json:"base_url"`
+	JSResults  []AssetResult `json:"js_assets"`
 	CSSResults []AssetResult `json:"css_assets"`
 	IMGResults []AssetResult `json:"img_assets"`
 }
-
 
 func (input Init) JsonAll() {
 	tmp, _ := json.MarshalIndent(input.Results, "", "  ")
@@ -76,35 +75,34 @@ func (input Init) JsonResults() string {
 	avg, statusResults := procResult(&results.BaseUrl)
 	output := Output{
 		Baseurl: BaseUrl{
-        	Url: results.BaseUrl.Url,
-        	Numreqs: len(results.BaseUrl.Status),
-        	TotBytes: results.BaseUrl.Bytes,
-        	AvgPageRespTime: results.AvgTotalRespTime,
-        	AvgTimeToFirsttByte: avg,
-       		Status: statusResults,
-    	},
-		JSResults: buildAssetSlice(results.JSResps),
+			Url:                 results.BaseUrl.Url,
+			Numreqs:             len(results.BaseUrl.Status),
+			TotBytes:            results.BaseUrl.Bytes,
+			AvgPageRespTime:     results.AvgTotalRespTime,
+			AvgTimeToFirsttByte: avg,
+			Status:              statusResults,
+		},
+		JSResults:  buildAssetSlice(results.JSResps),
 		CSSResults: buildAssetSlice(results.CSSResps),
 		IMGResults: buildAssetSlice(results.IMGResps),
 	}
-	
+
 	tmp, _ := json.MarshalIndent(output, "", "    ")
 	output_json := string(tmp)
-	fmt.Println(output_json)
 	return output_json
 }
 
 func buildAssetSlice(resps []request.IterateReqResp) []AssetResult {
 	results := []AssetResult{}
-    for _, resp := range resps {
-        avg, statusResults := procResult(&resp)
-        result := AssetResult {
-            Url: resp.Url,
-            AvgRespTime: avg,
-            Status: statusResults,
-        }
-        results = append(results, result)
-    }
+	for _, resp := range resps {
+		avg, statusResults := procResult(&resp)
+		result := AssetResult{
+			Url:         resp.Url,
+			AvgRespTime: avg,
+			Status:      statusResults,
+		}
+		results = append(results, result)
+	}
 	return results
 }
 
@@ -150,21 +148,21 @@ func procResultString(resp *request.IterateReqResp) (string, string) {
 
 func procResult(resp *request.IterateReqResp) (time.Duration, map[string]int) {
 	totalTime := time.Duration(0)
-    for _, val := range resp.RespTimes {
-        totalTime += val
-    }
-    avg := time.Duration(int64(totalTime) / int64(len(resp.Status)))
+	for _, val := range resp.RespTimes {
+		totalTime += val
+	}
+	avg := time.Duration(int64(totalTime) / int64(len(resp.Status)))
 
-    statusCodes := map[string][]int{}
-    for _, val := range resp.Status {
-        status := strconv.Itoa(val)
-        statusCodes[status] = append(statusCodes[status], val)
-    }
+	statusCodes := map[string][]int{}
+	for _, val := range resp.Status {
+		status := strconv.Itoa(val)
+		statusCodes[status] = append(statusCodes[status], val)
+	}
 
-    statusResults := make(map[string]int)
-    for key, _ := range statusCodes {
-        statusResults[key] = len(statusCodes[key])
-    }
+	statusResults := make(map[string]int)
+	for key, _ := range statusCodes {
+		statusResults[key] = len(statusCodes[key])
+	}
 
 	return avg, statusResults
 }
