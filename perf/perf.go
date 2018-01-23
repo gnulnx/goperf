@@ -48,26 +48,85 @@ func (input Init) JsonAll() {
 }
 
 func (input Init) JsonResults() {
-	color.Green("JsonResults")
 	results := input.Results
 
+	type BaseUrl struct {
+		Url	string `json:"base_url"`
+		Numreqs	int `json:"num_reqs"`
+		TotBytes int `json:"results.BaseUrl.Bytes"`
+		AvgPageRespTime time.Duration	`json:"avg_page_resp_time"`
+		AvgTimeToFirsttByte time.Duration `json:"avg_time_to_first_byte"`
+		Status map[string]int `json:"status"`
+	}
+
+	type AssetResult struct {
+		Url string `json:"url"`
+		AvgRespTime time.Duration   `json:"avg_resp_time"`
+		Status map[string]int `json:"status"`
+	}
+
 	type Output struct {
-		Baseurl map[string]string `json:"base_url"`
+		Baseurl BaseUrl  `json:"base_url"`
+		JSResults []AssetResult `json:"js_assets"`
+		CSSResults []AssetResult `json:"css_assets"`
+		IMGResults []AssetResult `json:"img_assets"`
 	}
 
-	baseurl := make(map[string]string)
-	baseurl["Url"] = results.BaseUrl.Url
-	baseurl["Number of Requests"] = strconv.Itoa(len(results.BaseUrl.Status))
+	avg, statusResults := procResult(&results.BaseUrl)
+	baseUrl := BaseUrl{
+		Url: results.BaseUrl.Url,
+		Numreqs: len(results.BaseUrl.Status),
+		TotBytes: results.BaseUrl.Bytes,
+		AvgPageRespTime: results.AvgTotalRespTime,
+		AvgTimeToFirsttByte: avg,
+		Status: statusResults,
 
-	tmp := Output{
-		Baseurl: baseurl,
 	}
-	tmp.Baseurl["url"] = results.BaseUrl.Url
-	fmt.Println(tmp)
 
-	output, _ := json.MarshalIndent(tmp, "", "    ")
-	fmt.Println(output)
-	fmt.Println(string(output))
+	jsResults := []AssetResult{}
+	for _, resp := range results.JSResps {
+		avg, statusResults := procResult(&resp)
+        jsResult := AssetResult {
+            Url: resp.Url,
+            AvgRespTime: avg,
+            Status: statusResults,
+        }
+        jsResults = append(jsResults, jsResult)
+    }
+
+	cssResults := []AssetResult{}
+	for _, resp := range results.CSSResps {
+		avg, statusResults := procResult(&resp)
+		cssResult := AssetResult {
+			Url: resp.Url,
+			AvgRespTime: avg,
+			Status: statusResults,
+		}
+		cssResults = append(cssResults, cssResult)
+	}
+
+	imgResults := []AssetResult{}
+    for _, resp := range results.IMGResps {
+        avg, statusResults := procResult(&resp)
+        imgResult := AssetResult {
+            Url: resp.Url,
+            AvgRespTime: avg,
+            Status: statusResults,
+        }
+        imgResults = append(imgResults, imgResult)
+    }
+
+
+
+	output := Output{
+		Baseurl: baseUrl,
+		JSResults: jsResults,
+		CSSResults: cssResults,
+		IMGResults: imgResults,
+	}
+	
+	output_json, _ := json.MarshalIndent(output, "", "    ")
+	fmt.Println(string(output_json))
 }
 
 func (input Init) Print() {
@@ -80,49 +139,55 @@ func (input Init) Print() {
 	fmt.Printf(" - %-30s %s\n", "Total Bytes:", green(strconv.Itoa(results.BaseUrl.Bytes)))
 	fmt.Printf(" - %-30s %s\n", "Avg Page Resp Time:", green(results.AvgTotalRespTime.String()))
 
-	avg, statusResults := procResult(&results.BaseUrl)
+	avg, statusResults := procResultString(&results.BaseUrl)
 	fmt.Printf(" - %-30s %s\n", "Average Time to First Byte:", green(avg))
 	fmt.Printf(" - %-30s %s\n", "Status:", green(statusResults))
 
 	color.Red("JS Results")
 	for _, resp := range results.JSResps {
-		avg, statusResults := procResult(&resp)
+		avg, statusResults := procResultString(&resp)
 		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 
 	color.Red("CSS Results")
 	for _, resp := range results.CSSResps {
-		avg, statusResults := procResult(&resp)
+		avg, statusResults := procResultString(&resp)
 		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 
 	color.Red("IMG Results")
 	for _, resp := range results.IMGResps {
-		avg, statusResults := procResult(&resp)
+		avg, statusResults := procResultString(&resp)
 		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
 	}
 }
 
-func procResult(resp *request.IterateReqResp) (string, string) {
-	totalTime := time.Duration(0)
-	for _, val := range resp.RespTimes {
-		totalTime += val
-	}
-	avg := time.Duration(int64(totalTime) / int64(len(resp.Status))).String()
-
-	statusCodes := map[string][]int{}
-	for _, val := range resp.Status {
-		status := strconv.Itoa(val)
-		statusCodes[status] = append(statusCodes[status], val)
-	}
-
-	statusResults := make(map[string]int)
-	for key, _ := range statusCodes {
-		statusResults[key] = len(statusCodes[key])
-	}
+func procResultString(resp *request.IterateReqResp) (string, string) {
+	avg, statusResults := procResult(resp)
 	tmp, _ := json.Marshal(statusResults)
 	status := string(tmp)
-	return avg, status
+	return avg.String(), status
+}
+
+func procResult(resp *request.IterateReqResp) (time.Duration, map[string]int) {
+	totalTime := time.Duration(0)
+    for _, val := range resp.RespTimes {
+        totalTime += val
+    }
+    avg := time.Duration(int64(totalTime) / int64(len(resp.Status)))
+
+    statusCodes := map[string][]int{}
+    for _, val := range resp.Status {
+        status := strconv.Itoa(val)
+        statusCodes[status] = append(statusCodes[status], val)
+    }
+
+    statusResults := make(map[string]int)
+    for key, _ := range statusCodes {
+        statusResults[key] = len(statusCodes[key])
+    }
+
+	return avg, statusResults
 }
 
 func iterateRequest(url string, sec int) request.IterateReqRespAll {
