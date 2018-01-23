@@ -47,13 +47,13 @@ func (input Init) JsonAll() {
 	fmt.Println(string(tmp))
 }
 
-func (input Init) JsonResults() {
+func (input Init) JsonResults() string {
 	results := input.Results
 
 	type BaseUrl struct {
 		Url	string `json:"base_url"`
 		Numreqs	int `json:"num_reqs"`
-		TotBytes int `json:"results.BaseUrl.Bytes"`
+		TotBytes int `json:"total_bytes"`
 		AvgPageRespTime time.Duration	`json:"avg_page_resp_time"`
 		AvgTimeToFirsttByte time.Duration `json:"avg_time_to_first_byte"`
 		Status map[string]int `json:"status"`
@@ -125,8 +125,10 @@ func (input Init) JsonResults() {
 		IMGResults: imgResults,
 	}
 	
-	output_json, _ := json.MarshalIndent(output, "", "    ")
-	fmt.Println(string(output_json))
+	tmp, _ := json.MarshalIndent(output, "", "    ")
+	output_json := string(tmp)
+	fmt.Println(output_json)
+	return output_json
 }
 
 func (input Init) Print() {
