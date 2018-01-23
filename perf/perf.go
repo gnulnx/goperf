@@ -118,7 +118,7 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	imgMap := map[string]*request.IterateReqResp{}
 
 	var totalRespTimes int64 = 0
-	var count int64 = 0
+	var count int64 = 0 // TODO for loop counter instead???
 	for {
 		//Fetch the url and all the js, css, and img assets
 		fetchAllResp := request.FetchAll(url, false)
@@ -171,7 +171,7 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 func gatherAllStats(resp *request.FetchAllResponse, jsMap map[string]*request.IterateReqResp, cssMap map[string]*request.IterateReqResp, imgMap map[string]*request.IterateReqResp) {
 	/*
 		Gather all the asset stuff.
-		Note;  You benchmarked this and the 3 go routine method was way slower so you removed the method
+		NOTE:  You benchmarked this and the 3 go routine method was way slower so you removed the method
 		BenchmarkGatherAllStatsGo-8   	  500000	      2764 ns/op
 		BenchmarkGatherAllStats-8     	 2000000	       638 ns/op
 	*/
