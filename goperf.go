@@ -89,7 +89,7 @@ func main() {
 	outfile, _ := os.Create("./results.json")
 
 	if *printjson {
-		perfJob.Json()
+		perfJob.JsonResults()
 	} else {
 		perfJob.Print()
 	}

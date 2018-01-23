@@ -42,9 +42,32 @@ func (input *Init) Basic() request.IterateReqRespAll {
 
 }
 
-func (input Init) Json() {
+func (input Init) JsonAll() {
 	tmp, _ := json.MarshalIndent(input.Results, "", "  ")
 	fmt.Println(string(tmp))
+}
+
+func (input Init) JsonResults() {
+	color.Green("JsonResults")
+	results := input.Results
+
+	type Output struct {
+		Baseurl map[string]string `json:"base_url"`
+	}
+
+	baseurl := make(map[string]string)
+	baseurl["Url"] = results.BaseUrl.Url
+	baseurl["Number of Requests"] = strconv.Itoa(len(results.BaseUrl.Status))
+
+	tmp := Output{
+		Baseurl: baseurl,
+	}
+	tmp.Baseurl["url"] = results.BaseUrl.Url
+	fmt.Println(tmp)
+
+	output, _ := json.MarshalIndent(tmp, "", "    ")
+	fmt.Println(output)
+	fmt.Println(string(output))
 }
 
 func (input Init) Print() {
