@@ -15,13 +15,21 @@ Fire a 3 second test with 3 simultaneous connections
 ./goperf -url {url} -sec=3 -connections=3
 ```
 
-### Fetch and return all stats as json
+### Fetch
+
+Fetch a page and its assets and display info.  
+--printjson also pretty prints the json that is displayed.
+```
 ./goperf -url {url} -fetch --printjson
+```
 
-### Fetch and return all asset bodies (js, css, html) as json
+Fetch a page and it's assets (js, css, img) and return the bodies for the assets.
+--printjson also pretty prints the json that is displayed.
+```
 ./goperf -url {url} -fetchall --printjson
-
+```
 
 ### Run minimal unit and benchmarck tests
+```
 go test ./... -cover -bench
-
+```
