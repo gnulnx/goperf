@@ -27,6 +27,7 @@ import (
 	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/perf"
 	"github.com/gnulnx/goperf/request"
+	"github.com/gnulnx/vestigo"
 	"net/http"
 	"os"
 	"runtime/pprof"
@@ -53,8 +54,16 @@ func main() {
 	flag.Parse()
 
 	if *web {
-		http.HandleFunc("/api/", handler)
-		http.ListenAndServe(":"+strconv.Itoa(*port), nil)
+		router := vestigo.NewRouter()
+		router.SetGlobalCors(&vestigo.CorsAccessControl{
+			AllowOrigin: []string{"*", "http://localhost:8080"},
+		})
+
+		router.Post("/api/", handler)
+		router.SetCors("/api/", &vestigo.CorsAccessControl{
+			AllowMethods: []string{"POST"}, // only allow cors for this resource on POST calls
+		})
+		http.ListenAndServe(":"+strconv.Itoa(*port), router)
 	}
 
 	if *fetch || *fetchall {
@@ -104,6 +113,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	/*
 	 */
 	r.ParseForm()
+	fmt.Println(r.PostForm)
+	fmt.Println(r.Form)
 	url, ok := r.PostForm["url"]
 	if !ok {
 		w.Write([]byte("url is required"))
