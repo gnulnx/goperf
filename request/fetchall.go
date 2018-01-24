@@ -135,8 +135,14 @@ func DefineAssetUrl(baseurl string, asseturl string) string {
 		If the url starts with a / we know it's a local resource
 		so we prepend the baseurl to it
 	*/
+	if asseturl[:4] == "http" {
+		return asseturl
+	}
+
 	if asseturl[0] == '/' {
 		asseturl = baseurl + asseturl
+	} else {
+		asseturl = baseurl + "/" + asseturl
 	}
 	return asseturl
 }

@@ -23,6 +23,11 @@ func Fetch(url string, retdat bool) *FetchResponse {
 	//Fetch the url and time the request
 	start := time.Now()
 	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("bye")
+		os.Exit(1)
+	}
 	defer resp.Body.Close()
 	responseTime := time.Now().Sub(start)
 
