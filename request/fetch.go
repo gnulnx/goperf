@@ -1,10 +1,8 @@
 package request
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 	"unicode/utf8"
 )
@@ -24,21 +22,22 @@ func Fetch(url string, retdat bool) *FetchResponse {
 	start := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("bye")
-		os.Exit(1)
+		return &FetchResponse{
+			Url: err.Error(),
+			// Not sure this Body message is doing much
+			Error: "There was a problem with you request.  Please double check your url",
+		}
 	}
 	defer resp.Body.Close()
 	responseTime := time.Now().Sub(start)
 
-	if err != nil {
-		// TODO This needs to return a FetchResponse with err as the url (or think of something better)
-		fmt.Println("Error: ", err)
-		os.Exit(0)
-	}
-
 	// Read the html 'body' content from the response object
 	body, err := ioutil.ReadAll(resp.Body)
+	Error := ""
+	if err != nil {
+		body = []byte("")
+		Error = err.Error()
+	}
 	responseBody := string(body)
 
 	output := FetchResponse{
@@ -49,6 +48,7 @@ func Fetch(url string, retdat bool) *FetchResponse {
 		Runes:   utf8.RuneCountInString(responseBody),
 		Time:    responseTime,
 		Status:  resp.StatusCode,
+		Error:   Error,
 	}
 
 	if !retdat { // we don't want the document data or headers

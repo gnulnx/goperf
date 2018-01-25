@@ -13,6 +13,7 @@ type FetchResponse struct {
 	Runes   int                 `json:"runes"`
 	Time    time.Duration       `json:"time"`
 	Status  int                 `json:"status"`
+	Error   string              `json:"error"`
 }
 
 type FetchAllResponse struct {
