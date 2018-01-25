@@ -28,6 +28,7 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 
 	// Fetch initial url
 	start := time.Now()
+	input.Retdat = true
 	output := Fetch(input)
 
 	// Now parse output for js, css, img urls
