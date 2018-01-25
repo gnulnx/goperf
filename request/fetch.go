@@ -7,11 +7,14 @@ import (
 	"unicode/utf8"
 )
 
-func Fetch(url string, retdat bool) *FetchResponse {
+func Fetch(input FetchInput) *FetchResponse {
 	/*
 	   Fetch document at url size and time data.
 	   If retdat is true you also return the http.Response.Body
 	*/
+
+	url := input.BaseUrl
+	retdat := input.Retdat
 
 	// Set up the http request
 	client := &http.Client{}

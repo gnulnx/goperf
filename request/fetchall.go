@@ -28,7 +28,7 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 
 	// Fetch initial url
 	start := time.Now()
-	output := Fetch(baseurl, true)
+	output := Fetch(input)
 
 	// Now parse output for js, css, img urls
 	jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
@@ -152,8 +152,12 @@ func DefineAssetUrl(baseurl string, asseturl string) string {
 }
 
 func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
+	// TODO This method would be cleaner if you passed the FetchInput struct in
 	asset_url := DefineAssetUrl(baseurl, asseturl)
-	return Fetch(asset_url, retdat)
+	return Fetch(FetchInput{
+		BaseUrl: asset_url,
+		Retdat: retdat,
+	})
 }
 
 func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
