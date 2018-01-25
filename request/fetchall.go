@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/httputils"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -144,6 +145,12 @@ func DefineAssetUrl(baseurl string, asseturl string) string {
 		return asseturl
 	}
 
+	u, err := url.Parse(baseurl)
+	if err != nil {
+		panic(err)
+	}
+	baseurl = fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())
+
 	if asseturl[0] == '/' {
 		asseturl = baseurl + asseturl
 	} else {
@@ -157,7 +164,7 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 	asset_url := DefineAssetUrl(baseurl, asseturl)
 	return Fetch(FetchInput{
 		BaseUrl: asset_url,
-		Retdat: retdat,
+		Retdat:  retdat,
 	})
 }
 

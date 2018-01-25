@@ -122,21 +122,24 @@ func (input Init) Print() {
 	fmt.Printf(" - %-30s %s\n", "Status:", green(statusResults))
 
 	color.Red("JS Results")
+	fmt.Printf(" - %-22s %-20s %-19s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
 	for _, resp := range results.JSResps {
 		avg, statusResults := procResultString(&resp)
-		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
+		fmt.Printf(" - %-22s %-20s %-10d %-10s\n", green(avg), yellow(statusResults), resp.Bytes, resp.Url)
 	}
 
 	color.Red("CSS Results")
+	fmt.Printf(" - %-22s %-20s %-19s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
 	for _, resp := range results.CSSResps {
 		avg, statusResults := procResultString(&resp)
-		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
+		fmt.Printf(" - %-22s %-20s %-10d %-10s\n", green(avg), yellow(statusResults), resp.Bytes, resp.Url)
 	}
 
 	color.Red("IMG Results")
+	fmt.Printf(" - %-22s %-20s %-19s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
 	for _, resp := range results.IMGResps {
 		avg, statusResults := procResultString(&resp)
-		fmt.Printf(" - %-22s %-20s %-10s\n", green(avg), yellow(statusResults), resp.Url)
+		fmt.Printf(" - %-22s %-20s %-10d %-10s\n", green(avg), yellow(statusResults), resp.Bytes, resp.Url)
 	}
 }
 
@@ -190,7 +193,7 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		//fetchAllResp := request.FetchAll(url, false)
 		fetchAllResp := request.FetchAll(request.FetchInput{
 			BaseUrl: url,
-			Retdat: false,
+			Retdat:  false,
 		})
 
 		// Set base resp properties
