@@ -30,6 +30,12 @@ Fetch a page and it's assets (js, css, img) and return the bodies for the assets
 ./goperf -url {url} -fetchall --printjson
 ```
 
+Fetch a page that requires a session id (such as a django login)
+
+```
+./goperf -url http://192.168.33.11/student/ -fetchall -cookies "sessionid_vagrant=0xkfeev882n0i9efkiq7vmd2i6efufz9;" --printjson
+```
+
 ### Run minimal unit and benchmark tests
 ```
 go test ./... -cover -bench
