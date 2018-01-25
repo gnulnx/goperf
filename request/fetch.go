@@ -17,6 +17,9 @@ func Fetch(url string, retdat bool) *FetchResponse {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
+	req.Header.Add("sessionid_vagrant", "5wd20mlbwfl4v3axen8sdiq5r1lmd301")
+	req.Header.Add("csrftoken_vagrant", "zhwnANgMsPQG4i5dYBNT9seiWY5TBZa8")
+	req.Header.Add("cookie", "sessionid_vagrant=5wd20mlbwfl4v3axen8sdiq5r1lmd301; csrftoken_vagrant=zhwnANgMsPQG4i5dYBNT9seiWY5TBZa8;")
 
 	//Fetch the url and time the request
 	start := time.Now()

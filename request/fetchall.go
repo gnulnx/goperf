@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
+func FetchAll(input FetchInput) *FetchAllResponse {
 	/*
 	   Fetch the url and then fetch all of it's assets.
 	   Assets currently refer to script, style, and img tags.
@@ -22,6 +22,10 @@ func FetchAll(baseurl string, retdat bool) *FetchAllResponse {
 	   you only need the raw timing and size data.  In those cases
 	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
+	baseurl := input.BaseUrl
+	retdat := input.Retdat
+	//cookies := input.Cookies
+
 	// Fetch initial url
 	start := time.Now()
 	output := Fetch(baseurl, true)

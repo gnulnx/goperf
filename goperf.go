@@ -46,6 +46,7 @@ func main() {
 	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
 	web := flag.Bool("web", false, "Run as a webserver -web {port}")
 	port := flag.Int("port", 8080, "used with -web to specif which port to bind")
+	cookies := flag.String("cookies", "{}", "Set up cookies for the request")
 
 	// Not currently used, but could be
 	iterations := flag.Int("iter", 1000, "Iterations per thread")
@@ -67,9 +68,14 @@ func main() {
 	}
 
 	if *fetch || *fetchall {
-
 		color.Green("~~ Fetching a single url and printing info ~~")
-		resp := request.FetchAll(*url, *fetchall)
+		resp := request.FetchAll(
+			request.FetchInput{
+				BaseUrl: *url,
+				Retdat: *fetchall,
+				Cookies: *cookies,
+			},
+        )
 
 		if *printjson {
 			tmp, _ := json.MarshalIndent(resp, "", "    ")
@@ -77,7 +83,7 @@ func main() {
 		}
 
 		request.PrintFetchAllResponse(resp)
-
+		
 		os.Exit(1)
 	}
 
@@ -89,6 +95,7 @@ func main() {
 		Output:     *output,
 		Verbose:    *verbose,
 		Seconds:    *seconds,
+		Cookies:    *cookies,
 	}
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)
@@ -96,7 +103,7 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	// Write json response to file.
-	outfile, _ := os.Create("./results.json")
+	outfile, _ := os.Create("./output.json")
 
 	if *printjson {
 		perfJob.JsonResults()
@@ -106,7 +113,7 @@ func main() {
 
 	tmp, _ := json.MarshalIndent(results, "", "    ")
 	outfile.WriteString(string(tmp))
-	color.Magenta("Job Results Saved: ./results.json")
+	color.Magenta("Job Results Saved: ./output.json")
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

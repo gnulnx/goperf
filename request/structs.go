@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+type FetchInput struct {
+    BaseUrl string
+    Retdat  bool
+    Cookies string
+}
+
 type FetchResponse struct {
 	Url     string              `json:"url"`
 	Body    string              `json:"body"`

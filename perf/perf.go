@@ -18,6 +18,7 @@ type Init struct {
 	Index      int // Also the channel number
 	Verbose    bool
 	Results    *request.IterateReqRespAll
+	Cookies    string
 }
 
 func (input *Init) Basic() request.IterateReqRespAll {
@@ -186,7 +187,11 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	var count int64 = 0 // TODO for loop counter instead???
 	for {
 		//Fetch the url and all the js, css, and img assets
-		fetchAllResp := request.FetchAll(url, false)
+		//fetchAllResp := request.FetchAll(url, false)
+		fetchAllResp := request.FetchAll(request.FetchInput{
+			BaseUrl: url,
+			Retdat: false,
+		})
 
 		// Set base resp properties
 		resp.Status = append(resp.Status, fetchAllResp.BaseUrl.Status)
