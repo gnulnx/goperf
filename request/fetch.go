@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -44,7 +45,7 @@ func Fetch(input FetchInput) *FetchResponse {
 		body = []byte("")
 		Error = err.Error()
 	}
-	responseBody := string(body)
+	responseBody := StripBody(string(body))
 
 	output := FetchResponse{
 		Url:     url,
@@ -63,4 +64,14 @@ func Fetch(input FetchInput) *FetchResponse {
 	}
 	//Close the response body and return the output
 	return &output
+}
+
+func StripBody(input string) string {
+	var output string = ""
+	for _, c := range input {
+		if !unicode.IsSpace(c) {
+			output = output + string(c)
+		}
+	}
+	return output
 }
