@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+	"unicode"
 )
 
 func FetchAll(input FetchInput) *FetchAllResponse {
@@ -31,6 +32,8 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	start := time.Now()
 	input.Retdat = true
 	output := Fetch(input)
+
+	output.Body = StripBody(output.Body)
 
 	// Now parse output for js, css, img urls
 	jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
@@ -134,6 +137,16 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 		total += val.Time
 		fmt.Printf(" - %-22s %-15s %-50s \n", green(val.Time.String()), yellow(strconv.Itoa(val.Bytes)), val.Url)
 	}
+}
+
+func StripBody(input string) string {
+	var output string = ""
+	for _, c := range input {
+		if !unicode.IsSpace(c) {
+			output = output + string(c)
+		}
+	}
+	return output
 }
 
 func DefineAssetUrl(baseurl string, asseturl string) string {
