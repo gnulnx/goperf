@@ -115,37 +115,54 @@ func buildAssetSlice(resps []request.IterateReqResp) []AssetResult {
 
 func (input Init) Print() {
 	results := input.Results
-	yellow := color.New(color.FgYellow).SprintfFunc()
-	green := color.New(color.FgGreen).SprintfFunc()
+	yel := color.New(color.FgHiYellow).SprintfFunc()
+	yellow := color.New(color.FgHiYellow, color.Underline).SprintfFunc()
+	//green := color.New(color.FgHiGreen).SprintfFunc()
+	//hiWhite := color.New(color.FgHiWhite).SprintfFunc()
+	grey := color.New(color.FgHiBlack).SprintfFunc()
+	white := color.New(color.FgWhite).SprintfFunc()
+
 	color.Red("Base Url Results")
-	fmt.Printf(" - %-30s %-25s\n", "Url:", green(results.BaseUrl.Url))
-	fmt.Printf(" - %-30s %-25s\n", "Number of Requests:", green(strconv.Itoa(len(results.BaseUrl.Status))))
-	fmt.Printf(" - %-30s %s\n", "Total Bytes:", green(strconv.Itoa(results.BaseUrl.Bytes)))
-	fmt.Printf(" - %-30s %s\n", "Avg Page Resp Time:", green(results.AvgTotalRespTime.String()))
+	fmt.Printf(" - %-45s %-25s\n", yel("Url:"), white(results.BaseUrl.Url))
+	fmt.Printf(" - %-45s %-25s\n", yel("Number of Requests:"), white(strconv.Itoa(len(results.BaseUrl.Status))))
+	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseUrl.Bytes)))
+	fmt.Printf(" - %-45s %s\n", yel("Avg Page Resp Time:"), white(results.AvgTotalRespTime.String()))
 
 	avg, statusResults := procResultString(&results.BaseUrl)
-	fmt.Printf(" - %-30s %s\n", "Average Time to First Byte:", green(avg))
-	fmt.Printf(" - %-30s %s\n", "Status:", green(statusResults))
+	fmt.Printf(" - %-45s %s\n", yel("Average Time to First Byte:"), white(avg))
+	fmt.Printf(" - %-45s %s\n", yel("Status:"), white(statusResults))
 
 	color.Red("JS Results")
-	fmt.Printf(" - %-22s %-20s %-19s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
-	for _, resp := range results.JSResps {
+	fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
+	for i, resp := range results.JSResps {
 		avg, statusResults := procResultString(&resp)
-		fmt.Printf(" - %-22s %-20s %-10d %-10s\n", green(avg), yellow(statusResults), resp.Bytes, resp.Url)
+		if i%2 == 0 {
+			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
+		} else {
+			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+		}
 	}
 
 	color.Red("CSS Results")
-	fmt.Printf(" - %-22s %-20s %-19s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
-	for _, resp := range results.CSSResps {
+	fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
+	for i, resp := range results.CSSResps {
 		avg, statusResults := procResultString(&resp)
-		fmt.Printf(" - %-22s %-20s %-10d %-10s\n", green(avg), yellow(statusResults), resp.Bytes, resp.Url)
+		if i%2 == 0 {
+			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
+		} else {
+			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+		}
 	}
 
 	color.Red("IMG Results")
-	fmt.Printf(" - %-22s %-20s %-19s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
-	for _, resp := range results.IMGResps {
+	fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
+	for i, resp := range results.IMGResps {
 		avg, statusResults := procResultString(&resp)
-		fmt.Printf(" - %-22s %-20s %-10d %-10s\n", green(avg), yellow(statusResults), resp.Bytes, resp.Url)
+		if i%2 == 0 {
+			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
+		} else {
+			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+		}
 	}
 }
 
