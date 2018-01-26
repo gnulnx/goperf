@@ -64,7 +64,9 @@ func main() {
 		router.SetCors("/api/", &vestigo.CorsAccessControl{
 			AllowMethods: []string{"POST"}, // only allow cors for this resource on POST calls
 		})
-		http.ListenAndServe(":"+strconv.Itoa(*port), router)
+		sPort := ":" + strconv.Itoa(*port)
+		color.Green("Your website is available at 127.0.0.1:%s", sPort)
+		http.ListenAndServe(sPort, router)
 	}
 
 	if *fetch || *fetchall {
@@ -72,10 +74,10 @@ func main() {
 		resp := request.FetchAll(
 			request.FetchInput{
 				BaseUrl: *url,
-				Retdat: *fetchall,
+				Retdat:  *fetchall,
 				Cookies: *cookies,
 			},
-        )
+		)
 
 		if *printjson {
 			tmp, _ := json.MarshalIndent(resp, "", "    ")
@@ -83,7 +85,7 @@ func main() {
 		}
 
 		request.PrintFetchAllResponse(resp)
-		
+
 		os.Exit(1)
 	}
 

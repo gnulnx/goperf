@@ -66,11 +66,17 @@ type Output struct {
 }
 
 func (input Init) JsonAll() {
+	/*
+		Prints out all of the JSON data.  Useful mainful for debugging
+	*/
 	tmp, _ := json.MarshalIndent(input.Results, "", "  ")
 	fmt.Println(string(tmp))
 }
 
 func (input Init) JsonResults() string {
+	/*
+		Return only the performance result json.
+	*/
 	results := input.Results
 
 	avg, statusResults := procResult(&results.BaseUrl)
