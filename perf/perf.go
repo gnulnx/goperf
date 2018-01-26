@@ -117,8 +117,6 @@ func (input Init) Print() {
 	results := input.Results
 	yel := color.New(color.FgHiYellow).SprintfFunc()
 	yellow := color.New(color.FgHiYellow, color.Underline).SprintfFunc()
-	//green := color.New(color.FgHiGreen).SprintfFunc()
-	//hiWhite := color.New(color.FgHiWhite).SprintfFunc()
 	grey := color.New(color.FgHiBlack).SprintfFunc()
 	white := color.New(color.FgWhite).SprintfFunc()
 
@@ -132,38 +130,21 @@ func (input Init) Print() {
 	fmt.Printf(" - %-45s %s\n", yel("Average Time to First Byte:"), white(avg))
 	fmt.Printf(" - %-45s %s\n", yel("Status:"), white(statusResults))
 
-	color.Red("JS Results")
-	fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
-	for i, resp := range results.JSResps {
-		avg, statusResults := procResultString(&resp)
-		if i%2 == 0 {
-			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
-		} else {
-			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+	printAssets := func(title string, results []request.IterateReqResp) {
+		color.Red(title)
+		fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
+		for i, resp := range results {
+			avg, statusResults := procResultString(&resp)
+			if i%2 == 0 {
+				fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
+			} else {
+				fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+			}
 		}
 	}
-
-	color.Red("CSS Results")
-	fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
-	for i, resp := range results.CSSResps {
-		avg, statusResults := procResultString(&resp)
-		if i%2 == 0 {
-			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
-		} else {
-			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
-		}
-	}
-
-	color.Red("IMG Results")
-	fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
-	for i, resp := range results.IMGResps {
-		avg, statusResults := procResultString(&resp)
-		if i%2 == 0 {
-			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
-		} else {
-			fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
-		}
-	}
+	printAssets("JS Results", results.JSResps)
+	printAssets("CSS Results", results.CSSResps)
+	printAssets("IMG Results", results.IMGResps)
 }
 
 func procResultString(resp *request.IterateReqResp) (string, string) {
