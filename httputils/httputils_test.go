@@ -17,8 +17,9 @@ func get_test_body() string {
 
 func test_deep_equal(input []string, testdata []string, t *testing.T) bool {
 	if reflect.DeepEqual(input, testdata) != true {
-		fmt.Println(input)
-		fmt.Println(testdata)
+		fmt.Println("\n-----------------------")
+		fmt.Println("- input: ", input)
+		fmt.Println("- expected: ", testdata)
 		t.Error("Slices above are not equal")
 		return false
 	}
