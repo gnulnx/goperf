@@ -47,16 +47,17 @@ func ParseAllAssets(body string) (js []string, img []string, css []string) {
 }
 
 func GetJS(body string) []string {
+	return runregex(`<script.*?src=["'\''](.*?)["'\''].*?script>`, body)
 	//return runregex(`<script.*?src=["'\''](.*?)["'\'']`, body)
-	return runregex(`<script.*?src="(.*?)"`, body)
+	//return runregex(`<script.*?src="(.*?)"`, body)
 }
 
 func GetCSS(body string) []string {
-	return runregex(`<link.*?href=["'\''](.*?)["'\'']`, body)
+	return runregex(`<link.*?href=["'\''](.*?)["'\''].*?>`, body)
 }
 
 func GetIMG(body string) []string {
-	return runregex(`<img.*?src=["'\''](.*?)["'\'']`, body)
+	return runregex(`<img.*?src=["'\''](.*?)["'\''].*?>`, body)
 }
 
 func runregex(expr string, body string) []string {

@@ -27,7 +27,7 @@ func test_deep_equal(input []string, testdata []string, t *testing.T) bool {
 }
 
 func TestParseAllAssets(t *testing.T) {
-	color.Green("~~ TestGetjs ~~")
+	color.Green("~~ TestParseAll ~~")
 	body := get_test_body()
 	jsfiles, imgfiles, cssfiles := ParseAllAssets(body)
 
@@ -40,7 +40,15 @@ func TestParseAllAssets(t *testing.T) {
 
 	// Test img results
 	test_data = []string{
+		`/media//teaquinox_header_2.svg`,
 		`/media/cart.svg`,
+		`/media/banners/1-12-2018/SnowyTea_lowres2.jpg`,
+		`/media/product_11/Shou_Mei_M.jpeg`,
+		`/media/product_36/Turmeric_Chai_M.jpeg`,
+		`/media/product_45/Luian_Gua_Pian_M.jpeg`,
+		`/media/product_58/NEB_new_m.jpg`,
+		`/media/product_71/Black_Dragon_Pearls_M.jpg`,
+		`/media/product_None/Moroccan_Mint_M.jpg`,
 		`/static/tcart/img/stripe_badges/outline_dark/powered_by_stripe.png`,
 	}
 	test_deep_equal(imgfiles, test_data, t)
