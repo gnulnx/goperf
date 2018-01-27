@@ -4,7 +4,6 @@ import (
 	"github.com/gnulnx/color"
 	"gopkg.in/fatih/set.v0"
 	"io/ioutil"
-	"reflect"
 	"testing"
 )
 
@@ -15,7 +14,7 @@ func get_test_body() string {
 	return body
 }
 
-func test_deep_equal(input []string, testdata []string, t *testing.T) bool {
+func test_equality(input []string, testdata []string, t *testing.T) bool {
 	sInput := set.New()
 	sExpected := set.New()
 	for _, i := range input {
@@ -31,27 +30,9 @@ func test_deep_equal(input []string, testdata []string, t *testing.T) bool {
 		t.Error("EXTRA", extra)
 	}
 	if !missing.IsEmpty() {
-		//fmt.Println("MISSING", missing)
 		t.Error("Missing", missing)
 	}
-	//fmt.Println("INPUT")
 
-	if reflect.DeepEqual(input, testdata) != true {
-		/*
-			fmt.Println("\n-----------------------")
-			color.Green("- input")
-			for _, i := range input {
-				color.Green(i)
-			}
-			//fmt.Println("- input: ", input)
-			fmt.Println("- expected")
-			for _, i := range testdata {
-				color.Red(i)
-			}
-			t.Error("Slices above are not equal")
-			return false
-		*/
-	}
 	return true
 }
 
@@ -65,7 +46,7 @@ func TestParseAllAssets(t *testing.T) {
 		`/static/tcart/js/test1.min.js`,
 		`/static/tcart/js/bundle_kldsf2334.min.js`,
 	}
-	test_deep_equal(jsfiles, test_data, t)
+	test_equality(jsfiles, test_data, t)
 
 	// Test img results
 	test_data = []string{
@@ -81,7 +62,7 @@ func TestParseAllAssets(t *testing.T) {
 		`/media/product_None/Moroccan_Mint_M.jpg`,
 		`/static/tcart/img/stripe_badges/outline_dark/powered_by_stripe.png`,
 	}
-	test_deep_equal(imgfiles, test_data, t)
+	test_equality(imgfiles, test_data, t)
 
 	//Test css Results
 	test_data = []string{
@@ -91,7 +72,7 @@ func TestParseAllAssets(t *testing.T) {
 		`/static/vendor/bootstrap/bootstrap.min.css`,
 		`/static/tcart/css/styles.min.css`,
 	}
-	test_deep_equal(cssfiles, test_data, t)
+	test_equality(cssfiles, test_data, t)
 }
 
 func BenchmarkParseAllAssets(b *testing.B) {
