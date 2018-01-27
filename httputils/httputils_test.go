@@ -8,7 +8,8 @@ import (
 )
 
 func get_test_body() string {
-	body_bytes, _ := ioutil.ReadFile("test_data/test.html")
+	//body_bytes, _ := ioutil.ReadFile("test_data/test.html")
+	body_bytes, _ := ioutil.ReadFile("test_data/test_basic.html")
 	num_bytes := len(body_bytes)
 	body := string(body_bytes[:num_bytes])
 	return body
