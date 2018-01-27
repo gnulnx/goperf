@@ -1,8 +1,8 @@
 package httputils
 
 import (
-	"fmt"
 	"github.com/gnulnx/color"
+	"gopkg.in/fatih/set.v0"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -16,12 +16,41 @@ func get_test_body() string {
 }
 
 func test_deep_equal(input []string, testdata []string, t *testing.T) bool {
+	sInput := set.New()
+	sExpected := set.New()
+	for _, i := range input {
+		sInput.Add(i)
+	}
+	for _, i := range testdata {
+		sExpected.Add(i)
+	}
+
+	extra := set.Difference(sInput, sExpected)
+	missing := set.Difference(sExpected, sInput)
+	if !extra.IsEmpty() {
+		t.Error("EXTRA", extra)
+	}
+	if !missing.IsEmpty() {
+		//fmt.Println("MISSING", missing)
+		t.Error("Missing", missing)
+	}
+	//fmt.Println("INPUT")
+
 	if reflect.DeepEqual(input, testdata) != true {
-		fmt.Println("\n-----------------------")
-		fmt.Println("- input: ", input)
-		fmt.Println("- expected: ", testdata)
-		t.Error("Slices above are not equal")
-		return false
+		/*
+			fmt.Println("\n-----------------------")
+			color.Green("- input")
+			for _, i := range input {
+				color.Green(i)
+			}
+			//fmt.Println("- input: ", input)
+			fmt.Println("- expected")
+			for _, i := range testdata {
+				color.Red(i)
+			}
+			t.Error("Slices above are not equal")
+			return false
+		*/
 	}
 	return true
 }
@@ -42,6 +71,7 @@ func TestParseAllAssets(t *testing.T) {
 	test_data = []string{
 		`/media//teaquinox_header_2.svg`,
 		`/media/cart.svg`,
+		`/media/banners/1-12-2018/SnowyTea_50percent.jpg`,
 		`/media/banners/1-12-2018/SnowyTea_lowres2.jpg`,
 		`/media/product_11/Shou_Mei_M.jpeg`,
 		`/media/product_36/Turmeric_Chai_M.jpeg`,

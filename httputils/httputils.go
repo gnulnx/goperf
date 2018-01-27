@@ -57,7 +57,7 @@ func GetCSS(body string) []string {
 }
 
 func GetIMG(body string) []string {
-	return runregex(`<img.*?src=["'\''](.*?)["'\''].*?>`, body)
+	return runregex(`<img(?s:.)*?src=["'\''](.*?)["'\'']`, body)
 }
 
 func runregex(expr string, body string) []string {
