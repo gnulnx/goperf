@@ -180,8 +180,7 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
 	responses := []FetchResponse{}
 
-	// TODO  What if this was go routines instead?
-	// NOTE: Then you end up hyper threaded which is perfect right?
+	// TODO  Look into turning this into go routines
 	// Look wait group example below
 	// https://nathanleclaire.com/blog/2014/02/15/how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
 	for _, asset_url := range files {
