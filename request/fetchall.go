@@ -43,9 +43,9 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	c2 := make(chan []FetchResponse)
 	c3 := make(chan []FetchResponse)
 
-	go FetchAllAssetArray(jsfiles, baseurl, retdat, c1)
-	go FetchAllAssetArray(imgfiles, baseurl, retdat, c2)
-	go FetchAllAssetArray(cssfiles, baseurl, retdat, c3)
+	go GoFetchAllAssetArray(jsfiles, baseurl, retdat, c1)
+	go GoFetchAllAssetArray(imgfiles, baseurl, retdat, c2)
+	go GoFetchAllAssetArray(cssfiles, baseurl, retdat, c3)
 
 	jsResponses := []FetchResponse{}
 	imgResponses := []FetchResponse{}
@@ -179,16 +179,29 @@ func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
 
 func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
 	responses := []FetchResponse{}
-
-	// TODO  Look into turning this into go routines
-	// Look wait group example below
-	// https://nathanleclaire.com/blog/2014/02/15/how-to-wait-for-all-goroutines-to-finish-executing-before-continuing/
 	for _, asset_url := range files {
-		responses = append(
-			responses,
-			*FetchAsset(baseurl, asset_url, retdat),
-		)
-	}
+        fetchResp := FetchAsset(baseurl, asset_url, retdat)
+		responses = append(responses, *fetchResp)
 
+	}
 	resp <- responses
+}
+
+func GoFetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
+    chanHolder := []chan FetchResponse{}
+    for i, asset_url := range files {
+        chanHolder = append(chanHolder, make(chan FetchResponse))
+        go func(c chan FetchResponse, asset_url string) {
+            fetchResp := FetchAsset(baseurl, asset_url, retdat)
+            c <- *fetchResp
+        }(chanHolder[i], asset_url)
+    }
+
+    // Wait on all the channels
+    responses := []FetchResponse{}
+    for _, ch := range chanHolder {
+        responses = append(responses, <-ch)
+    }
+
+    resp <- responses
 }
