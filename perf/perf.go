@@ -137,13 +137,13 @@ func (input Init) Print() {
 
 	printAssets := func(title string, results []request.IterateReqResp) {
 		color.Red(title)
-		fmt.Printf(" - %-24s %-22s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
+		fmt.Printf(" - %-28s %-30s %-21s %-10s\n", yellow("Average"), yellow("Status"), yellow("Bytes"), yellow("Url"))
 		for i, resp := range results {
 			avg, statusResults := procResultString(&resp)
 			if i%2 == 0 {
-				fmt.Printf(" - %-22s %-20s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
+				fmt.Printf(" - %-26s %-28s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
 			} else {
-				fmt.Printf(" - %-22s %-20s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+				fmt.Printf(" - %-26s %-28s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
 			}
 		}
 	}

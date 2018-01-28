@@ -28,9 +28,11 @@ func Fetch(input FetchInput) *FetchResponse {
 	start := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
+		//color.Red(err.Error())
 		return &FetchResponse{
-			Url:   err.Error(),
-			Error: "There was a problem with you request.  Please double check your url",
+			Url:    err.Error(),
+			Status: -100,
+			Error:  "There was a problem with you request.  Please double check your url",
 		}
 	}
 	defer resp.Body.Close()
