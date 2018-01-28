@@ -41,16 +41,16 @@ func main() {
 	fetch := flag.Bool("fetch", false, "Fetch -url and report it's stats. Does not return resources")
 	fetchall := flag.Bool("fetchall", false, "Fetch -url and report stats  return all assets (js, css, img)")
 	printjson := flag.Bool("printjson", false, "Print json output")
-	threads := flag.Int("connections", 1, "Number of concurrent connections")
+	users := flag.Int("users", 1, "Number of concurrent users/connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
-	seconds := flag.Int("sec", 2, "Number of seconds each concurrant thread/user should make requests")
+	seconds := flag.Int("sec", 2, "Number of seconds each concurrant user/connection should make consequitive requests")
 	web := flag.Bool("web", false, "Run as a webserver -web {port}")
 	port := flag.Int("port", 8080, "used with -web to specif which port to bind")
 	cookies := flag.String("cookies", "{}", "Set up cookies for the request")
 
 	// Not currently used, but could be
-	iterations := flag.Int("iter", 1000, "Iterations per thread")
-	output := flag.Int("output", 5, "Show thread output every {n} iterations")
+	iterations := flag.Int("iter", 1000, "Iterations per user/connection")
+	output := flag.Int("output", 5, "Show user output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
 	flag.Parse()
 
@@ -92,7 +92,7 @@ func main() {
 	// TODO Declare an inline parameter struct...
 	perfJob := &perf.Init{
 		Iterations: *iterations,
-		Threads:    *threads,
+		Threads:    *users,
 		Url:        *url,
 		Output:     *output,
 		Verbose:    *verbose,
