@@ -17,6 +17,7 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	imgResps := map[string][]IterateReqResp{}
 
 	var totalAvglRespTimes int64 = 0
+	var totalAvgLinearlRespTimes int64 = 0
 	var count int64 = 0
 	for _, resp := range results {
 		totalReqs += len(resp.BaseUrl.Status)
@@ -24,6 +25,7 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 		baseRespTimes = append(baseRespTimes, resp.BaseUrl.RespTimes...)
 		baseBytes += resp.BaseUrl.Bytes
 		totalAvglRespTimes += int64(resp.AvgTotalRespTime)
+		totalAvgLinearlRespTimes += int64(resp.AvgTotalLinearRespTime)
 		count += 1
 
 		for _, jsresp := range resp.JSResps {
@@ -38,6 +40,7 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	}
 
 	avgTotalRespTimes := time.Duration(totalAvglRespTimes / count)
+	avgTotalLinearRespTimes := time.Duration(totalAvgLinearlRespTimes / count)
 
 	combine := func(resps map[string][]IterateReqResp) []IterateReqResp {
 		allResps := []IterateReqResp{}
@@ -62,7 +65,8 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	}
 
 	return &IterateReqRespAll{
-		AvgTotalRespTime: avgTotalRespTimes,
+		AvgTotalRespTime:       avgTotalRespTimes,
+		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
 		BaseUrl: IterateReqResp{
 			Url:         results[0].BaseUrl.Url,
 			Status:      baseStatus,

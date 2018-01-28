@@ -29,8 +29,7 @@ func Fetch(input FetchInput) *FetchResponse {
 	resp, err := client.Do(req)
 	if err != nil {
 		return &FetchResponse{
-			Url: err.Error(),
-			// Not sure this Body message is doing much
+			Url:   err.Error(),
 			Error: "There was a problem with you request.  Please double check your url",
 		}
 	}
@@ -45,7 +44,6 @@ func Fetch(input FetchInput) *FetchResponse {
 		Error = err.Error()
 	}
 	responseBody := string(body)
-	//responseBody := StripBody(string(body))
 
 	output := FetchResponse{
 		Url:     url,

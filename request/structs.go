@@ -6,9 +6,9 @@ import (
 )
 
 type FetchInput struct {
-    BaseUrl string
-    Retdat  bool
-    Cookies string
+	BaseUrl string
+	Retdat  bool
+	Cookies string
 }
 
 type FetchResponse struct {
@@ -44,11 +44,12 @@ type IterateReqResp struct {
 }
 
 type IterateReqRespAll struct {
-	AvgTotalRespTime time.Duration    `json:"avg_total_resp_time"`
-	BaseUrl          IterateReqResp   `json:"baseUrl"`
-	JSResps          []IterateReqResp `json:"js_resps"`
-	CSSResps         []IterateReqResp `json:"css_resps"`
-	IMGResps         []IterateReqResp `json:"img_resps"`
+	AvgTotalRespTime       time.Duration    `json:"avg_total_resp_time"`
+	AvgTotalLinearRespTime time.Duration    `json:"avg_total_linear_resp_time"`
+	BaseUrl                IterateReqResp   `json:"baseUrl"`
+	JSResps                []IterateReqResp `json:"js_resps"`
+	CSSResps               []IterateReqResp `json:"css_resps"`
+	IMGResps               []IterateReqResp `json:"img_resps"`
 }
 
 /*

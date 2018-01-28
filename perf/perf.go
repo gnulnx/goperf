@@ -125,6 +125,11 @@ func (input Init) Print() {
 	fmt.Printf(" - %-45s %-25s\n", yel("Number of Requests:"), white(strconv.Itoa(len(results.BaseUrl.Status))))
 	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseUrl.Bytes)))
 	fmt.Printf(" - %-45s %s\n", yel("Avg Page Resp Time:"), white(results.AvgTotalRespTime.String()))
+	fmt.Printf(" - %-45s %s\n", yel("Avg Linear Resp Time:"), white(results.AvgTotalLinearRespTime.String()))
+
+	decrease := float64(results.AvgTotalLinearRespTime) - float64(results.AvgTotalRespTime)
+	percentDecrease := (float64(decrease) / float64(results.AvgTotalLinearRespTime) * 100.00)
+	fmt.Printf(" - %-45s %s\n", yel("percentDecrease:"), white(strconv.FormatFloat(percentDecrease, 'g', 5, 64)))
 
 	avg, statusResults := procResultString(&results.BaseUrl)
 	fmt.Printf(" - %-45s %s\n", yel("Average Time to First Byte:"), white(avg))
@@ -191,10 +196,10 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	imgMap := map[string]*request.IterateReqResp{}
 
 	var totalRespTimes int64 = 0
+	var totalLinearRespTimes int64 = 0
 	var count int64 = 0 // TODO for loop counter instead???
 	for {
 		//Fetch the url and all the js, css, and img assets
-		//fetchAllResp := request.FetchAll(url, false)
 		fetchAllResp := request.FetchAll(request.FetchInput{
 			BaseUrl: url,
 			Retdat:  false,
@@ -205,7 +210,10 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
 		resp.Bytes = fetchAllResp.TotalBytes
 
-		totalRespTimes += int64(fetchAllResp.TotalLinearTime)
+		totalRespTimes += int64(fetchAllResp.TotalTime)
+		totalLinearRespTimes += int64(fetchAllResp.TotalLinearTime)
+
+		//fmt.Println(fetchAllResp.TotalLinearTime)
 
 		gatherAllStats(fetchAllResp, jsMap, cssMap, imgMap)
 
@@ -217,6 +225,9 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	}
 
 	avgTotalRespTimes := time.Duration(totalRespTimes / count)
+	avgTotalLinearRespTimes := time.Duration(totalLinearRespTimes / count)
+	//fmt.Println("\navgTotalRespTimes: ", avgTotalRespTimes)
+	//fmt.Println("avgTotalLinearRespTimes: ", avgTotalLinearRespTimes)
 
 	// TODO Clean this up.  Perhaps some benchmark tests
 	// to see if its faster as go routines or not
@@ -236,11 +247,12 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 	}
 
 	output := request.IterateReqRespAll{
-		BaseUrl:          resp,
-		AvgTotalRespTime: avgTotalRespTimes,
-		JSResps:          jsResps,
-		CSSResps:         cssResps,
-		IMGResps:         imgResps,
+		BaseUrl:                resp,
+		AvgTotalRespTime:       avgTotalRespTimes,
+		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
+		JSResps:                jsResps,
+		CSSResps:               cssResps,
+		IMGResps:               imgResps,
 	}
 	return output
 }
