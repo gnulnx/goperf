@@ -32,6 +32,7 @@ import (
 	"os"
 	"runtime/pprof"
 	"strconv"
+    "io"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -57,7 +58,7 @@ func main() {
 	if *web {
 		router := vestigo.NewRouter()
 		router.SetGlobalCors(&vestigo.CorsAccessControl{
-			AllowOrigin: []string{"*", "http://localhost:8080"},
+			AllowOrigin: []string{"*", "http://138.197.97.39:8080"},
 		})
 
 		router.Post("/api/", handler)
@@ -154,5 +155,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(string(json_results))
+    io.WriteString(w,json_results)
 }
