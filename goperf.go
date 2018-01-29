@@ -55,6 +55,8 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Show verbose output")
 	flag.Parse()
 
+    http.DefaultTransport.(*http.Transport).MaxIdleConnsPerHost = 100
+
 	if *web {
 		router := vestigo.NewRouter()
 		router.SetGlobalCors(&vestigo.CorsAccessControl{
