@@ -30,7 +30,7 @@ func (input *Init) Basic() request.IterateReqRespAll {
 		go func(c chan request.IterateReqRespAll) {
 			c <- iterateRequest(input.Url, input.Seconds)
 		}(chanslice[i])
-        time.Sleep(time.Duration(100))
+        time.Sleep(time.Duration(1000))
 	}
 
 	// Wait on all the channels
