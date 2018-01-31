@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 import json
 import requests
-from json.decoder import JSONDecodeError
+
+try:
+    from json.decoder import JSONDecodeError
+except Exception:
+    from simplejson import JSONDecodeError
 
 for conn in range(2, 200, 2):
 
     r = requests.post("http://127.0.0.1:9000/api/", {
         'url': 'https://stage2.teaquinox.com/',
-        'seconds': 5,
+        'seconds': 10,
         'conn': conn
     })
 
@@ -18,6 +22,9 @@ for conn in range(2, 200, 2):
         status = r.json()['base_url']['status']
 
         #print(json.dumps(r.json(), indent=4, sort_keys=True, default=str))
-        print(conn, "%.3f" % resp_time, "%.3f" % first_byte, num_requests, status)
+        msg = "%s, %s, %s, %s, %s" % (
+            conn, "%.3f" % resp_time, "%.3f" % first_byte, num_requests, status
+        )
+        print(msg)
     else:
         print(r.status_code)
