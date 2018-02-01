@@ -28,9 +28,9 @@ func (input *Init) Basic() request.IterateReqRespAll {
 	for i := 0; i < input.Threads; i++ {
 		chanslice = append(chanslice, make(chan request.IterateReqRespAll))
 		go func(c chan request.IterateReqRespAll) {
-			c <- iterateRequest(input.Url, input.Seconds)
+			c <- iterateRequest(input.Url, input.Seconds, input.Cookies)
 		}(chanslice[i])
-        time.Sleep(time.Duration(1000))
+		time.Sleep(time.Duration(1000))
 	}
 
 	// Wait on all the channels
@@ -181,7 +181,7 @@ func procResult(resp *request.IterateReqResp) (time.Duration, map[string]int) {
 	return avg, statusResults
 }
 
-func iterateRequest(url string, sec int) request.IterateReqRespAll {
+func iterateRequest(url string, sec int, cookies string) request.IterateReqRespAll {
 	/*
 		Continuously fetch 'url' for 'sec' second and return the results.
 	*/
@@ -204,6 +204,7 @@ func iterateRequest(url string, sec int) request.IterateReqRespAll {
 		fetchAllResp := request.FetchAll(request.FetchInput{
 			BaseUrl: url,
 			Retdat:  false,
+			Cookies: cookies,
 		})
 
 		// Set base resp properties

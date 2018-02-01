@@ -24,7 +24,7 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	   you only need the raw timing and size data.  In those cases
 	   you can set retdat=false to effectivly cut down on the verbosity
 	*/
-	baseurl := input.BaseUrl
+	//baseurl := input.BaseUrl
 	retdat := input.Retdat
 	//cookies := input.Cookies
 
@@ -43,9 +43,9 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	c2 := make(chan []FetchResponse)
 	c3 := make(chan []FetchResponse)
 
-	go GoFetchAllAssetArray(jsfiles, baseurl, retdat, c1)
-	go GoFetchAllAssetArray(imgfiles, baseurl, retdat, c2)
-	go GoFetchAllAssetArray(cssfiles, baseurl, retdat, c3)
+	go GoFetchAllAssetArray(jsfiles, input, c1)
+	go GoFetchAllAssetArray(imgfiles, input, c2)
+	go GoFetchAllAssetArray(cssfiles, input, c3)
 
 	jsResponses := []FetchResponse{}
 	imgResponses := []FetchResponse{}
@@ -168,40 +168,23 @@ func DefineAssetUrl(baseurl string, asseturl string) string {
 	return asseturl
 }
 
-func FetchAsset(baseurl string, asseturl string, retdat bool) *FetchResponse {
-	// TODO This method would be cleaner if you passed the FetchInput struct in
-	asset_url := DefineAssetUrl(baseurl, asseturl)
-	return Fetch(FetchInput{
-		BaseUrl: asset_url,
-		Retdat:  retdat,
-	})
-}
+func GoFetchAllAssetArray(files []string, input FetchInput, resp chan []FetchResponse) {
+	baseurl := input.BaseUrl
 
-func FetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
-	responses := []FetchResponse{}
-	for _, asset_url := range files {
-        fetchResp := FetchAsset(baseurl, asset_url, retdat)
-		responses = append(responses, *fetchResp)
-
+	chanHolder := []chan FetchResponse{}
+	for i, asset_url := range files {
+		chanHolder = append(chanHolder, make(chan FetchResponse))
+		go func(c chan FetchResponse, asset_url string, input FetchInput) {
+			input.BaseUrl = DefineAssetUrl(baseurl, asset_url)
+			c <- *Fetch(input)
+		}(chanHolder[i], asset_url, input)
 	}
+
+	// Wait on all the channels
+	responses := []FetchResponse{}
+	for _, ch := range chanHolder {
+		responses = append(responses, <-ch)
+	}
+
 	resp <- responses
-}
-
-func GoFetchAllAssetArray(files []string, baseurl string, retdat bool, resp chan []FetchResponse) {
-    chanHolder := []chan FetchResponse{}
-    for i, asset_url := range files {
-        chanHolder = append(chanHolder, make(chan FetchResponse))
-        go func(c chan FetchResponse, asset_url string) {
-            fetchResp := FetchAsset(baseurl, asset_url, retdat)
-            c <- *fetchResp
-        }(chanHolder[i], asset_url)
-    }
-
-    // Wait on all the channels
-    responses := []FetchResponse{}
-    for _, ch := range chanHolder {
-        responses = append(responses, <-ch)
-    }
-
-    resp <- responses
 }

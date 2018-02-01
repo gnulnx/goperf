@@ -28,11 +28,11 @@ import (
 	"github.com/gnulnx/goperf/perf"
 	"github.com/gnulnx/goperf/request"
 	"github.com/gnulnx/vestigo"
+	"io"
 	"net/http"
 	"os"
 	"runtime/pprof"
 	"strconv"
-    "io"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -55,7 +55,7 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Show verbose output")
 	flag.Parse()
 
-    http.DefaultTransport.(*http.Transport).MaxIdleConnsPerHost = 100
+	http.DefaultTransport.(*http.Transport).MaxIdleConnsPerHost = 100
 
 	if *web {
 		router := vestigo.NewRouter()
@@ -102,6 +102,7 @@ func main() {
 		Seconds:    *seconds,
 		Cookies:    *cookies,
 	}
+	fmt.Println("prefJob: ", perfJob)
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)
 	results := perfJob.Basic()
@@ -157,5 +158,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-    io.WriteString(w,json_results)
+	io.WriteString(w, json_results)
 }

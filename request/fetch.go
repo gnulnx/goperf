@@ -1,6 +1,7 @@
 package request
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -21,7 +22,8 @@ func Fetch(input FetchInput) *FetchResponse {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
-	//req.Header.Add("cookie", "sessionid_vagrant=5wd20mlbwfl4v3axen8sdiq5r1lmd301; csrftoken_vagrant=zhwnANgMsPQG4i5dYBNT9seiWY5TBZa8;")
+	//req.Header.Add("cookie", "sessionid_vagrant=5i4bgzvc0vy8xjgf1flfoh89cwsg74hz; csrftoken_vagrant=taZjH9jskTjfbvDDq7OzdtQnTaB72zIk")
+	fmt.Println("cookies: ", cookies)
 	req.Header.Add("cookie", cookies)
 
 	//Fetch the url and time the request
