@@ -102,7 +102,6 @@ func main() {
 		Seconds:    *seconds,
 		Cookies:    *cookies,
 	}
-	fmt.Println("prefJob: ", perfJob)
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)
 	results := perfJob.Basic()
