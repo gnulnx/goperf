@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/request"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -28,6 +29,15 @@ func (input *Init) Basic() request.IterateReqRespAll {
 	for i := 0; i < input.Threads; i++ {
 		chanslice = append(chanslice, make(chan request.IterateReqRespAll))
 		go func(c chan request.IterateReqRespAll) {
+			// This is where you will get cookies from resp and set input.Cookies
+			// This how you make it simulate -n number of users.  Without these
+			// each request would likely make a new session which would be a load on the db
+			//  Conversly  you might want to simulate what it likes under total new user load...
+			resp1, _ := http.Get(input.Url)
+			if len(resp1.Header["Set-Cookie"]) > 0 {
+				input.Cookies = resp1.Header["Set-Cookie"][0]
+				//fmt.Println("cookies: ", input.Cookies)
+			}
 			c <- iterateRequest(input.Url, input.Seconds, input.Cookies)
 		}(chanslice[i])
 		time.Sleep(time.Duration(1000))
@@ -42,6 +52,80 @@ func (input *Init) Basic() request.IterateReqRespAll {
 	input.Results = request.Combine(results)
 	return *input.Results
 
+}
+
+func iterateRequest(url string, sec int, cookies string) request.IterateReqRespAll {
+	/*
+		Continuously fetch 'url' for 'sec' second and return the results.
+	*/
+	start := time.Now()
+	maxTime := time.Duration(sec) * time.Second
+	elapsedTime := maxTime
+
+	resp := request.IterateReqResp{
+		Url: url,
+	}
+	jsMap := map[string]*request.IterateReqResp{}
+	cssMap := map[string]*request.IterateReqResp{}
+	imgMap := map[string]*request.IterateReqResp{}
+
+	var totalRespTimes int64 = 0
+	var totalLinearRespTimes int64 = 0
+	var count int64 = 0 // TODO for loop counter instead???
+	for {
+		//Fetch the url and all the js, css, and img assets
+		fetchAllResp := request.FetchAll(request.FetchInput{
+			BaseUrl: url,
+			Retdat:  false,
+			Cookies: cookies,
+		})
+
+		// Set base resp properties
+		resp.Status = append(resp.Status, fetchAllResp.BaseUrl.Status)
+		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
+		resp.Bytes = fetchAllResp.TotalBytes
+
+		totalRespTimes += int64(fetchAllResp.TotalTime)
+		totalLinearRespTimes += int64(fetchAllResp.TotalLinearTime)
+
+		gatherAllStats(fetchAllResp, jsMap, cssMap, imgMap)
+
+		elapsedTime = time.Now().Sub(start)
+		count += 1
+		if elapsedTime > maxTime {
+			break
+		}
+	}
+
+	avgTotalRespTimes := time.Duration(totalRespTimes / count)
+	avgTotalLinearRespTimes := time.Duration(totalLinearRespTimes / count)
+
+	// TODO Clean this up.  Perhaps some benchmark tests
+	// to see if its faster as go routines or not
+	jsResps := []request.IterateReqResp{}
+	for _, val := range jsMap {
+		jsResps = append(jsResps, *val)
+	}
+
+	cssResps := []request.IterateReqResp{}
+	for _, val := range cssMap {
+		cssResps = append(cssResps, *val)
+	}
+
+	imgResps := []request.IterateReqResp{}
+	for _, val := range imgMap {
+		imgResps = append(imgResps, *val)
+	}
+
+	output := request.IterateReqRespAll{
+		BaseUrl:                resp,
+		AvgTotalRespTime:       avgTotalRespTimes,
+		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
+		JSResps:                jsResps,
+		CSSResps:               cssResps,
+		IMGResps:               imgResps,
+	}
+	return output
 }
 
 type BaseUrl struct {
@@ -179,80 +263,6 @@ func procResult(resp *request.IterateReqResp) (time.Duration, map[string]int) {
 	}
 
 	return avg, statusResults
-}
-
-func iterateRequest(url string, sec int, cookies string) request.IterateReqRespAll {
-	/*
-		Continuously fetch 'url' for 'sec' second and return the results.
-	*/
-	start := time.Now()
-	maxTime := time.Duration(sec) * time.Second
-	elapsedTime := maxTime
-
-	resp := request.IterateReqResp{
-		Url: url,
-	}
-	jsMap := map[string]*request.IterateReqResp{}
-	cssMap := map[string]*request.IterateReqResp{}
-	imgMap := map[string]*request.IterateReqResp{}
-
-	var totalRespTimes int64 = 0
-	var totalLinearRespTimes int64 = 0
-	var count int64 = 0 // TODO for loop counter instead???
-	for {
-		//Fetch the url and all the js, css, and img assets
-		fetchAllResp := request.FetchAll(request.FetchInput{
-			BaseUrl: url,
-			Retdat:  false,
-			Cookies: cookies,
-		})
-
-		// Set base resp properties
-		resp.Status = append(resp.Status, fetchAllResp.BaseUrl.Status)
-		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
-		resp.Bytes = fetchAllResp.TotalBytes
-
-		totalRespTimes += int64(fetchAllResp.TotalTime)
-		totalLinearRespTimes += int64(fetchAllResp.TotalLinearTime)
-
-		gatherAllStats(fetchAllResp, jsMap, cssMap, imgMap)
-
-		elapsedTime = time.Now().Sub(start)
-		count += 1
-		if elapsedTime > maxTime {
-			break
-		}
-	}
-
-	avgTotalRespTimes := time.Duration(totalRespTimes / count)
-	avgTotalLinearRespTimes := time.Duration(totalLinearRespTimes / count)
-
-	// TODO Clean this up.  Perhaps some benchmark tests
-	// to see if its faster as go routines or not
-	jsResps := []request.IterateReqResp{}
-	for _, val := range jsMap {
-		jsResps = append(jsResps, *val)
-	}
-
-	cssResps := []request.IterateReqResp{}
-	for _, val := range cssMap {
-		cssResps = append(cssResps, *val)
-	}
-
-	imgResps := []request.IterateReqResp{}
-	for _, val := range imgMap {
-		imgResps = append(imgResps, *val)
-	}
-
-	output := request.IterateReqRespAll{
-		BaseUrl:                resp,
-		AvgTotalRespTime:       avgTotalRespTimes,
-		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
-		JSResps:                jsResps,
-		CSSResps:               cssResps,
-		IMGResps:               imgResps,
-	}
-	return output
 }
 
 func gatherAllStats(resp *request.FetchAllResponse, jsMap map[string]*request.IterateReqResp, cssMap map[string]*request.IterateReqResp, imgMap map[string]*request.IterateReqResp) {

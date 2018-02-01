@@ -74,6 +74,16 @@ func main() {
 
 	if *fetch || *fetchall {
 		color.Green("~~ Fetching a single url and printing info ~~")
+
+		// This section will make an initial GET request and try to set any cookies we find
+		if *cookies == "" {
+			resp1, _ := http.Get(*url)
+			if len(resp1.Header["Set-Cookie"]) > 0 {
+				cookies = &resp1.Header["Set-Cookie"][0]
+				fmt.Println("cookies: ", *cookies)
+			}
+		}
+
 		resp := request.FetchAll(
 			request.FetchInput{
 				BaseUrl: *url,
