@@ -1,8 +1,9 @@
 # goperf
 
+### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
-## Example Output
+### Example Output
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
 ## Go based Load Tester
