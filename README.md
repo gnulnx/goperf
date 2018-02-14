@@ -2,6 +2,8 @@
 
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPer")
 
+![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
+
 ## Go based Load Tester
 This project is still in rabid development mode.  
 It is definitly not production ready code.
