@@ -11,10 +11,12 @@ This project is still in rabid development mode.
 It is definitly not production ready code.
 However, it does work and you may find it useful as is.  ;)
 
-### Install and Build
+#### Install
 ```
 go get github.com/gnulnx/goperf
 ```
+
+#### Build
 ```
 go install github.com/gnulnx/goperf
 ```
