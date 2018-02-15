@@ -48,6 +48,7 @@ func main() {
 	web := flag.Bool("web", false, "Run as a webserver -web {port}")
 	port := flag.Int("port", 8080, "used with -web to specif which port to bind")
 	cookies := flag.String("cookies", "{}", "Set up cookies for the request")
+	useragent := flag.String("useragent", "goperf", "Set the user agent string")
 
 	// Not currently used, but could be
 	iterations := flag.Int("iter", 1000, "Iterations per user/connection")
@@ -83,12 +84,14 @@ func main() {
 				fmt.Println("cookies: ", *cookies)
 			}
 		}
+		fmt.Println("cookies: ", *cookies)
 
 		resp := request.FetchAll(
 			request.FetchInput{
-				BaseUrl: *url,
-				Retdat:  *fetchall,
-				Cookies: *cookies,
+				BaseUrl:   *url,
+				Retdat:    *fetchall,
+				Cookies:   *cookies,
+				UserAgent: *useragent,
 			},
 		)
 
@@ -111,6 +114,7 @@ func main() {
 		Verbose:    *verbose,
 		Seconds:    *seconds,
 		Cookies:    *cookies,
+		UserAgent:  *useragent,
 	}
 	f, _ := os.Create(*cpuprofile)
 	pprof.StartCPUProfile(f)

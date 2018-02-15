@@ -6,9 +6,10 @@ import (
 )
 
 type FetchInput struct {
-	BaseUrl string
-	Retdat  bool
-	Cookies string
+	BaseUrl   string
+	Retdat    bool
+	Cookies   string
+	UserAgent string
 }
 
 type FetchResponse struct {

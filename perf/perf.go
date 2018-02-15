@@ -20,6 +20,7 @@ type Init struct {
 	Verbose    bool
 	Results    *request.IterateReqRespAll
 	Cookies    string
+	UserAgent  string
 }
 
 func (input *Init) Basic() request.IterateReqRespAll {
@@ -38,7 +39,8 @@ func (input *Init) Basic() request.IterateReqRespAll {
 				input.Cookies = resp1.Header["Set-Cookie"][0]
 				//fmt.Println("cookies: ", input.Cookies)
 			}
-			c <- iterateRequest(input.Url, input.Seconds, input.Cookies)
+			// TODO Just pass the Input in
+			c <- iterateRequest(input.Url, input.Seconds, input.Cookies, input.UserAgent)
 		}(chanslice[i])
 		time.Sleep(time.Duration(1000))
 	}
@@ -54,7 +56,7 @@ func (input *Init) Basic() request.IterateReqRespAll {
 
 }
 
-func iterateRequest(url string, sec int, cookies string) request.IterateReqRespAll {
+func iterateRequest(url string, sec int, cookies string, useragent string) request.IterateReqRespAll {
 	/*
 		Continuously fetch 'url' for 'sec' second and return the results.
 	*/
@@ -75,9 +77,10 @@ func iterateRequest(url string, sec int, cookies string) request.IterateReqRespA
 	for {
 		//Fetch the url and all the js, css, and img assets
 		fetchAllResp := request.FetchAll(request.FetchInput{
-			BaseUrl: url,
-			Retdat:  false,
-			Cookies: cookies,
+			BaseUrl:   url,
+			Retdat:    false,
+			Cookies:   cookies,
+			UserAgent: useragent,
 		})
 
 		// Set base resp properties
