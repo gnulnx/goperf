@@ -15,17 +15,13 @@ However, it does work and you may find it useful as is.  ;)
 go build
 
 ## Usage:
-### Basic perf test.
-
-Fire a 3 second test with 3 simultaneous connections
-```
-./goperf -url {url} -sec=3 -connections=3
-```
 
 ### Fetch
 
 Fetch a page and its assets and display info.  
 --printjson pretty prints the json that is returned (above other output).
+
+NOTE this will print the content of the body and all of the fetched assets. If you have large minified JS bundles it will be pretty messy
 ```
 ./goperf -url {url} -fetch --printjson
 ```
@@ -41,6 +37,15 @@ Fetch a page that requires a session id (such as a django login)
 ```
 ./goperf -url http://192.168.33.11/student/ -fetchall -cookies "sessionid_vagrant=0xkfeev882n0i9efkiq7vmd2i6efufz9;" --printjson
 ```
+
+### Basic perf test.
+
+Fire a 3 second test with 3 simultaneous connections
+```
+./goperf -url {url} -sec=3 -connections=3
+```
+
+
 
 ### Run minimal unit and benchmark tests
 ```
