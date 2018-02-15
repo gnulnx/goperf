@@ -1,4 +1,4 @@
-# goperf
+# goperf - Performance tester
 
 ### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
