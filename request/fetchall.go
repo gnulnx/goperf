@@ -10,20 +10,34 @@ import (
 	"unicode"
 )
 
-func FetchAll(input FetchInput) *FetchAllResponse {
-	/*
-	   Fetch the url and then fetch all of it's assets.
-	   Assets currently refer to script, style, and img tags.
-	   Each asset class is fetched in it's own go routine
+type FetchAllResponse struct {
+	BaseUrl         *FetchResponse  `json:"baseUrl"`
+	Time            time.Duration   `json:"time"`
+	TotalTime       time.Duration   `json:"total_time"`
+	TotalLinearTime time.Duration   `json:total_linear_time"`
+	TotalBytes      int             `json:"total_bytes"`
+	JSResponses     []FetchResponse `json:"jsResponses"`
+	IMGResponses    []FetchResponse `json:"imgResponses"`
+	CSSResponses    []FetchResponse `json:"cssResponses"`
 
-	   If retdata is False we don't return the Body or Header
-	   This is useful if you only want the timing data.
-	   For instance you might find it useful to fetch with retdat=true
-	   the first time around to get all the data and write to file.
-	   The subsequet requests could be used as part of a perf test where
-	   you only need the raw timing and size data.  In those cases
-	   you can set retdat=false to effectivly cut down on the verbosity
-	*/
+	Body string `json:"body"`
+}
+
+/*
+   Fetch the url and then fetch all of it's assets.
+   Assets currently refer to script, style, and img tags.
+
+   Each asset class is fetched in it's own go routine.
+
+   If retdata is False we don't return the Body or Header.
+   This is useful if you only want the timing data.
+   For instance you might find it useful to fetch with retdat=true
+   the first time around to get all the data and write to file.
+   The subsequet requests could be used as part of a perf test where
+   you only need the raw timing and size data.  In those cases
+   you can set retdat=false to effectivly cut down on the verbosity
+*/
+func FetchAll(input FetchInput) *FetchAllResponse {
 	//baseurl := input.BaseUrl
 	retdat := input.Retdat
 	//cookies := input.Cookies

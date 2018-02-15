@@ -7,12 +7,47 @@ import (
 	"unicode/utf8"
 )
 
-func Fetch(input FetchInput) *FetchResponse {
-	/*
-	   Fetch document at url size and time data.
-	   If retdat is true you also return the http.Response.Body
-	*/
+/*
+Structure Overview
+ - BaseUrl - the url to fetch
+ - Retdat - if true then the document data is returned
+ - Cookies - a cookie string to set on each request
+ - UserAge - default is golang, but can be set to anything.`
+*/
+type FetchInput struct {
+	BaseUrl   string
+	Retdat    bool
+	Cookies   string
+	UserAgent string
+}
 
+/*
+Structure Overview:
+ - Url - url of the fetched object <br>
+ - Body - The body of the returned document.  Could be anything...html, js, css, etc.
+ - Headers - The headers for the HttpResp object
+ - Bytes - The number of bytes returned
+ - Runes - The number of runes returned
+ - Time - How long the Resp took.
+ - Statue - the HttpResp status code.
+ - Error - Any errors that were returned
+*/
+type FetchResponse struct {
+	Url     string              `json:"url"`
+	Body    string              `json:"body"`
+	Headers map[string][]string `json:"headers"`
+	Bytes   int                 `json:"bytes"`
+	Runes   int                 `json:"runes"`
+	Time    time.Duration       `json:"time"`
+	Status  int                 `json:"status"`
+	Error   string              `json:"error"`
+}
+
+/*
+   	Fetch a document from a url.  The document can be almost anything such as html, js, css, xml, etc.
+	A FetchInput object is used to encapsulate the various properties of the request.
+*/
+func Fetch(input FetchInput) *FetchResponse {
 	url := input.BaseUrl
 	retdat := input.Retdat
 	cookies := input.Cookies
@@ -20,17 +55,18 @@ func Fetch(input FetchInput) *FetchResponse {
 	// Set up the http request
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
+
+	// Set the use user-agent.  Default is 'goperf'.  So most like users will want to change it to something different.
+	// Example user-agent: "Chrome/61.0.3163.100 Mobile Safari/537.36"
 	req.Header.Add("user-agent", input.UserAgent)
-	//req.Header.Add("user-agent", "Chrome/61.0.3163.100 Mobile Safari/537.36")
-	//req.Header.Add("cookie", "sessionid_vagrant=5i4bgzvc0vy8xjgf1flfoh89cwsg74hz; csrftoken_vagrant=taZjH9jskTjfbvDDq7OzdtQnTaB72zIk")
+
+	// cookies (example):  "sessionid_vagrant=5i4bgzvc0vy8xjgf1flfoh89cwsg74hz; csrftoken_vagrant=taZjH9jskTjfbvDDq7OzdtQnTaB72zIk"
 	req.Header.Add("cookie", cookies)
-	//fmt.Println(req.Header)
 
 	//Fetch the url and time the request
 	start := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
-		//color.Red(err.Error())
 		return &FetchResponse{
 			Url:    err.Error(),
 			Status: -100,

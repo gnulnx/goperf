@@ -4,6 +4,9 @@ import (
 	"regexp"
 )
 
+// Parse string of text (typically from a http.Response.Body)
+// and return the urls for the page <script> <link> and <img> tag.
+// The method runs lineearly.  In general it's probably better to use ParseAllAssets.
 func ParseAllAssetsSequential(body string) (js []string, img []string, css []string) {
 	jsfiles := GetJS(body)
 	cssfiles := GetCSS(body)
@@ -11,6 +14,9 @@ func ParseAllAssetsSequential(body string) (js []string, img []string, css []str
 	return jsfiles, imgfiles, cssfiles
 }
 
+// Parse string of text (typically from a http.Response.Body)
+// and return the urls for the page <script> <link> and <img> tag.
+// The method uses seperate go routines for each asset class.
 func ParseAllAssets(body string) (js []string, img []string, css []string) {
 	/*
 		Parse string of text (typically from a http.Response.Body)
@@ -46,16 +52,17 @@ func ParseAllAssets(body string) (js []string, img []string, css []string) {
 	return jsfiles, imgfiles, cssfiles
 }
 
+// Parse a string, typically an html document, and return an array of <script> src attributes.
 func GetJS(body string) []string {
-	//return runregex(`<script(?s:.)*src=["'\''](.*?)["'\'']`, body)
 	return runregex(`<script.*?src=["'\''](.*?)["'\''].*?script>`, body)
 }
 
+// Parse a string, typically an html document, and return an array of <link> href attributes.
 func GetCSS(body string) []string {
-	//return runregex(`<link(?s:.)*href=["'\''](.*?)["'\'']`, body)
 	return runregex(`<link.*?href=["'\''](.*?)["'\''].*?>`, body)
 }
 
+// Parse a string, typically an html document, and return an array of <img> src attributes.
 func GetIMG(body string) []string {
 	backgroundimgs := runregex(`background-image: url\(["'\''](.*?)["'\'']`, body)
 	imgs := runregex(`<img(?s:.)*?src=["'\''](.*?)["'\'']`, body)
@@ -63,6 +70,8 @@ func GetIMG(body string) []string {
 	return all
 }
 
+// Take a regex expression that returns the matched object
+// and return an array of the matched text
 func runregex(expr string, body string) []string {
 	r, _ := regexp.Compile(expr)
 	match := r.FindAllStringSubmatch(body, -10)

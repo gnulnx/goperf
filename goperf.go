@@ -16,7 +16,7 @@ You can do a simpler request that leaves the data and headers out like this
 
 
 ** Use Case 2: Load testing
-
+./goperf -url http://qa.teaquinox.com -sec 5 -users 5
 
 */
 
@@ -135,35 +135,68 @@ func main() {
 	color.Magenta("Job Results Saved: ./output.json")
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func checkParams(r *http.Request) ([]string, string, int, int) {
 	/*
-	 */
-	r.ParseForm()
-	fmt.Println(r.PostForm)
-	fmt.Println(r.Form)
+		Check that the request parameters are correct and return them.
+		Also return an array of error string if the parameters were not right
+	*/
+	errors := []string{}
+	seconds := 0
+	users := 0
+	var err error = nil
+
+	// Check that url has been supplied
 	url, ok := r.PostForm["url"]
 	if !ok {
-		w.Write([]byte("url is required"))
-		return
+		errors = append(errors, " - url (string) is a required field")
+		url = []string{""}
 	}
 
-	strSeconds, ok := r.PostForm["seconds"]
+	// Check that seconds is supplied
+	strSeconds, ok := r.PostForm["sec"]
 	if !ok {
-		w.Write([]byte("seconds is required"))
-		return
+		errors = append(errors, " - sec (int) is a required field")
+		strSeconds = []string{}
 	}
-	seconds, _ := strconv.Atoi(strSeconds[0])
+	if len(strSeconds) > 0 {
+		seconds, err = strconv.Atoi(strSeconds[0])
+		if err != nil {
+			errors = append(errors, " - sec (int) is a required field")
+			seconds = 0
+		}
+	}
 
-	strConnections, ok := r.PostForm["conn"]
+	// Check user field has been supplied
+	strUsers, ok := r.PostForm["users"]
 	if !ok {
-		w.Write([]byte("conn is required"))
+		errors = append(errors, " - users (int) is a required field")
+		strUsers = []string{}
+	}
+	if len(strUsers) > 0 {
+		users, err = strconv.Atoi(strUsers[0])
+		if err != nil {
+			errors = append(errors, " - users (int) is a required field")
+			users = 0
+		}
+	}
+
+	return errors, url[0], seconds, users
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	errors, url, seconds, users := checkParams(r)
+	if len(errors) > 0 {
+		for i := 0; i < len(errors); i++ {
+			e := errors[i] + "\n"
+			w.Write([]byte(e))
+		}
 		return
 	}
-	conn, _ := strconv.Atoi(strConnections[0])
 
 	perfJob := &perf.Init{
-		Threads: conn,
-		Url:     url[0],
+		Url:     url,
+		Threads: users,
 		Seconds: seconds,
 	}
 	perfJob.Basic()

@@ -5,37 +5,6 @@ import (
 	"time"
 )
 
-type FetchInput struct {
-	BaseUrl   string
-	Retdat    bool
-	Cookies   string
-	UserAgent string
-}
-
-type FetchResponse struct {
-	Url     string              `json:"url"`
-	Body    string              `json:"body"`
-	Headers map[string][]string `json:"headers"`
-	Bytes   int                 `json:"bytes"`
-	Runes   int                 `json:"runes"`
-	Time    time.Duration       `json:"time"`
-	Status  int                 `json:"status"`
-	Error   string              `json:"error"`
-}
-
-type FetchAllResponse struct {
-	BaseUrl         *FetchResponse  `json:"baseUrl"`
-	Time            time.Duration   `json:"time"`
-	TotalTime       time.Duration   `json:"total_time"`
-	TotalLinearTime time.Duration   `json:total_linear_time"`
-	TotalBytes      int             `json:"total_bytes"`
-	JSResponses     []FetchResponse `json:"jsResponses"`
-	IMGResponses    []FetchResponse `json:"imgResponses"`
-	CSSResponses    []FetchResponse `json:"cssResponses"`
-
-	Body string `json:"body"`
-}
-
 type IterateReqResp struct {
 	Url         string          `json:"url"`
 	Status      []int           `json:"status"`
