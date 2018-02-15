@@ -81,10 +81,8 @@ func main() {
 			resp1, _ := http.Get(*url)
 			if len(resp1.Header["Set-Cookie"]) > 0 {
 				cookies = &resp1.Header["Set-Cookie"][0]
-				fmt.Println("cookies: ", *cookies)
 			}
 		}
-		fmt.Println("cookies: ", *cookies)
 
 		resp := request.FetchAll(
 			request.FetchInput{
