@@ -19,8 +19,12 @@ go build
 ### Fetch
 
 Fetch a page and its assets and display info.  
---printjson pretty prints the json that is returned (above other output).
+```
+./goperf -url {url} -fetch
+```
+This will print the an output like
 
+![Alt text](readme_imgs/Fetch.png?raw=true "Fetch")
 NOTE this will print the content of the body and all of the fetched assets. If you have large minified JS bundles it will be pretty messy
 ```
 ./goperf -url {url} -fetch --printjson
