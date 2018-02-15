@@ -14,11 +14,11 @@ However, it does work and you may find it useful as is.  ;)
 #### Ensure gopath is correctly setup
 
 Make sure you have your GOPATH setup to point to the go/bin directory.
-If you have a default go install on ubuntu it would be ~/go/bin
-so you would add this to your path.
-
+If you have a default go install on ubuntu it would be ~/go/bin.
+If so you would add this to your path.
+```
 export PATH=$PATH:~/go/bin
-
+```
 #### Install
 
 ```
