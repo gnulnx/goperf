@@ -40,7 +40,8 @@ func (input *Init) Basic() request.IterateReqRespAll {
 				//fmt.Println("cookies: ", input.Cookies)
 			}
 			// TODO Just pass the Input in
-			c <- iterateRequest(input.Url, input.Seconds, input.Cookies, input.UserAgent)
+			c <- iterateRequest(input)
+			//c <- iterateRequest(input.Url, input.Seconds, input.Cookies, input.UserAgent)
 		}(chanslice[i])
 		time.Sleep(time.Duration(1000))
 	}
@@ -56,10 +57,15 @@ func (input *Init) Basic() request.IterateReqRespAll {
 
 }
 
-func iterateRequest(url string, sec int, cookies string, useragent string) request.IterateReqRespAll {
+//func iterateRequest(url string, sec int, cookies string, useragent string) request.IterateReqRespAll {
+func iterateRequest(input *Init) request.IterateReqRespAll {
 	/*
 		Continuously fetch 'url' for 'sec' second and return the results.
 	*/
+	url := input.Url
+	sec := input.Seconds
+	cookies := input.Cookies
+	useragent := input.UserAgent
 	start := time.Now()
 	maxTime := time.Duration(sec) * time.Second
 	elapsedTime := maxTime
