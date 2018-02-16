@@ -76,3 +76,14 @@ Fire a 3 second test with 3 simultaneous connections
 ```
 go test ./... -cover -bench
 ```
+
+
+## Road map and future plans.
+
+Currently goperf is currently quite good at simulating browser requests that include the body, css, img, and js assets.  
+
+However goper has no concept of an ajax request.  
+
+The next phase of golang will be hashing out a playbook of sorts to describe for instnace the intial page load followed by a request to the user-cart api.  
+
+Longer term support for a chaos mode where the perf users move through site randomly. 
