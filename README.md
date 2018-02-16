@@ -1,5 +1,5 @@
 # goperf - Performance tester
-A highly concurrant website load tester.
+A highly concurrant website load tester with easy command line syntax.
 
 Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate an initial browser request to your site.
 
@@ -8,8 +8,7 @@ Goperf also supports simple request settings like user-agent and cookies strings
 ### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
-### Output
-With easy to read output.
+### Easy to read and understand output
 
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
