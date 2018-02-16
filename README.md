@@ -4,7 +4,9 @@ A highly concurrant web stack load tester.
 ### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
-### Example Output
+
+### Output
+With easy to read human output
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
 ## Setup
