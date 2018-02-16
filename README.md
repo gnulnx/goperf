@@ -1,16 +1,12 @@
 # goperf - Performance tester
-A highly concurrant website load tester with easy command line syntax.
-
-Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate an initial browser request to your site.
-
-Goperf also supports simple request settings like user-agent and cookies strings.
+A highly concurrant website load tester with simple intuitive command line syntax.
 
 ### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
-### Easy to read and understand output
+Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate an initial browser request to your site.
 
-![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
+Goperf also supports simple request settings like user-agent and cookies strings.
 
 
 ## Usage:
@@ -43,6 +39,20 @@ Fetch a page that requires a session id (such as a django login)
 ```
 ./goperf -url http://192.168.33.11/student/ -fetchall -cookies "sessionid_vagrant=0xkfeev882n0i9efkiq7vmd2i6efufz9;" --printjson
 ```
+
+## Load testing
+
+Tell goperf the number of users you want simulate and the number of seconds you want the simulation to run.
+
+```
+./goperf -url {url} -users {int}  -sec {int}
+```
+
+Goperf will give off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets (also in seperate go routines).  The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.
+
+Load testing results: 
+
+![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
 ## Setup
 #### Ensure gopath is correctly setup
