@@ -41,10 +41,13 @@ Fetch a page and its assets and display info.
 This will print the an output like
 
 ![Alt text](readme_imgs/Fetch.png?raw=true "Fetch")
-NOTE this will print the content of the body and all of the fetched assets. If you have large minified JS bundles it will be pretty messy
+
+To Fetch a page and display all it's assets use:
 ```
 ./goperf -url {url} -fetch --printjson
 ```
+NOTE this will print the content of the body in each of the fetched assets. If you have large minified JS bundles it will be pretty messy.
+
 
 Fetch a page and it's assets (js, css, img) and return the bodies for the assets.
 --printjson also pretty prints the json that is returned (above other output).
