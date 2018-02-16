@@ -4,10 +4,9 @@ import (
 	"time"
 )
 
+// Combine the slice of IterateReqRespAll structs into a single IterateReqRespAll
 func Combine(results []IterateReqRespAll) *IterateReqRespAll {
-	/*
-		Combine the slice of IterateReqRespAll structs into a single IterateReqRespAll
-	*/
+
 	totalReqs := 0
 	baseStatus := []int{}
 	baseRespTimes := []time.Duration{}
@@ -16,17 +15,17 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	cssResps := map[string][]IterateReqResp{}
 	imgResps := map[string][]IterateReqResp{}
 
-	var totalAvglRespTimes int64 = 0
-	var totalAvgLinearlRespTimes int64 = 0
-	var count int64 = 0
+	var totalAvglRespTimes int64
+	var totalAvgLinearlRespTimes int64
+	var count int64
 	for _, resp := range results {
-		totalReqs += len(resp.BaseUrl.Status)
-		baseStatus = append(baseStatus, resp.BaseUrl.Status...)
-		baseRespTimes = append(baseRespTimes, resp.BaseUrl.RespTimes...)
-		baseBytes += resp.BaseUrl.Bytes
+		totalReqs += len(resp.BaseURL.Status)
+		baseStatus = append(baseStatus, resp.BaseURL.Status...)
+		baseRespTimes = append(baseRespTimes, resp.BaseURL.RespTimes...)
+		baseBytes += resp.BaseURL.Bytes
 		totalAvglRespTimes += int64(resp.AvgTotalRespTime)
 		totalAvgLinearlRespTimes += int64(resp.AvgTotalLinearRespTime)
-		count += 1
+		count++
 
 		for _, jsresp := range resp.JSResps {
 			jsResps[jsresp.Url] = append(jsResps[jsresp.Url], jsresp)
@@ -67,8 +66,8 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 	return &IterateReqRespAll{
 		AvgTotalRespTime:       avgTotalRespTimes,
 		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
-		BaseUrl: IterateReqResp{
-			Url:         results[0].BaseUrl.Url,
+		BaseURL: IterateReqResp{
+			Url:         results[0].BaseURL.Url,
 			Status:      baseStatus,
 			RespTimes:   baseRespTimes,
 			NumRequests: len(baseStatus),

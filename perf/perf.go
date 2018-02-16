@@ -3,11 +3,12 @@ package perf
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gnulnx/color"
-	"github.com/gnulnx/goperf/request"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gnulnx/color"
+	"github.com/gnulnx/goperf/request"
 )
 
 type Init struct {
@@ -83,15 +84,15 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	for {
 		//Fetch the url and all the js, css, and img assets
 		fetchAllResp := request.FetchAll(request.FetchInput{
-			BaseUrl:   url,
+			BaseURL:   url,
 			Retdat:    false,
 			Cookies:   cookies,
 			UserAgent: useragent,
 		})
 
 		// Set base resp properties
-		resp.Status = append(resp.Status, fetchAllResp.BaseUrl.Status)
-		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseUrl.Time)
+		resp.Status = append(resp.Status, fetchAllResp.BaseURL.Status)
+		resp.RespTimes = append(resp.RespTimes, fetchAllResp.BaseURL.Time)
 		resp.Bytes = fetchAllResp.TotalBytes
 
 		totalRespTimes += int64(fetchAllResp.TotalTime)
@@ -127,7 +128,7 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	}
 
 	output := request.IterateReqRespAll{
-		BaseUrl:                resp,
+		BaseURL:                resp,
 		AvgTotalRespTime:       avgTotalRespTimes,
 		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
 		JSResps:                jsResps,
@@ -137,7 +138,7 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	return output
 }
 
-type BaseUrl struct {
+type BaseURL struct {
 	Url                 string         `json:"base_url"`
 	Numreqs             int            `json:"num_reqs"`
 	TotBytes            int            `json:"total_bytes"`
@@ -153,7 +154,7 @@ type AssetResult struct {
 }
 
 type Output struct {
-	Baseurl    BaseUrl       `json:"base_url"`
+	BaseURL    BaseURL       `json:"base_url"`
 	JSResults  []AssetResult `json:"js_assets"`
 	CSSResults []AssetResult `json:"css_assets"`
 	IMGResults []AssetResult `json:"img_assets"`
@@ -173,12 +174,12 @@ func (input Init) JsonResults() string {
 	*/
 	results := input.Results
 
-	avg, statusResults := procResult(&results.BaseUrl)
+	avg, statusResults := procResult(&results.BaseURL)
 	output := Output{
-		Baseurl: BaseUrl{
-			Url:                 results.BaseUrl.Url,
-			Numreqs:             len(results.BaseUrl.Status),
-			TotBytes:            results.BaseUrl.Bytes,
+		BaseURL: BaseURL{
+			Url:                 results.BaseURL.Url,
+			Numreqs:             len(results.BaseURL.Status),
+			TotBytes:            results.BaseURL.Bytes,
 			AvgPageRespTime:     results.AvgTotalRespTime,
 			AvgTimeToFirsttByte: avg,
 			Status:              statusResults,
@@ -215,9 +216,9 @@ func (input Init) Print() {
 	white := color.New(color.FgWhite).SprintfFunc()
 
 	color.Red("Base Url Results")
-	fmt.Printf(" - %-45s %-25s\n", yel("Url:"), white(results.BaseUrl.Url))
-	fmt.Printf(" - %-45s %-25s\n", yel("Number of Requests:"), white(strconv.Itoa(len(results.BaseUrl.Status))))
-	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseUrl.Bytes)))
+	fmt.Printf(" - %-45s %-25s\n", yel("Url:"), white(results.BaseURL.Url))
+	fmt.Printf(" - %-45s %-25s\n", yel("Number of Requests:"), white(strconv.Itoa(len(results.BaseURL.Status))))
+	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseURL.Bytes)))
 	fmt.Printf(" - %-45s %s\n", yel("Avg Page Resp Time:"), white(results.AvgTotalRespTime.String()))
 	fmt.Printf(" - %-45s %s\n", yel("Avg Linear Resp Time:"), white(results.AvgTotalLinearRespTime.String()))
 
@@ -225,7 +226,7 @@ func (input Init) Print() {
 	percentDecrease := (float64(decrease) / float64(results.AvgTotalLinearRespTime) * 100.00)
 	fmt.Printf(" - %-45s %s\n", yel("percentDecrease:"), white(strconv.FormatFloat(percentDecrease, 'g', 5, 64)))
 
-	avg, statusResults := procResultString(&results.BaseUrl)
+	avg, statusResults := procResultString(&results.BaseURL)
 	fmt.Printf(" - %-45s %s\n", yel("Average Time to First Byte:"), white(avg))
 	fmt.Printf(" - %-45s %s\n", yel("Status:"), white(statusResults))
 

@@ -8,20 +8,24 @@ import (
 )
 
 /*
+FetchInput used used as input to the Fetch method.
+
 Structure Overview
- - BaseUrl - the url to fetch
+ - BaseURL - the url to fetch
  - Retdat - if true then the document data is returned
  - Cookies - a cookie string to set on each request
  - UserAge - default is golang, but can be set to anything.`
 */
 type FetchInput struct {
-	BaseUrl   string
+	BaseURL   string
 	Retdat    bool
 	Cookies   string
 	UserAgent string
 }
 
 /*
+FetchResponse is the struct returned for Fetch()
+
 Structure Overview:
  - Url - url of the fetched object <br>
  - Body - The body of the returned document.  Could be anything...html, js, css, etc.
@@ -44,11 +48,11 @@ type FetchResponse struct {
 }
 
 /*
-   	Fetch a document from a url.  The document can be almost anything such as html, js, css, xml, etc.
-	A FetchInput object is used to encapsulate the various properties of the request.
+Fetch is a document from a url.  The document can be almost anything such as html, js, css, xml, etc.
+A FetchInput object is used to encapsulate the various properties of the request.
 */
 func Fetch(input FetchInput) *FetchResponse {
-	url := input.BaseUrl
+	url := input.BaseURL
 	retdat := input.Retdat
 	cookies := input.Cookies
 

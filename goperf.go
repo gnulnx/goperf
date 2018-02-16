@@ -24,15 +24,16 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/gnulnx/color"
-	"github.com/gnulnx/goperf/perf"
-	"github.com/gnulnx/goperf/request"
-	"github.com/gnulnx/vestigo"
 	"io"
 	"net/http"
 	"os"
 	"runtime/pprof"
 	"strconv"
+
+	"github.com/gnulnx/color"
+	"github.com/gnulnx/goperf/perf"
+	"github.com/gnulnx/goperf/request"
+	"github.com/gnulnx/vestigo"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -74,7 +75,8 @@ func main() {
 	}
 
 	if *fetch || *fetchall {
-		color.Green("~~ Fetching a single url and printing info ~~")
+		// TODO This method treats these command line arguments exactly the same... no good
+		// -fetch -printjson should ONLY return the body of the primary request and not the other assets
 
 		// This section will make an initial GET request and try to set any cookies we find
 		if *cookies == "" {
@@ -83,10 +85,10 @@ func main() {
 				cookies = &resp1.Header["Set-Cookie"][0]
 			}
 		}
-
+		fmt.Println("*fetchall: ", *fetchall)
 		resp := request.FetchAll(
 			request.FetchInput{
-				BaseUrl:   *url,
+				BaseURL:   *url,
 				Retdat:    *fetchall,
 				Cookies:   *cookies,
 				UserAgent: *useragent,
@@ -141,7 +143,7 @@ func checkParams(r *http.Request) ([]string, string, int, int) {
 	errors := []string{}
 	seconds := 0
 	users := 0
-	var err error = nil
+	var err error
 
 	// Check that url has been supplied
 	url, ok := r.PostForm["url"]
@@ -198,9 +200,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		Seconds: seconds,
 	}
 	perfJob.Basic()
-	json_results := perfJob.JsonResults()
+	jsonResults := perfJob.JsonResults()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	io.WriteString(w, json_results)
+	io.WriteString(w, jsonResults)
 }

@@ -14,12 +14,12 @@ type IterateReqResp struct {
 }
 
 type IterateReqRespAll struct {
-	AvgTotalRespTime       time.Duration    `json:"avg_total_resp_time"`
-	AvgTotalLinearRespTime time.Duration    `json:"avg_total_linear_resp_time"`
-	BaseUrl                IterateReqResp   `json:"baseUrl"`
-	JSResps                []IterateReqResp `json:"js_resps"`
-	CSSResps               []IterateReqResp `json:"css_resps"`
-	IMGResps               []IterateReqResp `json:"img_resps"`
+	AvgTotalRespTime       time.Duration    `json:"avgTotalRespTime"`
+	AvgTotalLinearRespTime time.Duration    `json:"avgTotalLinearRespTime"`
+	BaseURL                IterateReqResp   `json:"baseURL"`
+	JSResps                []IterateReqResp `json:"jsResps"`
+	CSSResps               []IterateReqResp `json:"cssResps"`
+	IMGResps               []IterateReqResp `json:"imgResps"`
 }
 
 /*

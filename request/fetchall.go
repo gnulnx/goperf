@@ -2,20 +2,22 @@ package request
 
 import (
 	"fmt"
-	"github.com/gnulnx/color"
-	"github.com/gnulnx/goperf/httputils"
 	"net/url"
 	"strconv"
 	"time"
 	"unicode"
+
+	"github.com/gnulnx/color"
+	"github.com/gnulnx/goperf/httputils"
 )
 
+// FetchAllResponse is the return structure from FetchAll
 type FetchAllResponse struct {
-	BaseUrl         *FetchResponse  `json:"baseUrl"`
+	BaseURL         *FetchResponse  `json:"BaseURL"`
 	Time            time.Duration   `json:"time"`
-	TotalTime       time.Duration   `json:"total_time"`
-	TotalLinearTime time.Duration   `json:total_linear_time"`
-	TotalBytes      int             `json:"total_bytes"`
+	TotalTime       time.Duration   `json:"totalTime"`
+	TotalLinearTime time.Duration   `json:totalLinearTime"`
+	TotalBytes      int             `json:"totalBytes"`
 	JSResponses     []FetchResponse `json:"jsResponses"`
 	IMGResponses    []FetchResponse `json:"imgResponses"`
 	CSSResponses    []FetchResponse `json:"cssResponses"`
@@ -24,22 +26,24 @@ type FetchAllResponse struct {
 }
 
 /*
-   Fetch the url and then fetch all of it's assets.
-   Assets currently refer to script, style, and img tags.
+FetchAll takes a FetchInput object and proceeds to fetch
+the BaseURL and then fetch all of it's assets.
 
-   Each asset class is fetched in it's own go routine.
+Assets currently refer to script, style, and img tags.
 
-   If retdata is False we don't return the Body or Header.
-   This is useful if you only want the timing data.
-   For instance you might find it useful to fetch with retdat=true
-   the first time around to get all the data and write to file.
-   The subsequet requests could be used as part of a perf test where
-   you only need the raw timing and size data.  In those cases
-   you can set retdat=false to effectivly cut down on the verbosity
+Each asset class is fetched in it's own go routine.
+If retdata is False we don't return the Body or Header.
+This is useful if you only want the timing data.
+For instance you might find it useful to fetch with retdat=true
+the first time around to get all the data and write to file.
+The subsequet requests could be used as part of a perf test where
+you only need the raw timing and size data.  In those cases
+you can set retdat=false to effectivly cut down on the verbosity
 */
 func FetchAll(input FetchInput) *FetchAllResponse {
-	//baseurl := input.BaseUrl
+	//BaseURL := input.BaseURL
 	retdat := input.Retdat
+	fmt.Println("retdata", retdat)
 	//cookies := input.Cookies
 
 	// Fetch initial url
@@ -97,7 +101,7 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	totalBytes := output.Bytes + jsBytes + cssBytes + imgBytes
 
 	resp := FetchAllResponse{
-		BaseUrl:         output,
+		BaseURL:         output,
 		Time:            output.Time,
 		TotalTime:       totalTime2,
 		TotalLinearTime: totalLinearTime,
@@ -117,18 +121,18 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	white := color.New(color.FgWhite).SprintfFunc()
 	red := color.New(color.FgRed).SprintfFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
-	total := resp.BaseUrl.Time
+	total := resp.BaseURL.Time
 
 	color.Red("Base Url Results")
-	if resp.BaseUrl.Status == 200 {
-		fmt.Printf(" - %-34s %-25s\n", yel("Status:"), green(strconv.Itoa(resp.BaseUrl.Status)))
+	if resp.BaseURL.Status == 200 {
+		fmt.Printf(" - %-34s %-25s\n", yel("Status:"), green(strconv.Itoa(resp.BaseURL.Status)))
 	} else {
-		fmt.Printf(" - %-34s %-25s\n", yel("Status:"), red(strconv.Itoa(resp.BaseUrl.Status)))
+		fmt.Printf(" - %-34s %-25s\n", yel("Status:"), red(strconv.Itoa(resp.BaseURL.Status)))
 	}
-	fmt.Printf(" - %-34s %-25s\n", yel("Url:"), white(resp.BaseUrl.Url))
+	fmt.Printf(" - %-34s %-25s\n", yel("Url:"), white(resp.BaseURL.Url))
 	fmt.Printf(" - %-34s %-25s\n", yel("Time to first byte"), total.String())
-	fmt.Printf(" - %-34s %-25s\n", yel("Bytes"), strconv.Itoa(resp.BaseUrl.Bytes))
-	fmt.Printf(" - %-34s %-25s\n", yel("Runes"), strconv.Itoa(resp.BaseUrl.Runes))
+	fmt.Printf(" - %-34s %-25s\n", yel("Bytes"), strconv.Itoa(resp.BaseURL.Bytes))
+	fmt.Printf(" - %-34s %-25s\n", yel("Runes"), strconv.Itoa(resp.BaseURL.Runes))
 	fmt.Printf(" - %-34s %-25s\n", yel("TotalTime"), resp.TotalTime.String())
 	fmt.Printf(" - %-34s %-25s\n", yel("TotalBytes"), strconv.Itoa(resp.TotalBytes))
 
@@ -159,37 +163,37 @@ func StripBody(input string) string {
 	return output
 }
 
-func DefineAssetUrl(baseurl string, asseturl string) string {
+func DefineAssetUrl(BaseURL string, asseturl string) string {
 	/*
 		If the url starts with a / we know it's a local resource
-		so we prepend the baseurl to it
+		so we prepend the BaseURL to it
 	*/
 	if asseturl[:4] == "http" {
 		return asseturl
 	}
 
-	u, err := url.Parse(baseurl)
+	u, err := url.Parse(BaseURL)
 	if err != nil {
 		panic(err)
 	}
-	baseurl = fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())
+	BaseURL = fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())
 
 	if asseturl[0] == '/' {
-		asseturl = baseurl + asseturl
+		asseturl = BaseURL + asseturl
 	} else {
-		asseturl = baseurl + "/" + asseturl
+		asseturl = BaseURL + "/" + asseturl
 	}
 	return asseturl
 }
 
 func GoFetchAllAssetArray(files []string, input FetchInput, resp chan []FetchResponse) {
-	baseurl := input.BaseUrl
+	BaseURL := input.BaseURL
 
 	chanHolder := []chan FetchResponse{}
 	for i, asset_url := range files {
 		chanHolder = append(chanHolder, make(chan FetchResponse))
 		go func(c chan FetchResponse, asset_url string, input FetchInput) {
-			input.BaseUrl = DefineAssetUrl(baseurl, asset_url)
+			input.BaseURL = DefineAssetUrl(BaseURL, asset_url)
 			c <- *Fetch(input)
 		}(chanHolder[i], asset_url, input)
 	}
