@@ -1,7 +1,7 @@
-# goperf - Website Load Tester
-![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
-
+# goperf
 A highly concurrant website load tester with a simple intuitive command line syntax.
+
+![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
 The header image shows goperf running on a 32 cpu machine.  The machine being tested was a traditional web stack with a load balancer and 10 app servers.
 
