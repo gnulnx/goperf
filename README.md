@@ -40,7 +40,7 @@ Fetch a page and its assets and display info.
 ```
 ./goperf -url {url} -fetch
 ```
-This will print the an output like
+This will print output like:
 
 ![Alt text](readme_imgs/Fetch.png?raw=true "Fetch")
 
