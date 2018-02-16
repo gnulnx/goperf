@@ -1,12 +1,16 @@
 # goperf - Performance tester
-A highly concurrant web stack load tester.
+A highly concurrant website load tester.
+
+Goperf fetches the html document as well as all the img, css, and js assets in an effect to realistically simulate an initial browser request to your site.
+
+Goperf also supports simple request settings like user-agent and cookies strings.
 
 ### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
-
 ### Output
-With easy to read human output
+With easy to read output.
+
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
 ## Setup
