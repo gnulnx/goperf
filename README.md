@@ -1,19 +1,17 @@
 # goperf - Performance tester
-A highly concurrant website load tester with simple intuitive command line syntax.
-
-### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
-Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate an initial browser request to your site.
+A highly concurrant website load tester with simple intuitive command line syntax.
+The header image shows goperf running on a 32 cpu machine.
+
+Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate a a basic browser request to your site.  *Support for follow up ajax requests is aimed for the next release*
 
 Goperf also supports simple request settings like user-agent and cookies strings.
 
 
 ## Usage:
 
-### Fetch
-
-Fetch a page and its assets and display info.  
+### Fetch a page display info.  
 ```
 ./goperf -url {url} -fetch
 ```
@@ -25,30 +23,23 @@ To Fetch a page and display all it's assets use:
 ```
 ./goperf -url {url} -fetch --printjson
 ```
-NOTE this will print the content of the body in each of the fetched assets. If you have large minified JS bundles it will be pretty messy.
+**NOTE** this will print the content of the body in each of the fetched assets. If you have large minified JS bundles it will be pretty messy.  *A future version will support only showing the body text*
 
-
-Fetch a page and it's assets (js, css, img) and return the bodies for the assets.
---printjson also pretty prints the json that is returned (above other output).
-```
-./goperf -url {url} -fetchall --printjson
-```
 
 Fetch a page that requires a session id (such as a django login)
-
 ```
-./goperf -url http://192.168.33.11/student/ -fetchall -cookies "sessionid_vagrant=0xkfeev882n0i9efkiq7vmd2i6efufz9;" --printjson
+./goperf -url http://192.168.33.11/student/ -fetch -cookies "sessionid_vagrant=0xkfeev882n0i9efkiq7vmd2i6efufz9;" --printjson
 ```
 
-## Load testing
+### Load testing
 
-Tell goperf the number of users you want simulate and the number of seconds you want the simulation to run.
+Tell goperf the number of users you want to simulate and the number of seconds you want the simulation to run.
 
 ```
 ./goperf -url {url} -users {int}  -sec {int}
 ```
 
-Goperf will give off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets (also in seperate go routines).  The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.
+Goperf will kick off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets in seperate go routines.  The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.  
 
 Load testing results: 
 
