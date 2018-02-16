@@ -1,4 +1,5 @@
 # goperf - Performance tester
+A highly concurrant web stack load tester.
 
 ### Running on a 32 CPU machine
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
@@ -6,9 +7,7 @@
 ### Example Output
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
-## Go based Load Tester
-A highly concurrant web stack load tester.
-
+## Setup
 #### Ensure gopath is correctly setup
 
 Make sure you have your GOPATH setup to point to the go/bin directory.
