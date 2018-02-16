@@ -70,8 +70,6 @@ Fire a 3 second test with 3 simultaneous connections
 ./goperf -url {url} -sec=3 -connections=3
 ```
 
-
-
 ### Run minimal unit and benchmark tests
 ```
 go test ./... -cover -bench
@@ -84,6 +82,6 @@ Currently goperf is currently quite good at simulating browser requests that inc
 
 However goper has no concept of an ajax request.  
 
-The next phase of golang will be hashing out a playbook of sorts to describe for instnace the intial page load followed by a request to the user-cart api.  
+The next phase of golang will be adding in support for additional requests after intial page load.  For example say you wanted to time how long it took for 10 users to hit your website and also request a specific api.  This approach will allow us to have much better simulation for javacsript heavy sites.  
 
-Longer term support for a chaos mode where the perf users move through site randomly. 
+Longer term support for a chaos mode where the performance "users" move through the site randomly selecting a new url after each request. 
