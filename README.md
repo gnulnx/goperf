@@ -7,9 +7,7 @@
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
 ## Go based Load Tester
-This project is still in rabid development mode.  
-It is definitly not production ready code.
-However, it does work and you may find it useful as is.  ;)
+A highly concurrant web stack load tester.
 
 #### Ensure gopath is correctly setup
 
