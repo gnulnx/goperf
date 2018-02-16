@@ -1,4 +1,4 @@
-# goperf - Performance tester
+# goperf - Website Load Tester
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
 A highly concurrant website load tester with a simple intuitive command line syntax.
