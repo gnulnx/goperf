@@ -1,7 +1,7 @@
 # goperf - Performance tester
 A highly concurrant website load tester.
 
-Goperf fetches the html document as well as all the img, css, and js assets in an effect to realistically simulate an initial browser request to your site.
+Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate an initial browser request to your site.
 
 Goperf also supports simple request settings like user-agent and cookies strings.
 
