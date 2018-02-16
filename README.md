@@ -2,12 +2,12 @@
 ![Alt text](readme_imgs/GoPerf.png?raw=true "GoPerf")
 
 A highly concurrant website load tester with simple intuitive command line syntax.
-The header image shows goperf running on a 32 cpu machine.
+
+The header image shows goperf running on a 32 cpu machine.  The machine being tested was a traditional web stack with a load balancer and 10 app servers.
 
 Goperf fetches the html document as well as all the img, css, and js assets in an effort to realistically simulate a a basic browser request to your site.  *Support for follow up ajax requests is aimed for the next release*
 
-Goperf also supports simple request settings like user-agent and cookies strings.
-
+Goperf also supports simple http request headers like user-agent and cookies strings.
 
 ## Usage:
 
