@@ -12,25 +12,6 @@ Goperf also supports simple request settings like user-agent and cookies strings
 
 ![Alt text](readme_imgs/GoPerfOutput.png?raw=true "Output")
 
-## Setup
-#### Ensure gopath is correctly setup
-
-Make sure you have your GOPATH setup to point to the go/bin directory.
-If you have a default go install on ubuntu it would be ~/go/bin.
-If so you would add this to your path.
-```
-export PATH=$PATH:~/go/bin
-```
-#### Install
-
-```
-go get github.com/gnulnx/goperf
-```
-
-#### Build
-```
-go install github.com/gnulnx/goperf
-```
 
 ## Usage:
 
@@ -62,6 +43,27 @@ Fetch a page that requires a session id (such as a django login)
 ```
 ./goperf -url http://192.168.33.11/student/ -fetchall -cookies "sessionid_vagrant=0xkfeev882n0i9efkiq7vmd2i6efufz9;" --printjson
 ```
+
+## Setup
+#### Ensure gopath is correctly setup
+
+Make sure you have your GOPATH setup to point to the go/bin directory.
+If you have a default go install on ubuntu it would be ~/go/bin.
+If so you would add this to your path.
+```
+export PATH=$PATH:~/go/bin
+```
+#### Install
+
+```
+go get github.com/gnulnx/goperf
+```
+
+#### Build
+```
+go install github.com/gnulnx/goperf
+```
+
 
 ### Basic perf test.
 
