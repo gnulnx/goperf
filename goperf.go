@@ -51,6 +51,7 @@ func main() {
 	iterations := flag.Int("iter", 1000, "Iterations per user/connection")
 	output := flag.Int("output", 5, "Show user output every {n} iterations")
 	verbose := flag.Bool("verbose", false, "Show verbose output")
+	var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 	flag.Parse()
 
 	http.DefaultTransport.(*http.Transport).MaxIdleConnsPerHost = 100

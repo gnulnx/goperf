@@ -1,3 +1,4 @@
+// Fetchall is super cool
 package request
 
 import (
