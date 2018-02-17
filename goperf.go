@@ -1,24 +1,22 @@
-package main
-
 /*
-goperf is a load testing tool.
+Package goper is a highly concurrant website load tester with a simple intuitive command line syntax.
 
-** Use Case 1:  Fetch a url and report stats
+* Fetch a url and report stats
 
 This command will return all information for a given url.
-./goperf -url http://qa.teaquinox.com -fetchall -printjson
+ ./goperf -url http://qa.teaquinox.com -fetchall -printjson
 
 When fetchall is provided the returned struct will contain
 url, time, size, and data info.
 
 You can do a simpler request that leaves the data and headers out like this
-./goperf -url http://qa.teaquinox.com -fetchall -printjson
+ ./goperf -url http://qa.teaquinox.com -fetchall -printjson
 
 
-** Use Case 2: Load testing
-./goperf -url http://qa.teaquinox.com -sec 5 -users 5
-
+* Load testing
+ ./goperf -url http://qa.teaquinox.com -sec 5 -users 5
 */
+package main
 
 import (
 	"encoding/json"
@@ -35,8 +33,6 @@ import (
 	"github.com/gnulnx/goperf/request"
 	"github.com/gnulnx/vestigo"
 )
-
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
 	// I ❤️  the way go handles command line arguments
@@ -135,11 +131,11 @@ func main() {
 	color.Magenta("Job Results Saved: ./output.json")
 }
 
+/*
+Check that the request parameters are correct and return them.
+Also return an array of error string if the parameters were not right
+*/
 func checkParams(r *http.Request) ([]string, string, int, int) {
-	/*
-		Check that the request parameters are correct and return them.
-		Also return an array of error string if the parameters were not right
-	*/
 	errors := []string{}
 	seconds := 0
 	users := 0
