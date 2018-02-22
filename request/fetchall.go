@@ -44,8 +44,6 @@ you can set retdat=false to effectivly cut down on the verbosity
 func FetchAll(input FetchInput) *FetchAllResponse {
 	//BaseURL := input.BaseURL
 	retdat := input.Retdat
-	fmt.Println("retdata", retdat)
-	//cookies := input.Cookies
 
 	// Fetch initial url
 	start := time.Now()

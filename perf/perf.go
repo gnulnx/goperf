@@ -47,7 +47,7 @@ func (input *Init) Basic() request.IterateReqRespAll {
 			// TODO Just pass the Input in
 			c <- iterateRequest(input)
 		}(chanslice[i])
-		time.Sleep(time.Duration(1000))
+		//time.Sleep(time.Duration(1000))
 	}
 
 	// Wait on all the channels
