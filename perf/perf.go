@@ -35,14 +35,17 @@ func (input *Init) Basic() request.IterateReqRespAll {
 			// This how you make it simulate -n number of users.  Without these
 			// each request would likely make a new session which would be a load on the db
 			//  Conversly  you might want to simulate what it likes under total new user load...
-			resp1, _ := http.Get(input.Url)
-            if resp1 == nil {
-                fmt.Println("Error connecting to url: ", input.Url)
-                return
-            }
-            fmt.Println(resp1)
-			if len(resp1.Header["Set-Cookie"]) > 0 {
-				input.Cookies = resp1.Header["Set-Cookie"][0]
+
+			if 0 == 1 {
+				resp1, _ := http.Get(input.Url)
+				if resp1 == nil {
+					fmt.Println("Error connecting to url: ", input.Url)
+					return
+				}
+				fmt.Println(resp1)
+				if len(resp1.Header["Set-Cookie"]) > 0 {
+					input.Cookies = resp1.Header["Set-Cookie"][0]
+				}
 			}
 			// TODO Just pass the Input in
 			c <- iterateRequest(input)
