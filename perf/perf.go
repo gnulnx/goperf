@@ -36,13 +36,16 @@ func (input *Init) Basic() request.IterateReqRespAll {
 			// each request would likely make a new session which would be a load on the db
 			//  Conversly  you might want to simulate what it likes under total new user load...
 			resp1, _ := http.Get(input.Url)
+            if resp1 == nil {
+                fmt.Println("Error connecting to url: ", input.Url)
+                return
+            }
+            fmt.Println(resp1)
 			if len(resp1.Header["Set-Cookie"]) > 0 {
 				input.Cookies = resp1.Header["Set-Cookie"][0]
-				//fmt.Println("cookies: ", input.Cookies)
 			}
 			// TODO Just pass the Input in
 			c <- iterateRequest(input)
-			//c <- iterateRequest(input.Url, input.Seconds, input.Cookies, input.UserAgent)
 		}(chanslice[i])
 		time.Sleep(time.Duration(1000))
 	}
@@ -58,7 +61,6 @@ func (input *Init) Basic() request.IterateReqRespAll {
 
 }
 
-//func iterateRequest(url string, sec int, cookies string, useragent string) request.IterateReqRespAll {
 func iterateRequest(input *Init) request.IterateReqRespAll {
 	/*
 		Continuously fetch 'url' for 'sec' second and return the results.

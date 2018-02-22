@@ -67,7 +67,7 @@ func main() {
 			AllowMethods: []string{"POST"}, // only allow cors for this resource on POST calls
 		})
 		sPort := ":" + strconv.Itoa(*port)
-		color.Green("Your website is available at 127.0.0.1:%s", sPort)
+		color.Green("Your website is available at 127.0.0.1%s", sPort)
 		http.ListenAndServe(sPort, router)
 	}
 
