@@ -225,11 +225,14 @@ func (input Init) Print() {
 	fmt.Printf(" - %-45s %-25s\n", yel("Number of Requests:"), white(strconv.Itoa(len(results.BaseURL.Status))))
 	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseURL.Bytes)))
 	fmt.Printf(" - %-45s %s\n", yel("Avg Page Resp Time:"), white(results.AvgTotalRespTime.String()))
-	fmt.Printf(" - %-45s %s\n", yel("Avg Linear Resp Time:"), white(results.AvgTotalLinearRespTime.String()))
 
-	decrease := float64(results.AvgTotalLinearRespTime) - float64(results.AvgTotalRespTime)
-	percentDecrease := (float64(decrease) / float64(results.AvgTotalLinearRespTime) * 100.00)
-	fmt.Printf(" - %-45s %s\n", yel("percentDecrease:"), white(strconv.FormatFloat(percentDecrease, 'g', 5, 64)))
+	// This shows the total time to do a linear fetch asset by asset.
+	//fmt.Printf(" - %-45s %s\n", yel("Avg Linear Resp Time:"), white(results.AvgTotalLinearRespTime.String()))
+
+	// This is useful for comparing the decrease in resp time from linear to go routines
+	// decrease := float64(results.AvgTotalLinearRespTime) - float64(results.AvgTotalRespTime)
+	// percentDecrease := (float64(decrease) / float64(results.AvgTotalLinearRespTime) * 100.00)
+	// fmt.Printf(" - %-45s %s\n", yel("percentDecrease:"), white(strconv.FormatFloat(percentDecrease, 'g', 5, 64)))
 
 	avg, statusResults := procResultString(&results.BaseURL)
 	fmt.Printf(" - %-45s %s\n", yel("Average Time to First Byte:"), white(avg))

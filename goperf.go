@@ -114,9 +114,12 @@ func main() {
 		UserAgent:  *useragent,
 	}
 	f, _ := os.Create(*cpuprofile)
-	pprof.StartCPUProfile(f)
 	results := perfJob.Basic()
-	defer pprof.StopCPUProfile()
+
+	if 0 == 1 {
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
 	// Write json response to file.
 	outfile, _ := os.Create("./output.json")
