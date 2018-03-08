@@ -222,6 +222,7 @@ func (input Init) Print() {
 	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseURL.Bytes)))
 	fmt.Printf(" - %-45s %s\n", yel("Avg Page Resp Time:"), white(results.AvgTotalRespTime.String()))
 
+	// TODO Remove this and associated code
 	// This shows the total time to do a linear fetch asset by asset.
 	//fmt.Printf(" - %-45s %s\n", yel("Avg Linear Resp Time:"), white(results.AvgTotalLinearRespTime.String()))
 
