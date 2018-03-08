@@ -3,12 +3,11 @@ package perf
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gnulnx/color"
+	"github.com/gnulnx/goperf/request"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/gnulnx/color"
-	"github.com/gnulnx/goperf/request"
 )
 
 type Init struct {
@@ -31,21 +30,18 @@ func (input *Init) Basic() request.IterateReqRespAll {
 	for i := 0; i < input.Threads; i++ {
 		chanslice = append(chanslice, make(chan request.IterateReqRespAll))
 		go func(c chan request.IterateReqRespAll) {
-			// This is where you will get cookies from resp and set input.Cookies
-			// This how you make it simulate -n number of users.  Without these
-			// each request would likely make a new session which would be a load on the db
-			//  Conversly  you might want to simulate what it likes under total new user load...
 
-			if 0 == 1 {
-				resp1, _ := http.Get(input.Url)
-				if resp1 == nil {
-					fmt.Println("Error connecting to url: ", input.Url)
-					return
-				}
-				fmt.Println(resp1)
-				if len(resp1.Header["Set-Cookie"]) > 0 {
-					input.Cookies = resp1.Header["Set-Cookie"][0]
-				}
+			// Make an initial GET request to get and set cookies so we can accurately simulate a user.
+			// This effectivly sets up a user session.  If this is commented out
+			// then each request will simulate a new user.
+			// TODO This should be a parameter the user can set.
+			resp1, _ := http.Get(input.Url)
+			if resp1 == nil {
+				fmt.Println("Error connecting to url: ", input.Url)
+				return
+			}
+			if len(resp1.Header["Set-Cookie"]) > 0 {
+				input.Cookies = resp1.Header["Set-Cookie"][0]
 			}
 			// TODO Just pass the Input in
 			c <- iterateRequest(input)
