@@ -11,7 +11,7 @@ Goperf also supports simple http request headers like user-agent and cookies str
 
 ## Usage:
 
-### Fetch a page display info.  
+### Fetch a page and display info.  
 ```
 ./goperf -url {url} -fetch
 ```
