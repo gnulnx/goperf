@@ -39,7 +39,9 @@ Tell goperf the number of users you want to simulate and the number of seconds y
 ./goperf -url {url} -users {int}  -sec {int}
 ```
 
-Goperf will kick off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets in seperate go routines.  The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.  
+Goperf will kick off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets in seperate go routines.  *Each users will make an initial GET request to fetch the cookies and then use them in follow up requests in order to simulate users sessions.*  
+
+The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.  
 
 Load testing results: 
 
@@ -66,13 +68,6 @@ go install github.com/gnulnx/goperf
 ```
 
 
-### Basic perf test.
-
-Fire a 3 second test with 3 simultaneous connections
-```
-./goperf -url {url} -sec=3 -connections=3
-```
-
 ### Run minimal unit and benchmark tests
 ```
 go test ./... -cover -bench
@@ -87,4 +82,4 @@ However goper has no concept of an ajax request.
 
 The next phase of goperf will be adding in support for additional requests after intial page load.  For example say you wanted to time how long it took for 10 users to hit your website and also request a specific api.  This approach will allow us to have much better simulation for javacsript heavy sites.  
 
-Longer term support for a chaos mode where the performance "users" move through the site randomly selecting a new url after each request. 
+Longer term support for a chaos mode where the perf "users" move through the site randomly selecting a new url after each request. 
