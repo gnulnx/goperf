@@ -89,4 +89,4 @@ However goper has no concept of an ajax request.
 
 The next phase of goperf will be adding in support for additional requests after intial page load.  For example say you wanted to time how long it took for 10 users to hit your website and also request a specific api.  This approach will allow us to have much better simulation for javacsript heavy sites.  
 
-Longer term support for a chaos mode where the performance "users" move through the site randomly selecting a new url after each request. 
+Longer term support for a chaos mode where the perf "users" move through the site randomly selecting a new url after each request. 
