@@ -68,13 +68,6 @@ go install github.com/gnulnx/goperf
 ```
 
 
-### Basic perf test.
-
-Fire a 3 second test with 3 simultaneous connections
-```
-./goperf -url {url} -sec=3 -connections=3
-```
-
 ### Run minimal unit and benchmark tests
 ```
 go test ./... -cover -bench
