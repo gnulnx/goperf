@@ -190,9 +190,8 @@ func (input Init) JsonResults() string {
 		IMGResults: buildAssetSlice(results.IMGResps),
 	}
 
-	tmp, _ := json.MarshalIndent(output, "", "    ")
-	output_json := string(tmp)
-	return output_json
+	output_json, _ := json.MarshalIndent(output, "", "    ")
+	return string(output_json)
 }
 
 func buildAssetSlice(resps []request.IterateReqResp) []AssetResult {
