@@ -39,7 +39,9 @@ Tell goperf the number of users you want to simulate and the number of seconds y
 ./goperf -url {url} -users {int}  -sec {int}
 ```
 
-Goperf will kick off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets in seperate go routines.  The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.  
+Goperf will kick off a seperate go routine for each user.  Each user will then continiously fetch the url along with all it's page assets in seperate go routines.  *Each users will make an initial GET request to fetch the cookies and then use them in follow up requests in order to simulate users sessions.*  
+
+The light weight nature of goroutines allows this high concurancy to simulate many users with very litte memory.  You will most likely overhewlm the test url servers or consume all of the available network bandwidth before memory becomes an issue.  
 
 Load testing results: 
 
