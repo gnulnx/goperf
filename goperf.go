@@ -39,6 +39,7 @@ func main() {
 	fetch := flag.Bool("fetch", false, "Fetch -url and report it's stats. Does not return resources")
 	fetchall := flag.Bool("fetchall", false, "Fetch -url and report stats  return all assets (js, css, img)")
 	printjson := flag.Bool("printjson", false, "Print json output")
+	perftest := flag.Bool("perftest", false, "Run the goland perf suite")
 	users := flag.Int("users", 1, "Number of concurrent users/connections")
 	url := flag.String("url", "https://qa.teaquinox.com", "url to test")
 	seconds := flag.Int("sec", 2, "Number of seconds each concurrant user/connection should make consequitive requests")
@@ -116,7 +117,7 @@ func main() {
 	f, _ := os.Create(*cpuprofile)
 	results := perfJob.Basic()
 
-	if 0 == 1 {
+	if *perftest {
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
