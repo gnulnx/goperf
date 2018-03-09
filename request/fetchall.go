@@ -153,10 +153,10 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 }
 
 func StripBody(input string) string {
-	var output string = ""
+	var output string
 	for _, c := range input {
 		if !unicode.IsSpace(c) {
-			output = output + string(c)
+			output += string(c)
 		}
 	}
 	return output
