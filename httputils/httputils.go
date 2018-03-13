@@ -1,7 +1,6 @@
 package httputils
 
 import (
-	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -26,25 +25,31 @@ func GetAssets(body string) (js []string, img []string, css []string) {
 		log.Println("Unable to parse document with goquery.  Make sure it is utf8")
 		return ParseAllAssets(body)
 	}
-
-	c1 := make(chan []string)
-	c2 := make(chan []string)
-	c3 := make(chan []string)
-
-	go func() { c1 <- getAttr(doc, "script", "src") }()
-	go func() { c2 <- getAttr(doc, "img", "src") }()
-	go func() { c3 <- getAttr(doc, "link", "href") }()
-
+	goroutine := false
 	jsfiles := []string{}
 	imgfiles := []string{}
 	cssfiles := []string{}
 
-	for i := 0; i < 3; i++ {
-		select {
-		case jsfiles = <-c1:
-		case imgfiles = <-c2:
-		case cssfiles = <-c3:
+	if goroutine {
+		c1 := make(chan []string)
+		c2 := make(chan []string)
+		c3 := make(chan []string)
+
+		go func() { c1 <- getAttr(doc, "script", "src") }()
+		go func() { c2 <- getAttr(doc, "img", "src") }()
+		go func() { c3 <- getAttr(doc, "link", "href") }()
+
+		for i := 0; i < 3; i++ {
+			select {
+			case jsfiles = <-c1:
+			case imgfiles = <-c2:
+			case cssfiles = <-c3:
+			}
 		}
+	} else {
+		jsfiles = getAttr(doc, "script", "src")
+		imgfiles = getAttr(doc, "img", "src")
+		cssfiles = getAttr(doc, "link", "href")
 	}
 
 	return jsfiles, imgfiles, cssfiles
@@ -72,7 +77,7 @@ func ParseAllAssets(body string) (js []string, img []string, css []string) {
 		Note:  In go it is literally faster to start seperate go routines for each asset rather than
 			fetch them sequetially.  The go routine overhead is miniscule.  Go literally fucking rocks...
 	*/
-	fmt.Print(body)
+	//fmt.Print(body)
 	// make some channels
 	c1 := make(chan []string)
 	c2 := make(chan []string)

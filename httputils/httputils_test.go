@@ -1,10 +1,11 @@
 package httputils
 
 import (
-	"github.com/gnulnx/color"
-	"gopkg.in/fatih/set.v0"
 	"io/ioutil"
 	"testing"
+
+	"github.com/gnulnx/color"
+	"gopkg.in/fatih/set.v0"
 )
 
 func get_test_body() string {
@@ -87,5 +88,12 @@ func BenchmarkParseAllAssetsSequential(b *testing.B) {
 	body := get_test_body()
 	for i := 0; i < b.N; i++ {
 		ParseAllAssetsSequential(body)
+	}
+}
+
+func BenchmarkGetAssets(b *testing.B) {
+	body := get_test_body()
+	for i := 0; i < b.N; i++ {
+		GetAssets(body)
 	}
 }
