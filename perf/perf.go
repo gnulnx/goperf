@@ -13,7 +13,7 @@ import (
 )
 
 type Init struct {
-	Url        string
+	URL        string
 	Threads    int
 	Seconds    int
 	Iterations int
@@ -37,9 +37,9 @@ func (input *Init) Basic() request.IterateReqRespAll {
 			// This effectivly sets up a user session.  If this is commented out
 			// then each request will simulate a new user.
 			// TODO This should be a parameter the user can set.
-			resp1, _ := http.Get(input.Url)
+			resp1, _ := http.Get(input.URL)
 			if resp1 == nil {
-				fmt.Println("Error connecting to url: ", input.Url)
+				fmt.Println("Error connecting to url: ", input.URL)
 				return
 			}
 			if len(resp1.Header["Set-Cookie"]) > 0 {
@@ -66,7 +66,7 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	/*
 		Continuously fetch 'url' for 'sec' second and return the results.
 	*/
-	url := input.Url
+	url := input.URL
 	sec := input.Seconds
 	cookies := input.Cookies
 	useragent := input.UserAgent
@@ -75,7 +75,7 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	elapsedTime := maxTime
 
 	resp := request.IterateReqResp{
-		Url: url,
+		URL: url,
 	}
 	jsMap := map[string]*request.IterateReqResp{}
 	cssMap := map[string]*request.IterateReqResp{}
@@ -124,7 +124,6 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	for _, val := range cssMap {
 		cssResps = append(cssResps, *val)
 	}
-
 	imgResps := []request.IterateReqResp{}
 	for _, val := range imgMap {
 		imgResps = append(imgResps, *val)
@@ -180,7 +179,7 @@ func (input Init) JsonResults() string {
 	avg, statusResults := procResult(&results.BaseURL)
 	output := Output{
 		BaseURL: BaseURL{
-			Url:                 results.BaseURL.Url,
+			Url:                 results.BaseURL.URL,
 			Numreqs:             len(results.BaseURL.Status),
 			TotBytes:            results.BaseURL.Bytes,
 			AvgPageRespTime:     results.AvgTotalRespTime,
@@ -201,7 +200,7 @@ func buildAssetSlice(resps []request.IterateReqResp) []AssetResult {
 	for _, resp := range resps {
 		avg, statusResults := procResult(&resp)
 		result := AssetResult{
-			Url:         resp.Url,
+			Url:         resp.URL,
 			AvgRespTime: avg,
 			Status:      statusResults,
 		}
@@ -218,7 +217,7 @@ func (input Init) Print() {
 	white := color.New(color.FgWhite).SprintfFunc()
 
 	color.Red("Base Url Results")
-	fmt.Printf(" - %-45s %-25s\n", yel("Url:"), white(results.BaseURL.Url))
+	fmt.Printf(" - %-45s %-25s\n", yel("Url:"), white(results.BaseURL.URL))
 	fmt.Printf(" - %-45s %-25s\n", yel("Number of Requests:"), white(strconv.Itoa(len(results.BaseURL.Status))))
 	fmt.Printf(" - %-45s %s\n", yel("Total Bytes:"), white(strconv.Itoa(results.BaseURL.Bytes)))
 	fmt.Printf(" - %-45s %s\n", yel("Avg Page Resp Time:"), white(results.AvgTotalRespTime.String()))
@@ -242,9 +241,9 @@ func (input Init) Print() {
 		for i, resp := range results {
 			avg, statusResults := procResultString(&resp)
 			if i%2 == 0 {
-				fmt.Printf(" - %-26s %-28s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.Url))
+				fmt.Printf(" - %-26s %-28s %-19s %-10s\n", grey(avg), grey(statusResults), grey(strconv.Itoa(resp.Bytes)), grey(resp.URL))
 			} else {
-				fmt.Printf(" - %-26s %-28s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.Url))
+				fmt.Printf(" - %-26s %-28s %-19s %-10s\n", white(avg), white(statusResults), white(strconv.Itoa(resp.Bytes)), white(resp.URL))
 			}
 		}
 	}
@@ -300,14 +299,14 @@ func gatherAllStats(resp *request.FetchAllResponse, jsMap map[string]*request.It
 func gatherStats(Resps []request.FetchResponse, respMap map[string]*request.IterateReqResp) {
 	// gather all the responses
 	for resp := 0; resp < len(Resps); resp++ {
-		url2 := Resps[resp].Url
+		url2 := Resps[resp].URL
 		bytes := Resps[resp].Bytes
 		status := Resps[resp].Status
 		respTime := Resps[resp].Time
 		_, ok := respMap[url2]
 		if !ok {
 			respMap[url2] = &request.IterateReqResp{
-				Url:         url2,
+				URL:         url2,
 				Bytes:       bytes,
 				Status:      []int{status},
 				RespTimes:   []time.Duration{respTime},

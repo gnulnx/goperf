@@ -106,7 +106,7 @@ func main() {
 	perfJob := &perf.Init{
 		Iterations: *iterations,
 		Threads:    *users,
-		Url:        *url,
+		URL:        *url,
 		Output:     *output,
 		Verbose:    *verbose,
 		Seconds:    *seconds,
@@ -195,7 +195,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	perfJob := &perf.Init{
-		Url:     url,
+		URL:     url,
 		Threads: users,
 		Seconds: seconds,
 	}
