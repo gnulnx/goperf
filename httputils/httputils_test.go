@@ -8,15 +8,15 @@ import (
 	"gopkg.in/fatih/set.v0"
 )
 
-func get_test_body() string {
+func getTestBody() string {
 	//body_bytes, _ := ioutil.ReadFile("test_data/test.html")
-	body_bytes, _ := ioutil.ReadFile("test_data/test_basic.html")
-	num_bytes := len(body_bytes)
-	body := string(body_bytes[:num_bytes])
+	bodyBytes, _ := ioutil.ReadFile("test_data/test_basic.html")
+	numBytes := len(bodyBytes)
+	body := string(bodyBytes[:numBytes])
 	return body
 }
 
-func test_equality(input []string, testdata []string, t *testing.T) bool {
+func testEquality(input []string, testdata []string, t *testing.T) bool {
 	sInput := set.New()
 	sExpected := set.New()
 	for _, i := range input {
@@ -40,18 +40,18 @@ func test_equality(input []string, testdata []string, t *testing.T) bool {
 
 func TestParseAllAssets(t *testing.T) {
 	color.Green("~~ TestParseAll ~~")
-	body := get_test_body()
+	body := getTestBody()
 	jsfiles, imgfiles, cssfiles := ParseAllAssets(body)
 
 	// Test js results
-	test_data := []string{
+	testData := []string{
 		`/static/tcart/js/test1.min.js`,
 		`/static/tcart/js/bundle_kldsf2334.min.js`,
 	}
-	test_equality(jsfiles, test_data, t)
+	testEquality(jsfiles, testData, t)
 
 	// Test img results
-	test_data = []string{
+	testData = []string{
 		`/media//teaquinox_header_2.svg`,
 		`/media/cart.svg`,
 		`/media/banners/1-12-2018/SnowyTea_50percent.jpg`,
@@ -64,35 +64,35 @@ func TestParseAllAssets(t *testing.T) {
 		`/media/product_None/Moroccan_Mint_M.jpg`,
 		`/static/tcart/img/stripe_badges/outline_dark/powered_by_stripe.png`,
 	}
-	test_equality(imgfiles, test_data, t)
+	testEquality(imgfiles, testData, t)
 
 	//Test css Results
-	test_data = []string{
+	testData = []string{
 		`/media/manifest.webmanifest`,
 		`/static/vendor/icomoon/style.css`,
 		`/media/favicon_94S_icon.ico`,
 		`/static/vendor/bootstrap/bootstrap.min.css`,
 		`/static/tcart/css/styles.min.css`,
 	}
-	test_equality(cssfiles, test_data, t)
+	testEquality(cssfiles, testData, t)
 }
 
 func BenchmarkParseAllAssets(b *testing.B) {
-	body := get_test_body()
+	body := getTestBody()
 	for i := 0; i < b.N; i++ {
 		ParseAllAssets(body)
 	}
 }
 
 func BenchmarkParseAllAssetsSequential(b *testing.B) {
-	body := get_test_body()
+	body := getTestBody()
 	for i := 0; i < b.N; i++ {
 		ParseAllAssetsSequential(body)
 	}
 }
 
 func BenchmarkGetAssets(b *testing.B) {
-	body := get_test_body()
+	body := getTestBody()
 	for i := 0; i < b.N; i++ {
 		GetAssets(body)
 	}
