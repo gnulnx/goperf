@@ -38,6 +38,7 @@ Structure Overview:
 */
 type FetchResponse struct {
 	Url     string              `json:"url"`
+	Resp    *http.Response      `json:"resp"`
 	Body    string              `json:"body"`
 	Headers map[string][]string `json:"headers"`
 	Bytes   int                 `json:"bytes"`
@@ -70,6 +71,8 @@ func Fetch(input FetchInput) *FetchResponse {
 	//Fetch the url and time the request
 	start := time.Now()
 	resp, err := client.Do(req)
+	// fmt.Println(resp.Header)
+	// os.Exit(1)
 	if err != nil {
 		return &FetchResponse{
 			Url:    err.Error(),
@@ -88,9 +91,11 @@ func Fetch(input FetchInput) *FetchResponse {
 		Error = err.Error()
 	}
 	responseBody := string(body)
+	// responseBody := body
 
 	output := FetchResponse{
 		Url:     url,
+		Resp:    resp,
 		Body:    responseBody,
 		Headers: resp.Header,
 		Bytes:   len(responseBody),

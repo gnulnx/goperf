@@ -83,7 +83,6 @@ func main() {
 				cookies = &resp1.Header["Set-Cookie"][0]
 			}
 		}
-		fmt.Println("*fetchall: ", *fetchall)
 		resp := request.FetchAll(
 			request.FetchInput{
 				BaseURL:   *url,

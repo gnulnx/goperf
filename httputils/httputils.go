@@ -1,7 +1,12 @@
 package httputils
 
 import (
+	"fmt"
+	"log"
 	"regexp"
+	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 // Parse string of text (typically from a http.Response.Body)
@@ -12,6 +17,48 @@ func ParseAllAssetsSequential(body string) (js []string, img []string, css []str
 	cssfiles := GetCSS(body)
 	imgfiles := GetIMG(body)
 	return jsfiles, imgfiles, cssfiles
+}
+
+func GetAssets(body string) (js []string, img []string, css []string) {
+	utfBody := strings.NewReader(body)
+	doc, err := goquery.NewDocumentFromReader(utfBody)
+	if err != nil {
+		log.Println("Unable to parse document with goquery.  Make sure it is utf8")
+		return ParseAllAssets(body)
+	}
+
+	c1 := make(chan []string)
+	c2 := make(chan []string)
+	c3 := make(chan []string)
+
+	go func() { c1 <- getAttr(doc, "script", "src") }()
+	go func() { c2 <- getAttr(doc, "img", "src") }()
+	go func() { c3 <- getAttr(doc, "link", "href") }()
+
+	jsfiles := []string{}
+	imgfiles := []string{}
+	cssfiles := []string{}
+
+	for i := 0; i < 3; i++ {
+		select {
+		case jsfiles = <-c1:
+		case imgfiles = <-c2:
+		case cssfiles = <-c3:
+		}
+	}
+
+	return jsfiles, imgfiles, cssfiles
+}
+
+func getAttr(doc *goquery.Document, tag string, attr string) []string {
+	files := []string{}
+	doc.Find(tag).Each(func(i int, s *goquery.Selection) {
+		value, exists := s.Attr(attr)
+		if exists {
+			files = append(files, value)
+		}
+	})
+	return files
 }
 
 // Parse string of text (typically from a http.Response.Body)
@@ -25,7 +72,7 @@ func ParseAllAssets(body string) (js []string, img []string, css []string) {
 		Note:  In go it is literally faster to start seperate go routines for each asset rather than
 			fetch them sequetially.  The go routine overhead is miniscule.  Go literally fucking rocks...
 	*/
-
+	fmt.Print(body)
 	// make some channels
 	c1 := make(chan []string)
 	c2 := make(chan []string)

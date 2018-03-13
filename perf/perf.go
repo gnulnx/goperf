@@ -3,11 +3,13 @@ package perf
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gnulnx/color"
-	"github.com/gnulnx/goperf/request"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gnulnx/color"
+	"github.com/gnulnx/goperf/request"
 )
 
 type Init struct {
@@ -253,7 +255,11 @@ func (input Init) Print() {
 
 func procResultString(resp *request.IterateReqResp) (string, string) {
 	avg, statusResults := procResult(resp)
-	tmp, _ := json.Marshal(statusResults)
+	tmp, err := json.Marshal(statusResults)
+	if err != nil {
+		log.Println("Unable to Marshal", statusResults)
+		log.Fatal(err)
+	}
 	status := string(tmp)
 	return avg.String(), status
 }

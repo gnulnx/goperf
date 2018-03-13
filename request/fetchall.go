@@ -1,4 +1,3 @@
-// Fetchall is super cool
 package request
 
 import (
@@ -50,10 +49,11 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	input.Retdat = true
 	output := Fetch(input)
 
-	output.Body = StripBody(output.Body)
+	//output.Body = StripBody(output.Body)
 
 	// Now parse output for js, css, img urls
-	jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
+	jsfiles, imgfiles, cssfiles := httputils.GetAssets(output.Body)
+	// jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
 
 	// Now lets create some go routines and fetch all the js, img, css files
 	c1 := make(chan []FetchResponse)
@@ -153,6 +153,7 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 }
 
 func StripBody(input string) string {
+	/*  Deprecated..not even sure why I wrote it */
 	var output string
 	for _, c := range input {
 		if !unicode.IsSpace(c) {
