@@ -70,7 +70,7 @@ go install github.com/gnulnx/goperf
 
 ### Run minimal unit and benchmark tests
 ```
-go test ./... -cover -bench
+go test ./... -cover -bench=.
 ```
 
 
