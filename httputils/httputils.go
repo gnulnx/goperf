@@ -8,9 +8,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// Parse string of text (typically from a http.Response.Body)
-// and return the urls for the page <script> <link> and <img> tag.
-// The method runs lineearly.  In general it's probably better to use ParseAllAssets.
+/*
+	ParseAllAssetsSequential takes a string of text (typically from a http.Response.Body)
+	and return the urls for the page <script> <link> and <img> tag.
+	The method runs lineearly.
+	In benchmark you will see that ParseAllAssets is generally faster and GetAssets is faster still
+*/
 func ParseAllAssetsSequential(body string) (js []string, img []string, css []string) {
 	jsfiles := GetJS(body)
 	cssfiles := GetCSS(body)
@@ -18,6 +21,11 @@ func ParseAllAssetsSequential(body string) (js []string, img []string, css []str
 	return jsfiles, imgfiles, cssfiles
 }
 
+/*
+GetAssets takes a string of test from an http.Response.Body and returns the
+urls for the page <script>, <link>, and <img> tags.
+It makes use of the goquery library and is currently the fastest method
+*/
 func GetAssets(body string) (js []string, img []string, css []string) {
 	utfBody := strings.NewReader(body)
 	doc, err := goquery.NewDocumentFromReader(utfBody)
@@ -55,6 +63,10 @@ func GetAssets(body string) (js []string, img []string, css []string) {
 	return jsfiles, imgfiles, cssfiles
 }
 
+/*
+	geAttr takes a *goquery.Document a html tag and attr
+	and returns a list of those attributes
+*/
 func getAttr(doc *goquery.Document, tag string, attr string) []string {
 	files := []string{}
 	doc.Find(tag).Each(func(i int, s *goquery.Selection) {
@@ -66,18 +78,13 @@ func getAttr(doc *goquery.Document, tag string, attr string) []string {
 	return files
 }
 
-// Parse string of text (typically from a http.Response.Body)
-// and return the urls for the page <script> <link> and <img> tag.
-// The method uses seperate go routines for each asset class.
+/*
+	ParseAllAssets takes string of text (typically from a http.Response.Body)
+	and return the urls for the page <script> <link> and <img> tag.
+	The method uses seperate go routines for each asset class.
+	It is faster than ParseAllAssetsSequentially, but still slow that GetAssets
+*/
 func ParseAllAssets(body string) (js []string, img []string, css []string) {
-	/*
-		Parse string of text (typically from a http.Response.Body)
-		and return it's assets:  js, css, img.
-
-		Note:  In go it is literally faster to start seperate go routines for each asset rather than
-			fetch them sequetially.  The go routine overhead is miniscule.  Go literally fucking rocks...
-	*/
-	//fmt.Print(body)
 	// make some channels
 	c1 := make(chan []string)
 	c2 := make(chan []string)
@@ -104,17 +111,17 @@ func ParseAllAssets(body string) (js []string, img []string, css []string) {
 	return jsfiles, imgfiles, cssfiles
 }
 
-// Parse a string, typically an html document, and return an array of <script> src attributes.
+// GetJS uses regex to parse a body of text and return the script src attributes
 func GetJS(body string) []string {
 	return runregex(`<script.*?src=["'\''](.*?)["'\''].*?script>`, body)
 }
 
-// Parse a string, typically an html document, and return an array of <link> href attributes.
+// GetCSS uses regex to parse a body of text and return the <link> href attributes
 func GetCSS(body string) []string {
 	return runregex(`<link.*?href=["'\''](.*?)["'\''].*?>`, body)
 }
 
-// Parse a string, typically an html document, and return an array of <img> src attributes.
+// GetIMG uses regex to parse a body of text and return the <img> src attributes
 func GetIMG(body string) []string {
 	backgroundimgs := runregex(`background-image: url\(["'\''](.*?)["'\'']`, body)
 	imgs := runregex(`<img(?s:.)*?src=["'\''](.*?)["'\'']`, body)

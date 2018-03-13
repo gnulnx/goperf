@@ -6,7 +6,7 @@ import (
 )
 
 type IterateReqResp struct {
-	Url         string          `json:"url"`
+	URL         string          `json:"url"`
 	Status      []int           `json:"status"`
 	RespTimes   []time.Duration `json:"resp_times"`
 	NumRequests int             `json:"num_requests"`

@@ -37,7 +37,7 @@ Structure Overview:
  - Error - Any errors that were returned
 */
 type FetchResponse struct {
-	Url     string              `json:"url"`
+	URL     string              `json:"url"`
 	Resp    *http.Response      `json:"resp"`
 	Body    string              `json:"body"`
 	Headers map[string][]string `json:"headers"`
@@ -75,7 +75,7 @@ func Fetch(input FetchInput) *FetchResponse {
 	// os.Exit(1)
 	if err != nil {
 		return &FetchResponse{
-			Url:    err.Error(),
+			URL:    err.Error(),
 			Status: -100,
 			Error:  "There was a problem with you request.  Please double check your url",
 		}
@@ -94,7 +94,7 @@ func Fetch(input FetchInput) *FetchResponse {
 	// responseBody := body
 
 	output := FetchResponse{
-		Url:     url,
+		URL:     url,
 		Resp:    resp,
 		Body:    responseBody,
 		Headers: resp.Header,

@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strconv"
 	"time"
-	"unicode"
 
 	"github.com/gnulnx/color"
 	"github.com/gnulnx/goperf/httputils"
@@ -41,7 +40,6 @@ you only need the raw timing and size data.  In those cases
 you can set retdat=false to effectivly cut down on the verbosity
 */
 func FetchAll(input FetchInput) *FetchAllResponse {
-	//BaseURL := input.BaseURL
 	retdat := input.Retdat
 
 	// Fetch initial url
@@ -49,11 +47,8 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	input.Retdat = true
 	output := Fetch(input)
 
-	//output.Body = StripBody(output.Body)
-
 	// Now parse output for js, css, img urls
 	jsfiles, imgfiles, cssfiles := httputils.GetAssets(output.Body)
-	// jsfiles, imgfiles, cssfiles := httputils.ParseAllAssets(output.Body)
 
 	// Now lets create some go routines and fetch all the js, img, css files
 	c1 := make(chan []FetchResponse)
@@ -113,6 +108,9 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 	return &resp
 }
 
+/*
+	PrintFetchAllRespnse takes a FetchAllResonse object and prints the results to stdout
+*/
 func PrintFetchAllResponse(resp *FetchAllResponse) {
 	yel := color.New(color.FgHiYellow).SprintfFunc()
 	yellow := color.New(color.FgHiYellow, color.Underline).SprintfFunc()
@@ -128,7 +126,7 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	} else {
 		fmt.Printf(" - %-34s %-25s\n", yel("Status:"), red(strconv.Itoa(resp.BaseURL.Status)))
 	}
-	fmt.Printf(" - %-34s %-25s\n", yel("Url:"), white(resp.BaseURL.Url))
+	fmt.Printf(" - %-34s %-25s\n", yel("Url:"), white(resp.BaseURL.URL))
 	fmt.Printf(" - %-34s %-25s\n", yel("Time to first byte"), total.String())
 	fmt.Printf(" - %-34s %-25s\n", yel("Bytes"), strconv.Itoa(resp.BaseURL.Bytes))
 	fmt.Printf(" - %-34s %-25s\n", yel("Runes"), strconv.Itoa(resp.BaseURL.Runes))
@@ -140,9 +138,9 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 		fmt.Printf(" - %-24s %-22s %-21s\n", yellow("Time"), yellow("Bytes"), yellow("Url"))
 		for i, val := range results {
 			if i%2 == 0 {
-				fmt.Printf(" - %-22s %-20s %-10s \n", white(val.Time.String()), white(strconv.Itoa(val.Bytes)), white(val.Url))
+				fmt.Printf(" - %-22s %-20s %-10s \n", white(val.Time.String()), white(strconv.Itoa(val.Bytes)), white(val.URL))
 			} else {
-				fmt.Printf(" - %-22s %-20s %-10s \n", grey(val.Time.String()), grey(strconv.Itoa(val.Bytes)), grey(val.Url))
+				fmt.Printf(" - %-22s %-20s %-10s \n", grey(val.Time.String()), grey(strconv.Itoa(val.Bytes)), grey(val.URL))
 			}
 		}
 	}
@@ -152,18 +150,8 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	printAssets("IMG Responses", resp.IMGResponses)
 }
 
-func StripBody(input string) string {
-	/*  Deprecated..not even sure why I wrote it */
-	var output string
-	for _, c := range input {
-		if !unicode.IsSpace(c) {
-			output += string(c)
-		}
-	}
-	return output
-}
-
-func DefineAssetUrl(BaseURL string, asseturl string) string {
+//DefineAssetURL is used to determine if an asset is a local resource
+func DefineAssetURL(BaseURL string, asseturl string) string {
 	/*
 		If the url starts with a / we know it's a local resource
 		so we prepend the BaseURL to it
@@ -190,12 +178,12 @@ func GoFetchAllAssetArray(files []string, input FetchInput, resp chan []FetchRes
 	BaseURL := input.BaseURL
 
 	chanHolder := []chan FetchResponse{}
-	for i, asset_url := range files {
+	for i, assetURL := range files {
 		chanHolder = append(chanHolder, make(chan FetchResponse))
-		go func(c chan FetchResponse, asset_url string, input FetchInput) {
-			input.BaseURL = DefineAssetUrl(BaseURL, asset_url)
+		go func(c chan FetchResponse, assetURL string, input FetchInput) {
+			input.BaseURL = DefineAssetURL(BaseURL, assetURL)
 			c <- *Fetch(input)
-		}(chanHolder[i], asset_url, input)
+		}(chanHolder[i], assetURL, input)
 	}
 
 	// Wait on all the channels

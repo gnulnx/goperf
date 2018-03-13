@@ -8,8 +8,10 @@ import (
 	"gopkg.in/fatih/set.v0"
 )
 
+/*
+getTestBody reads the test html file from the test_data directory
+*/
 func getTestBody() string {
-	//body_bytes, _ := ioutil.ReadFile("test_data/test.html")
 	bodyBytes, _ := ioutil.ReadFile("test_data/test_basic.html")
 	numBytes := len(bodyBytes)
 	body := string(bodyBytes[:numBytes])

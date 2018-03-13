@@ -28,13 +28,13 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 		count++
 
 		for _, jsresp := range resp.JSResps {
-			jsResps[jsresp.Url] = append(jsResps[jsresp.Url], jsresp)
+			jsResps[jsresp.URL] = append(jsResps[jsresp.URL], jsresp)
 		}
 		for _, cssresp := range resp.CSSResps {
-			cssResps[cssresp.Url] = append(cssResps[cssresp.Url], cssresp)
+			cssResps[cssresp.URL] = append(cssResps[cssresp.URL], cssresp)
 		}
 		for _, imgresp := range resp.IMGResps {
-			imgResps[imgresp.Url] = append(imgResps[imgresp.Url], imgresp)
+			imgResps[imgresp.URL] = append(imgResps[imgresp.URL], imgresp)
 		}
 	}
 
@@ -53,7 +53,7 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 				bytes += resp.Bytes
 			}
 			allResps = append(allResps, IterateReqResp{
-				Url:         k,
+				URL:         k,
 				Status:      status,
 				RespTimes:   respTimes,
 				NumRequests: len(status),
@@ -67,7 +67,7 @@ func Combine(results []IterateReqRespAll) *IterateReqRespAll {
 		AvgTotalRespTime:       avgTotalRespTimes,
 		AvgTotalLinearRespTime: avgTotalLinearRespTimes,
 		BaseURL: IterateReqResp{
-			Url:         results[0].BaseURL.Url,
+			URL:         results[0].BaseURL.URL,
 			Status:      baseStatus,
 			RespTimes:   baseRespTimes,
 			NumRequests: len(baseStatus),
