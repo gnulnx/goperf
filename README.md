@@ -18,6 +18,10 @@ Goperf also supports simple http request headers like user-agent and cookies str
 
 [FreeBSD 32 bit](https://github.com/gnulnx/goperf/tree/master/binaries/freebsd/386/goperf)
 
+[Linux 64 bit](https://github.com/gnulnx/goperf/tree/master/binaries/linux/amd64/goperf)
+
+[Linux 32 bit](https://github.com/gnulnx/goperf/tree/master/binaries/linux/386/goperf)
+
 [Windows 64 bit](https://github.com/gnulnx/goperf/tree/master/binaries/windows/amd64/goperf.exe)
 
 [Windows 32 bit](https://github.com/gnulnx/goperf/tree/master/binaries/windows/386/goperf.exe)
