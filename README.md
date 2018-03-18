@@ -9,6 +9,9 @@ Goperf fetches the html document as well as all the img, css, and js assets in a
 
 Goperf also supports simple http request headers like user-agent and cookies strings.
 
+## Prebuilt Binaries
+[Darwin 386](https://github.com/gnulnx/goperf/tree/master/binaries/darwin/386)
+
 ## Usage:
 
 ### Fetch a page and display info.  
