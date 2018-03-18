@@ -21,5 +21,12 @@ mv goperf binaries/darwin/386/
 env GOOS=darwin GOARCH=amd64 go build
 mv goperf binaries/darwin/amd64/
 
+# Build for Linux
+env GOOS=linux GOARCH=386 go build
+mv goperf binaries/linux/386/
+
+env GOOS=linux GOARCH=amd64 go build
+mv goperf binaries/linux/amd64/
+
 # Build for current platform
 go build
