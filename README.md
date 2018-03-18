@@ -10,9 +10,9 @@ Goperf fetches the html document as well as all the img, css, and js assets in a
 Goperf also supports simple http request headers like user-agent and cookies strings.
 
 ## Prebuilt Binaries
-[Darwin 64 bit](https://github.com/gnulnx/goperf/tree/master/binaries/darwin/amd64/goperf)
+[Darwin 64 bit](https://github.com/gnulnx/goperf/raw/master/binaries/darwin/amd64/goperf)
 
-[Darwin 32 bit](https://github.com/gnulnx/goperf/tree/master/binaries/darwin/386/goperf)
+[Darwin 32 bit](https://github.com/gnulnx/goperf/raw/master/binaries/darwin/386/goperf)
 
 [FreeBSD 64 bit](https://github.com/gnulnx/goperf/tree/master/binaries/freebsd/amd64/goperf)
 
