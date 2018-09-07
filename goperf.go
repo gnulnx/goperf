@@ -1,5 +1,5 @@
 /*
-Package goper is a highly concurrant website load tester with a simple intuitive command line syntax.
+Package goperf is a highly concurrant website load tester with a simple intuitive command line syntax.
 
 * Fetch a url and report stats
 
