@@ -12,8 +12,6 @@ Goperf also supports simple http request headers like user-agent and cookies str
 ## Prebuilt Binaries
 [Darwin 64 bit](https://github.com/gnulnx/goperf/raw/master/binaries/darwin/amd64/goperf)
 
-[Darwin 32 bit](https://github.com/gnulnx/goperf/raw/master/binaries/darwin/386/goperf)
-
 [FreeBSD 64 bit](https://github.com/gnulnx/goperf/raw/master/binaries/freebsd/amd64/goperf)
 
 [FreeBSD 32 bit](https://github.com/gnulnx/goperf/raw/master/binaries/freebsd/386/goperf)
