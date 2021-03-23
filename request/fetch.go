@@ -3,6 +3,7 @@ package request
 import (
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 	"unicode/utf8"
 )
@@ -20,6 +21,7 @@ type FetchInput struct {
 	BaseURL   string
 	Retdat    bool
 	Cookies   string
+	Headers   string
 	UserAgent string
 }
 
@@ -56,10 +58,14 @@ func Fetch(input FetchInput) *FetchResponse {
 	url := input.BaseURL
 	retdat := input.Retdat
 	cookies := input.Cookies
+	headers := strings.Split(input.Headers, "=")
 
 	// Set up the http request
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
+
+	// Set the header
+	req.Header.Add(headers[0], headers[1])
 
 	// Set the use user-agent.  Default is 'goperf'.  So most like users will want to change it to something different.
 	// Example user-agent: "Chrome/61.0.3163.100 Mobile Safari/537.36"
@@ -71,8 +77,7 @@ func Fetch(input FetchInput) *FetchResponse {
 	//Fetch the url and time the request
 	start := time.Now()
 	resp, err := client.Do(req)
-	// fmt.Println(resp.Header)
-	// os.Exit(1)
+
 	if err != nil {
 		return &FetchResponse{
 			URL:    err.Error(),
@@ -90,8 +95,8 @@ func Fetch(input FetchInput) *FetchResponse {
 		body = []byte("")
 		Error = err.Error()
 	}
+	// This contains the text of the response.  HTML, Json, Exception, etc
 	responseBody := string(body)
-	// responseBody := body
 
 	output := FetchResponse{
 		URL:     url,
