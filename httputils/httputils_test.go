@@ -19,8 +19,8 @@ func getTestBody() string {
 }
 
 func testEquality(input []string, testdata []string, t *testing.T) bool {
-	sInput := set.New()
-	sExpected := set.New()
+	sInput := set.New(set.ThreadSafe)
+	sExpected := set.New(set.ThreadSafe)
 	for _, i := range input {
 		sInput.Add(i)
 	}
