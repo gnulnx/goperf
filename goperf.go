@@ -46,6 +46,7 @@ func main() {
 	web := flag.Bool("web", false, "Run as a webserver -web {port}")
 	port := flag.Int("port", 8080, "used with -web to specif which port to bind")
 	cookies := flag.String("cookies", "{}", "Set up cookies for the request")
+	headers := flag.String("headers", "{}", "Set up headers for the request")
 	useragent := flag.String("useragent", "goperf", "Set the user agent string")
 
 	// Not currently used, but could be
@@ -88,6 +89,7 @@ func main() {
 				BaseURL:   *url,
 				Retdat:    *fetchall,
 				Cookies:   *cookies,
+				Headers:   *headers,
 				UserAgent: *useragent,
 			},
 		)
@@ -111,6 +113,7 @@ func main() {
 		Verbose:    *verbose,
 		Seconds:    *seconds,
 		Cookies:    *cookies,
+		Headers:    *headers,
 		UserAgent:  *useragent,
 	}
 	f, _ := os.Create(*cpuprofile)

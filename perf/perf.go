@@ -22,6 +22,7 @@ type Init struct {
 	Verbose    bool
 	Results    *request.IterateReqRespAll
 	Cookies    string
+	Headers    string
 	UserAgent  string
 }
 
@@ -69,6 +70,7 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 	url := input.URL
 	sec := input.Seconds
 	cookies := input.Cookies
+	headers := input.Headers
 	useragent := input.UserAgent
 	start := time.Now()
 	maxTime := time.Duration(sec) * time.Second
@@ -90,6 +92,7 @@ func iterateRequest(input *Init) request.IterateReqRespAll {
 			BaseURL:   url,
 			Retdat:    false,
 			Cookies:   cookies,
+			Headers:   headers,
 			UserAgent: useragent,
 		})
 

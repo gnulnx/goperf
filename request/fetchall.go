@@ -100,6 +100,7 @@ func FetchAll(input FetchInput) *FetchAllResponse {
 		TotalTime:       totalTime2,
 		TotalLinearTime: totalLinearTime,
 		TotalBytes:      totalBytes,
+		Body:            output.Body,
 		JSResponses:     jsResponses,
 		IMGResponses:    imgResponses,
 		CSSResponses:    cssResponses,
@@ -119,6 +120,9 @@ func PrintFetchAllResponse(resp *FetchAllResponse) {
 	red := color.New(color.FgRed).SprintfFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
 	total := resp.BaseURL.Time
+
+	// Show the resp body.
+	fmt.Print(resp.Body)
 
 	color.Red("Base Url Results")
 	if resp.BaseURL.Status == 200 {
